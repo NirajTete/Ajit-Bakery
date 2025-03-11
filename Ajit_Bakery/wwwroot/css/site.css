@@ -1,26 +1,41 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
-body {
-  margin-bottom: 60px;
-}
-
 .pagination, .dt-search {
     float: inline-end !important;
+}
+
+/* Apply Bootstrap styles to DataTables buttons */
+.dt-buttons .btn {
+    padding: 4px 6px;
+    border-radius: 4px;
+    margin-right: 5px;
+    font-weight: bold;
+    color: white !important;
+}
+
+/* Excel button (Green) */
+.dt-buttons .btn-success {
+    background-color: #28a745 !important;
+    border-color: #28a745 !important;
+}
+
+/* PDF button (Red) */
+.dt-buttons .btn-danger {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+}
+
+/* CSV button (Blue) */
+.dt-buttons .btn-info {
+    background-color: #17a2b8 !important;
+    border-color: #17a2b8 !important;
+}
+
+/* Print button (Dark Blue) */
+.dt-buttons .btn-primary {
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+}
+
+/* Ensure icons are properly aligned */
+.dt-buttons .btn i {
+    margin-right: 5px;
 }
