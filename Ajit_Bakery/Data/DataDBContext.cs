@@ -17,5 +17,7 @@ namespace Ajit_Bakery.Data
         public DbSet<Ajit_Bakery.Models.OutletMaster> OutletMaster { get; set; } 
         public DbSet<Ajit_Bakery.Models.TransportMaster> TransportMaster { get; set; } 
         public DbSet<Ajit_Bakery.Models.UserMaster> UserMaster { get; set; } 
+        public DbSet<Ajit_Bakery.Models.MenuModel> MenuModel { get; set; } 
+        public DbSet<Ajit_Bakery.Models.UserManagment> UserManagment { get; set; } 
     }
 }

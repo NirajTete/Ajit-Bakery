@@ -1,0 +1,149 @@
+﻿@model List<string>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    // string role = Context.Request.HttpContext.Session.GetString("Role");
+    // var jsonData = Context.Request.HttpContext.Session.GetString("MenuMaster");
+}
+
+@* @if (!string.IsNullOrEmpty(role))
+{ *@
+    @* @if (role == "ADMIN")
+    { *@
+        <div class="container-fluid">
+            <div class="card-header bg-dark text-white">
+                <div class="d-flex align-items-baseline">
+                    <h5 class="mx-auto font-weight-bolder">Registered Users List</h5>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-sm">
+                <thead class="thead-light">
+                    <tr class="text-center">
+                        <!-- Center-align all headers -->
+                        <th style="text-align: center;">Sr. No</th>
+                        <th style="text-align: center;">UserName</th>
+                        <th style="text-align: center;">Action</th>
+                    </tr>
+                </thead>
+                        <tbody class="  text-center">
+                            @{
+                                int counter = 1;
+                            }
+                            @foreach (var item in ViewBag.MyList)
+                            {
+                                <tr>
+                                    <td style="width:100px;">@counter</td>
+                                    <td class="text-lowercase">@item.UserName</td>
+                                    <td>
+                                        @if (item.IsFound)
+                                        {
+                                            <a asp-action="Edit" asp-route-username="@item.UserName" class="btn btn-sm btn-warning">
+                                                <i class="fa fa-pencil" aria-hidden="true"></i> Edit
+                                            </a>
+                                        
+                                            <a href="#" class="btn btn-sm btn-danger delete-button" data-username="@item.UserName">
+                                                <i class="fas fa-trash-alt" aria-hidden="true"></i> Delete
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a asp-action="Create" asp-route-username="@item.UserName" class="btn btn-sm btn-success">
+                                                <i class="fa fa-plus" aria-hidden="true"></i> Allot
+                                            </a>
+                                        
+                                            <a href="#" class="btn btn-sm btn-danger delete-button" data-username="@item.UserName">
+                                                <i class="fas fa-trash-alt" aria-hidden="true"></i> Delete
+                                            </a>
+                                        }
+
+                                     
+                                    </td>
+
+                                </tr>
+                                counter++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    @* } *@
+   
+@* } *@
+@* else
+{
+    <div class="container-fluid">
+        <div class="console.log( console.log(-danger console.log(-dismissible fade show">
+            <h6 class="console.log(-heading">
+                <i class="bi-exclamation-octagon-fill"></i>
+                No Access !!
+            </h6>
+            <p>
+                You do not have access to this page. Please contact your administrator for assistance.
+            </p>
+            <hr>
+            <button type="button" class="btn-close" data-bs-dismiss="console.log("></button>
+        </div>
+    </div>
+} *@
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<script>
+    function confirmDelete(username, row) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You will not be able to recover this user!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                console.log("username : " + username);
+                $.ajax({
+                    url: '/UserManagment/Delete', // The URL to the delete action
+                    type: 'POST', // HTTP method
+                    data: { username: username }, // Data to be sent to the server
+                    success: function (response) {
+                        if (response.success) {
+                            console.log("Success !");
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: "User Removed Successfully !",
+                            }).then(() => {
+                                // Remove the row from the table
+                                row.remove();
+                                window.location.href = '/UserManagment/Index';
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: "Error found !",
+                            });
+                        }
+                    },
+                    error: function () {
+                        console.log('An error occurred while processing the request.');
+                    }
+                });
+            }
+        });
+    }
+
+    var deleteButtons = document.querySelectorAll('.delete-button');
+    deleteButtons.forEach(function (button) {
+        button.addEventListener('click', function (event) {
+            var username = button.dataset.username;
+            var row = button.closest('tr'); // Find the closest table row
+            confirmDelete(username, row);
+        });
+    });
+</script>

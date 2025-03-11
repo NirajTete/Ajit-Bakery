@@ -1,5 +1,6 @@
 using Ajit_Bakery.Data;
 using AspNetCoreHero.ToastNotification;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,26 @@ builder.Services.AddSession(options =>
 {
 });
 
+//added logi
+//Login page 
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(option =>
+    {
+        option.Cookie.Name = "demo";
+        option.LoginPath = "/UserMasters/Login";
+        option.ExpireTimeSpan = TimeSpan.FromMinutes(50);
+        option.AccessDeniedPath = "/Access/AccessDenied";
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(name: "User", configurePolicy: policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim("role", "User");
+    });
+});
+//end
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -40,6 +61,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Login}/{action=Index}/{id?}");
+    pattern: "{controller=UserMasters}/{action=Login}/{id?}");
 
 app.Run();

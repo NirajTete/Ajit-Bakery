@@ -6,6 +6,7 @@ namespace Ajit_Bakery.Models
     public class ProductMaster
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         //[Column(TypeName ="varchar()")]
         public string ProductName { get; set; }

@@ -1,7 +1,11 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using System.Security.Claims;
 @{
+    var menubar = User.Claims.FirstOrDefault(a => a.Type == "Menu").Value;
+    var userName = User.Identity.Name.ToUpper();
+    var userRole = User.FindFirstValue(ClaimTypes.Role);
+    
+    // var unitNameClaim = ViewBag.UnitName;
+    // var plantNameClaim = ViewBag.PlantName;
 }
 <!-- [ Sidebar Menu ] start -->
 <nav class="pc-sidebar">
@@ -14,30 +18,40 @@
         </div>
         <div class="navbar-content">
             <ul class="pc-navbar">
-                <li class="pc-item pc-caption">
+              @*   <li class="pc-item pc-caption">
                     <label>Navigation</label>
-                </li>
-                <li class="pc-item">
-                    <a asp-controller="Home" asp-action="Index" class="pc-link">
+                </li> *@
+                @* <li class="pc-item">
+                    <a class="pc-link" asp-controller="Home" asp-action="Index">
                         <span class="pc-micon">
                             <i class="ph ph-gauge"></i>
-                        </span><span class="pc-mtext">Dashboard</span>
+                        </span><span class="pc-mtext" >Dashboard</span>
+                    </a>
+                </li>
+ *@
+                <li class="pc-item">
+                    <a class="pc-link" asp-controller="Home" asp-action="Index">
+                        <span class="pc-micon">
+                            <i class="ph ph-chart-line-up"></i> <!-- Modern Dashboard Icon -->
+                        </span>
+                        <span class="pc-mtext">Dashboard</span>
                     </a>
                 </li>
 
                 <li class="pc-item pc-caption">
-                    <label>Other</label>
+                    <label>Menus</label>
                     <i class="ph ph-suitcase"></i>
                 </li>
                 <li class="pc-item pc-hasmenu">
                     <a href="#!" class="pc-link">
-                        <span class="pc-micon"> <i class="ph ph-tree-structure"></i> </span><span class="pc-mtext">Menu levels</span><span class="pc-arrow">
+                        <span class="pc-micon"> <i class="ph ph-tree-structure"></i> </span><span class="pc-mtext">Masters</span><span class="pc-arrow">
                             <i data-feather="chevron-right"></i>
                         </span>
                     </a>
                     <ul class="pc-submenu">
-                        <li class="pc-item"><a class="pc-link" asp-controller="Home" asp-action="test">Level 2.1</a></li>
-                        <li class="pc-item pc-hasmenu">
+                        <li class="pc-item"><a class="pc-link" asp-controller="ProductMasters" asp-action="Index">Product Master</a></li>
+                        <li class="pc-item"><a class="pc-link" asp-controller="UserManagments" asp-action="Index">User Managment</a></li>
+                       @*  <li class="pc-item pc-hasmenu">
                             <a href="#!" class="pc-link">
                                 Level 2.2<span class="pc-arrow">
                                     <i data-feather="chevron-right"></i>
@@ -58,29 +72,8 @@
                                     </ul>
                                 </li>
                             </ul>
-                        </li>
-                        <li class="pc-item pc-hasmenu">
-                            <a href="#!" class="pc-link">
-                                Level 2.3<span class="pc-arrow">
-                                    <i data-feather="chevron-right"></i>
-                                </span>
-                            </a>
-                            <ul class="pc-submenu">
-                                <li class="pc-item"><a class="pc-link" href="#!">Level 3.1</a></li>
-                                <li class="pc-item"><a class="pc-link" href="#!">Level 3.2</a></li>
-                                <li class="pc-item pc-hasmenu">
-                                    <a href="#!" class="pc-link">
-                                        Level 3.3<span class="pc-arrow">
-                                            <i data-feather="chevron-right"></i>
-                                        </span>
-                                    </a>
-                                    <ul class="pc-submenu">
-                                        <li class="pc-item"><a class="pc-link" href="#!">Level 4.1</a></li>
-                                        <li class="pc-item"><a class="pc-link" href="#!">Level 4.2</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </li>
+                        </li> *@
+                     
                     </ul>
                 </li>              
 

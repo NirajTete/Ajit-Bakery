@@ -1,13 +1,14 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using System.Security.Claims;
 @{
+    var userName = User.Identity.Name.ToUpper();
+    var userRole = User.FindFirstValue(ClaimTypes.Role);
+    var unitNameClaim = ViewBag.UnitName;
+    var plantNameClaim = ViewBag.PlantName;
 }
 <!-- [ Header Topbar ] start -->
 <header class="pc-header">
     <div class="m-header">
         <a href="../dashboard/index.html" class="b-brand text-primary">
-            <!-- ========   Change your logo from here   ============ -->
             <img src="../assets/images/logo-white.svg" alt="logo image" class="logo-lg" />
         </a>
     </div>
@@ -48,13 +49,14 @@
                 <li class="dropdown pc-h-item header-user-profile">
                     <a class="dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#" role="button"
                        aria-haspopup="false" data-bs-auto-close="outside" aria-expanded="false">
-                        <img src="../assets/images/user/avatar-2.jpg" alt="user-image" class="user-avtar" />
+                        Hello, @userName
+                        <img src="../assets/images/user/avatar-2.jpg" style="margin-left:5px;" alt="user-image" class="user-avtar" />
                     </a>
                     <div class="dropdown-menu dropdown-user-profile dropdown-menu-end pc-h-dropdown">
                         <div class="dropdown-body">
                             <div class="profile-notification-scroll position-relative" style="max-height: calc(100vh - 225px)">
                                 <ul class="list-group list-group-flush w-100">
-                                    <li class="list-group-item">
+                                    @* <li class="list-group-item">
                                         <a href="https://codedthemes.com/item/gradient-able-admin-template/" target="_blank"
                                            class="dropdown-item">
                                             <span class="d-flex align-items-center">
@@ -82,15 +84,10 @@
                                                 <span>Settings</span>
                                             </span>
                                         </a>
-                                    </li>
+                                    </li> *@
                                     <li class="list-group-item">
-                                        <a href="#" class="dropdown-item">
-                                            <span class="d-flex align-items-center">
-                                                <i class="ph ph-plus-circle"></i>
-                                                <span>Add account</span>
-                                            </span>
-                                        </a>
-                                        <a href="#" class="dropdown-item">
+                                       
+                                        <a class="dropdown-item" asp-action="Logout" asp-controller="UserMasters">
                                             <span class="d-flex align-items-center">
                                                 <i class="ph ph-power"></i>
                                                 <span>Logout</span>
