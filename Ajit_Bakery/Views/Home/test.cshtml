@@ -3,6 +3,11 @@
 *@
 @{
 }
+
+<style>
+
+</style>
+
 <!-- [ breadcrumb ] start -->
 <div class="page-header">
     <div class="page-block card mb-0">
@@ -98,23 +103,59 @@
     }
 
     <script>
-          $(document).ready(function () {
-            // Initialize the DataTable and assign it to a variable
-            dakgrnTable = $('#example').DataTable({
-                dom: 'Bfrtip',
-                searching: true,
-                ordering: false,
+        $(document).ready(function () {
+            $('#example').DataTable({
+                dom: 'Bfrtip', // Add button controls
                 buttons: [
                     {
                         extend: 'excel',
-                        title: 'DAK Report',
+                        title: 'DAK Report', // Title inside the Excel file
                         filename: function () {
                             return generateFilename('DAK_Report');
                         },
                         className: 'buttons-excel'
+                    },
+                    {
+                        extend: 'pdf',
+                        title: 'DAK Report', // Title inside the PDF
+                        filename: function () {
+                            return generateFilename('DAK_Report');
+                        },
+                        className: 'buttons-pdf',
+                        orientation: 'landscape', // Optional: Set orientation
+                        pageSize: 'A4', // Optional: Set page size
+                        customize: function (doc) {
+                            doc.styles.title = {
+                                fontSize: 16,
+                                bold: true,
+                                alignment: 'center'
+                            };
+                        }
+                    },
+                    {
+                        extend: 'csv',
+                        filename: function () {
+                            return generateFilename('DAK_Report');
+                        },
+                        className: 'buttons-csv'
+                    },
+                    {
+                        extend: 'print',
+                        title: 'DAK Report', // Title in print preview
+                        className: 'buttons-print'
                     }
-                ]
+                ],
+                info: false,
+                ordering: false
             });
         });
+
+        function generateFilename(baseName) {
+            const now = new Date();
+            const date = now.toISOString().slice(0, 10).replace(/-/g, '_'); // Format: YYYY_MM_DD
+            return `${baseName}_${date}`;
+        }
     </script>
+
 }
+

@@ -14,31 +14,29 @@
           content="Bootstrap admin template, Dashboard UI Kit, Dashboard Template, Backend Panel, react dashboard, angular dashboard" />
     <meta name="author" content="codedthemes" />
 
-    <!-- [Favicon] icon -->
+    <!-- [Favicon] -->
     <link rel="icon" href="~/assets/images/favicon.svg" type="image/x-icon" />
 
-    <!-- map-vector css -->
-    <link rel="stylesheet" href="~/assets/css/plugins/jsvectormap.min.css" />
-    <!-- [Google Font : Poppins] icon -->
+    <!-- [Google Font: Poppins] -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
 
-    <!-- [Tabler Icons] https://tablericons.com -->
-    <link rel="stylesheet" href="~/assets/fonts/tabler-icons.min.css" />
-    <!-- [Feather Icons] https://feathericons.com -->
-    <link rel="stylesheet" href="~/assets/fonts/feather.css" />
-    <!-- [Font Awesome Icons] https://fontawesome.com/icons -->
-    <link rel="stylesheet" href="~/assets/fonts/fontawesome.css" />
-    <!-- [Material Icons] https://fonts.google.com/icons -->
-    <link rel="stylesheet" href="~/assets/fonts/material.css" />
-    <!-- [Template CSS Files] -->
+    <!-- [Icons & Fonts] -->
+    <link rel="stylesheet" href="~/assets/fonts/tabler-icons.min.css" />  <!-- Tabler Icons -->
+    <link rel="stylesheet" href="~/assets/fonts/feather.css" />           <!-- Feather Icons -->
+    <link rel="stylesheet" href="~/assets/fonts/fontawesome.css" />       <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/assets/fonts/material.css" />          <!-- Material Icons -->
+    <!-- [Map Vector CSS] -->
+    <link rel="stylesheet" href="~/assets/css/plugins/jsvectormap.min.css" />
+
+    <!-- [Template Styles] -->
     <link rel="stylesheet" href="~/assets/css/style.css" id="main-style-link" />
     <link rel="stylesheet" href="~/assets/css/style-preset.css" />
 
-    <!-- [ DataTables CSS ] start -->
-    <link href="~/datatable/bootstrap.min.css" rel="stylesheet" />
+    <!-- [ DataTables CSS ] -->
+    <link href="~/datatable/bootstrap.min.css" rel="stylesheet" />  <!-- Ensure this is necessary -->
     <link href="~/datatable/datatables.bootstrap.css" rel="stylesheet" />
-    <!-- [ DataTables CSS ] end -->
 
+    <link href="~/css/site.css" rel="stylesheet" />
 </head>
 <!-- [Head] end -->
 
@@ -65,27 +63,41 @@
 
     <partial name="_Footer" />
 
-    <!-- [ DataTables JS ] start -->
+    <!-- [ Required JS ] -->
     <script src="~/datatable/jquery-3.7.1.js"></script>
-    <script src="~/datatable/bootstrap.min.js"></script>
+    <script src="~/assets/js/plugins/popper.min.js"></script>
+    <script src="~/assets/js/plugins/bootstrap.min.js"></script> <!-- Remove duplicate Bootstrap -->
+    <!-- [ DataTables JS ] -->
     <script src="~/datatable/datatables.js"></script>
     <script src="~/datatable/datatables.bootstrap.js"></script>
-    <!-- [ DataTables JS ] end -->
-    <!-- [Page Specific JS] start -->
+
+    <!-- [ Other Plugins ] -->
+    <script src="~/assets/js/plugins/simplebar.min.js"></script>
+    <script src="~/assets/js/plugins/feather.min.js"></script>
+
+    <!-- [ Page-Specific JS ] -->
     <script src="~/assets/js/plugins/apexcharts.min.js"></script>
     <script src="~/assets/js/plugins/jsvectormap.min.js"></script>
     <script src="~/assets/js/plugins/world.js"></script>
     <script src="~/assets/js/plugins/world-merc.js"></script>
     <script src="~/assets/js/pages/dashboard-sales.js"></script>
-    <!-- [Page Specific JS] end -->
-    <!-- Required Js -->
-    <script src="~/assets/js/plugins/popper.min.js"></script>
-    <script src="~/assets/js/plugins/simplebar.min.js"></script>
-    <script src="~/assets/js/plugins/bootstrap.min.js"></script>
+
+    <!-- [ Custom & Theme Scripts ] -->
     <script src="~/assets/js/fonts/custom-font.js"></script>
     <script src="~/assets/js/script.js"></script>
     <script src="~/assets/js/theme.js"></script>
-    <script src="~/assets/js/plugins/feather.min.js"></script>
+
+    <!-- DataTables Buttons CSS -->
+    <link rel="stylesheet" href="~/datatable/buttons.dataTables.min.css" />
+
+    <!-- DataTables Buttons JS -->
+    <script src="~/datatable/dataTables.buttons.min.js"></script>
+    <script src="~/datatable/jszip.min.js"></script>
+    <script src="~/datatable/pdfmake.min.js"></script>
+    <script src="~/datatable/vfs_fonts.js"></script>
+    <script src="~/datatable/buttons.html5.min.js"></script>
+    <script src="~/datatable/buttons.print.min.js"></script>
+
 
 
     <script>
