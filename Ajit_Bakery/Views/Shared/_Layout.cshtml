@@ -33,6 +33,12 @@
     <!-- [Template CSS Files] -->
     <link rel="stylesheet" href="~/assets/css/style.css" id="main-style-link" />
     <link rel="stylesheet" href="~/assets/css/style-preset.css" />
+
+    <!-- [ DataTables CSS ] start -->
+    <link href="~/datatable/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/datatable/datatables.bootstrap.css" rel="stylesheet" />
+    <!-- [ DataTables CSS ] end -->
+
     @* SWEETALERT *@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @* JQUERY *@
@@ -50,10 +56,8 @@
     </div>
     <!-- [ Pre-loader ] End -->
 
-
     <partial name="_Sidebar" />
     <partial name="_Header" />
-
 
     <!-- [ Main Content ] start -->
     <div class="pc-container">
@@ -65,7 +69,12 @@
 
     <partial name="_Footer" />
 
-
+    <!-- [ DataTables JS ] start -->
+    <script src="~/datatable/jquery-3.7.1.js"></script>
+    <script src="~/datatable/bootstrap.min.js"></script>
+    <script src="~/datatable/datatables.js"></script>
+    <script src="~/datatable/datatables.bootstrap.js"></script>
+    <!-- [ DataTables JS ] end -->
     <!-- [Page Specific JS] start -->
     <script src="~/assets/js/plugins/apexcharts.min.js"></script>
     <script src="~/assets/js/plugins/jsvectormap.min.js"></script>
