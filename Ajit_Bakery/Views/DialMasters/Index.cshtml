@@ -1,0 +1,113 @@
+﻿@model IEnumerable<Ajit_Bakery.Models.DialMaster>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.DialCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DialShape)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DialWg)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DialWgUom)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DialDiameter)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DialLength)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DialBreadth)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DialUom)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DialArea)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreateDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Createtime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ModifiedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Modifiedtime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.DialCode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DialShape)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DialWg)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DialWgUom)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DialDiameter)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DialLength)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DialBreadth)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DialUom)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DialArea)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreateDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Createtime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ModifiedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Modifiedtime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
