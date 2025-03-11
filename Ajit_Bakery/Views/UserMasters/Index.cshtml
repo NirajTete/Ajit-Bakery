@@ -21,9 +21,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.UserDept)
             </th>
-            <th>
+       @*      <th>
                 @Html.DisplayNameFor(model => model.UserDesignation)
-            </th>
+            </th> *@
             <th>
                 @Html.DisplayNameFor(model => model.UserContactNo)
             </th>
@@ -42,9 +42,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Modifiedtime)
             </th>
-            <th>
+           @*  <th>
                 @Html.DisplayNameFor(model => model.User)
-            </th>
+            </th> *@
             <th></th>
         </tr>
     </thead>
@@ -60,9 +60,9 @@
             <td>
                 @Html.DisplayFor(modelItem => item.UserDept)
             </td>
-            <td>
+          @*   <td>
                 @Html.DisplayFor(modelItem => item.UserDesignation)
-            </td>
+            </td> *@
             <td>
                 @Html.DisplayFor(modelItem => item.UserContactNo)
             </td>
@@ -81,9 +81,9 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Modifiedtime)
             </td>
-            <td>
+           @*  <td>
                 @Html.DisplayFor(modelItem => item.User)
-            </td>
+            </td> *@
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

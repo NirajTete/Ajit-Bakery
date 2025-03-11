@@ -25,10 +25,10 @@ namespace Ajit_Bakery.Models
         //[Column(TypeName = "varchar()")]
         public string? VehicleVolume { get; set; }
         //ADDED
-        public DateTime? CreateDate { get; set; }
-        public DateTime? Createtime { get; set; }
-        public DateTime? ModifiedDate { get; set; }
-        public DateTime? Modifiedtime { get; set; }
+        public string? CreateDate { get; set; }
+        public string? Createtime { get; set; }
+        public string? ModifiedDate { get; set; }
+        public string? Modifiedtime { get; set; }
         public string? User { get; set; }
     }
 }

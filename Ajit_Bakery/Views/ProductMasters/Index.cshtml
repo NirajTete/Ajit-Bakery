@@ -3,117 +3,70 @@
 @{
     ViewData["Title"] = "Index";
 }
+<div class="container-fluid">
+    <div class="card shadow-sm mt-3">
+        <div class="card-header bg-dark text-white py-2">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 font-weight-bold small text-center">Product Master</h5>
+                <a asp-action="Create" class="btn btn-success btn-sm text-white">
+                    <i class="fas fa-plus-square"></i> Add
+                </a>
+            </div>
+        </div>
+        <div class="card-body p-2">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover table-sm" id="dataTable">
+                    <thead class="thead-light  text-center">
+                        <tr class="text-center small">
+                            <th>Sr.No.</th>
+                            <th>Product Name</th>
+                            <th>Qty</th>
+                            <th>Unit Qty</th>
+                            <th>UOM</th>
+                            <th>Category</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="small text-center">
+                        @{
+                            int counter = 1;
+                        }
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="text-center">@counter</td>
+                                <td>@Html.DisplayFor(modelItem => item.ProductName)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Qty)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Unitqty)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Uom)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Category)</td>
+                                @* <td class="text-center">
+                                    <span class="badge @GetStatusBadgeClass(item.status)">
+                                        @item.status
+                                    </span>
+                                </td> *@
+                                <td class="text-center">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-success" title="Edit">
+                                            <i class="fas fa-pencil-alt"></i>
+                                        </a>
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-warning" title="Details">
+                                            <i class="fa fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger" title="Delete">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            counter++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
-<h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ProductName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Qty)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Unitqty)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Uom)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Category)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Type)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PerGmRate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MRP)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DialCode1)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DialCode2)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreateDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Createtime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ModifiedDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Modifiedtime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.User)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProductName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Qty)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Unitqty)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Uom)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Category)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Type)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PerGmRate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MRP)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DialCode1)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DialCode2)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreateDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Createtime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ModifiedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Modifiedtime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+
