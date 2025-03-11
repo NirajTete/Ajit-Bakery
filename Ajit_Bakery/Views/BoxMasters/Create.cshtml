@@ -1,0 +1,83 @@
+﻿@model Ajit_Bakery.Models.BoxMaster
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>BoxMaster</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="BoxNumber" class="control-label"></label>
+                <input asp-for="BoxNumber" class="form-control" />
+                <span asp-validation-for="BoxNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BoxLength" class="control-label"></label>
+                <input asp-for="BoxLength" class="form-control" />
+                <span asp-validation-for="BoxLength" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BoxBreadth" class="control-label"></label>
+                <input asp-for="BoxBreadth" class="form-control" />
+                <span asp-validation-for="BoxBreadth" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BoxHeight" class="control-label"></label>
+                <input asp-for="BoxHeight" class="form-control" />
+                <span asp-validation-for="BoxHeight" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BoxUom" class="control-label"></label>
+                <input asp-for="BoxUom" class="form-control" />
+                <span asp-validation-for="BoxUom" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BoxArea" class="control-label"></label>
+                <input asp-for="BoxArea" class="form-control" />
+                <span asp-validation-for="BoxArea" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreateDate" class="control-label"></label>
+                <input asp-for="CreateDate" class="form-control" />
+                <span asp-validation-for="CreateDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Createtime" class="control-label"></label>
+                <input asp-for="Createtime" class="form-control" />
+                <span asp-validation-for="Createtime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ModifiedDate" class="control-label"></label>
+                <input asp-for="ModifiedDate" class="form-control" />
+                <span asp-validation-for="ModifiedDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Modifiedtime" class="control-label"></label>
+                <input asp-for="Modifiedtime" class="form-control" />
+                <span asp-validation-for="Modifiedtime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="User" class="control-label"></label>
+                <input asp-for="User" class="form-control" />
+                <span asp-validation-for="User" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

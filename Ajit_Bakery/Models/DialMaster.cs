@@ -1,0 +1,36 @@
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Ajit_Bakery.Models
+{
+    public class DialMaster
+    {
+        [Key]
+        public int Id { get; set; }
+        //[Column(TypeName = "varchar()")]
+        public string DialCode { get; set; }
+        //[Column(TypeName = "varchar()")]
+        public string DialShape { get; set; }
+        //[Column(TypeName = "varchar()")]
+        public double DialWg { get; set; }
+        // [Column(TypeName = "varchar()")]
+        public string DialWgUom { get; set; }
+        //[Column(TypeName = "varchar()")]
+        public double DialDiameter { get; set; }
+        //[Column(TypeName = "varchar()")]
+        public double DialLength { get; set; }
+        //[Column(TypeName = "varchar()")]
+        public double DialBreadth { get; set; }
+        //[Column(TypeName = "varchar()")]
+        public string DialUom { get; set; }
+        //[Column(TypeName = "varchar()")]
+        public string? DialArea { get; set; }
+
+        //ADDED
+        public DateTime? CreateDate { get; set; }
+        public DateTime? Createtime { get; set; }
+        public DateTime? ModifiedDate { get; set; }
+        public DateTime? Modifiedtime { get; set; }
+        public string? User { get; set; }
+    }
+}

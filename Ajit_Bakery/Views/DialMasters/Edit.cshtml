@@ -1,0 +1,99 @@
+﻿@model Ajit_Bakery.Models.DialMaster
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>DialMaster</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="DialCode" class="control-label"></label>
+                <input asp-for="DialCode" class="form-control" />
+                <span asp-validation-for="DialCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DialShape" class="control-label"></label>
+                <input asp-for="DialShape" class="form-control" />
+                <span asp-validation-for="DialShape" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DialWg" class="control-label"></label>
+                <input asp-for="DialWg" class="form-control" />
+                <span asp-validation-for="DialWg" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DialWgUom" class="control-label"></label>
+                <input asp-for="DialWgUom" class="form-control" />
+                <span asp-validation-for="DialWgUom" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DialDiameter" class="control-label"></label>
+                <input asp-for="DialDiameter" class="form-control" />
+                <span asp-validation-for="DialDiameter" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DialLength" class="control-label"></label>
+                <input asp-for="DialLength" class="form-control" />
+                <span asp-validation-for="DialLength" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DialBreadth" class="control-label"></label>
+                <input asp-for="DialBreadth" class="form-control" />
+                <span asp-validation-for="DialBreadth" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DialUom" class="control-label"></label>
+                <input asp-for="DialUom" class="form-control" />
+                <span asp-validation-for="DialUom" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DialArea" class="control-label"></label>
+                <input asp-for="DialArea" class="form-control" />
+                <span asp-validation-for="DialArea" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreateDate" class="control-label"></label>
+                <input asp-for="CreateDate" class="form-control" />
+                <span asp-validation-for="CreateDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Createtime" class="control-label"></label>
+                <input asp-for="Createtime" class="form-control" />
+                <span asp-validation-for="Createtime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ModifiedDate" class="control-label"></label>
+                <input asp-for="ModifiedDate" class="form-control" />
+                <span asp-validation-for="ModifiedDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Modifiedtime" class="control-label"></label>
+                <input asp-for="Modifiedtime" class="form-control" />
+                <span asp-validation-for="Modifiedtime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="User" class="control-label"></label>
+                <input asp-for="User" class="form-control" />
+                <span asp-validation-for="User" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
