@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Ajit_Bakery.Models;
 
 namespace Ajit_Bakery.Data
 {
@@ -19,5 +20,6 @@ namespace Ajit_Bakery.Data
         public DbSet<Ajit_Bakery.Models.UserMaster> UserMaster { get; set; } 
         public DbSet<Ajit_Bakery.Models.MenuModel> MenuModel { get; set; } 
         public DbSet<Ajit_Bakery.Models.UserManagment> UserManagment { get; set; } 
+        public DbSet<Ajit_Bakery.Models.UserType> UserType { get; set; } = default!;
     }
 }

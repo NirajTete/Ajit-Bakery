@@ -41,6 +41,9 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @* JQUERY *@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    @* select 2 link *@
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
 </head>
 <!-- [Head] end -->
 
@@ -67,6 +70,11 @@
 
     <partial name="_Footer" />
 
+    @* notification toast *@
+    @await Component.InvokeAsync("Notyf")
+    @* select 2 query *@
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+
     <!-- [ Required JS ] -->
     <script src="~/datatable/jquery-3.7.1.js"></script>
     <script src="~/assets/js/plugins/popper.min.js"></script>
@@ -79,12 +87,12 @@
     <script src="~/assets/js/plugins/simplebar.min.js"></script>
     <script src="~/assets/js/plugins/feather.min.js"></script>
 
-    <!-- [ Page-Specific JS ] -->
+ @*    <!-- [ Page-Specific JS ] -->
     <script src="~/assets/js/plugins/apexcharts.min.js"></script>
     <script src="~/assets/js/plugins/jsvectormap.min.js"></script>
     <script src="~/assets/js/plugins/world.js"></script>
     <script src="~/assets/js/plugins/world-merc.js"></script>
-    <script src="~/assets/js/pages/dashboard-sales.js"></script>
+    <script src="~/assets/js/pages/dashboard-sales.js"></script> *@
 
     <!-- [ Custom & Theme Scripts ] -->
     <script src="~/assets/js/fonts/custom-font.js"></script>
@@ -94,16 +102,17 @@
     <!-- DataTables Buttons CSS -->
     <link rel="stylesheet" href="~/datatable/buttons.dataTables.min.css" />
 
-    <!-- DataTables Buttons JS -->
+   @*  <!-- DataTables Buttons JS -->
     <script src="~/datatable/dataTables.buttons.min.js"></script>
     <script src="~/datatable/jszip.min.js"></script>
     <script src="~/datatable/pdfmake.min.js"></script>
     <script src="~/datatable/vfs_fonts.js"></script>
     <script src="~/datatable/buttons.html5.min.js"></script>
-    <script src="~/datatable/buttons.print.min.js"></script>
+    <script src="~/datatable/buttons.print.min.js"></script> *@
 
-
-
+    <script src="~/vendor/jquery-easing/jquery.easing.compatibility.js"></script>
+    <script src="~/vendor/jquery-easing/jquery.easing.js"></script>
+    <script src="~/vendor/jquery-easing/jquery.easing.min.js"></script>
     <script>
         layout_change('light');
     </script>

@@ -2,16 +2,10 @@
 @{
     ViewData["Title"] = "Edit";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    string role = Context.Request.HttpContext.Session.GetString("Role");
-    var jsonData = Context.Request.HttpContext.Session.GetString("MenuMaster");
-
 }
 
-@if (!string.IsNullOrEmpty(role))
-{
-    @if (role == "ADMIN")
-    {
-        <div class="containeratio col-md-12">
+
+<div class="containeratio col-md-12">
             <div class="card-header bg-dark text-white">
                 <div class="d-flex align-items-baseline">
                     <h5 class="mx-auto font-weight-bolder">User Management Page</h5>
@@ -107,51 +101,7 @@
             </div>
             @*card end*@
         </div>
-    }
-    else if (role == "HOSITE")
-    {
-        @*  <div class="row">
-            <div class="col-xl-3 col-sm-6 mb-3">
-                <h3 style="color:red"><b>No Access !</b></h3>
-            </div>
-        </div> *@
-        <div class="container-fluid">
-            <div class="console.log( console.log(-danger console.log(-dismissible fade show">
-                <h6 class="console.log(-heading">
-                    <i class="bi-exclamation-octagon-fill"></i>
-                    No Access !!
-                </h6>
-                <p>
-                    You do not have access to this page. Please contact your administrator for assistance.
-                </p>
-                <hr>
-                <button type="button" class="btn-close" data-bs-dismiss="console.log("></button>
-            </div>
-        </div>
-
-    }
-    else if (role == "WAREHOUSE")
-    {
-        @* <div class="row">
-            <div class="col-xl-3 col-sm-6 mb-3">
-                <h3 style="color:red"><b>No Access !</b></h3>
-            </div>
-        </div> *@
-        <div class="container-fluid">
-            <div class="console.log( console.log(-danger console.log(-dismissible fade show">
-                <h6 class="console.log(-heading">
-                    <i class="bi-exclamation-octagon-fill"></i>
-                    No Access !!
-                </h6>
-                <p>
-                    You do not have access to this page. Please contact your administrator for assistance.
-                </p>
-                <hr>
-                <button type="button" class="btn-close" data-bs-dismiss="console.log("></button>
-            </div>
-        </div>
-    }
-}
+    
 
 @section Scripts {
     @{

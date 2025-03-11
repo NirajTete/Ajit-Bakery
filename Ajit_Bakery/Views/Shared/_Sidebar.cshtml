@@ -1,4 +1,6 @@
 ﻿@using System.Security.Claims;
+@using Newtonsoft.Json
+
 @{
     var menubar = User.Claims.FirstOrDefault(a => a.Type == "Menu").Value;
     var userName = User.Identity.Name.ToUpper();
@@ -50,7 +52,45 @@
                     </a>
                     <ul class="pc-submenu">
                         <li class="pc-item"><a class="pc-link" asp-controller="ProductMasters" asp-action="Index">Product Master</a></li>
-                        <li class="pc-item"><a class="pc-link" asp-controller="UserManagments" asp-action="Index">User Managment</a></li>
+                        <li class="pc-item"><a class="pc-link" asp-controller="DialMasters" asp-action="Index">Dial Master</a></li>
+                        <li class="pc-item"><a class="pc-link" asp-controller="BoxMasters" asp-action="Index">Box Master</a></li>
+                        <li class="pc-item"><a class="pc-link" asp-controller="OutletMasters" asp-action="Index">Outlet Master</a></li>
+                        <li class="pc-item"><a class="pc-link" asp-controller="TransportMasters" asp-action="Index">Transport Master</a></li>
+                        <li class="pc-item"><a class="pc-link" asp-controller="UserManagments" asp-action="Index">User Managments</a></li>
+                        <li class="pc-item"><a class="pc-link" asp-controller="UserMasters" asp-action="Index">User Master</a></li>
+@*                         @if (!string.IsNullOrEmpty(menubar))
+                        {
+                            var menuData = JsonConvert.DeserializeObject<List<MenuModel>>(menubar);
+                            if (menuData != null && menuData.Any())
+                            {
+                                @foreach (var item in menuData.Where(s => s.ParentMenuId == 0).GroupBy(Obj => new
+                                {
+                                    Obj.MenuId
+                                }).Distinct().ToList())
+                                {
+                                    <li class="sidebar-item has-sub">
+                                        <a href="#" class='sidebar-link'>
+                                            <i class="@item.FirstOrDefault().icon"></i>
+                                            <b><span>@item.FirstOrDefault().Title</span></b>
+                                        </a>
+                                        <ul class="submenu m-0 p-0">
+                                            @foreach (var firstItem in (menuData.Where(s => s.ParentMenuId == item.FirstOrDefault().MenuId).ToList()))
+                                            {
+
+                                                <li class="submenu-item">
+                                                    <a class="nav-link text-dark" asp-area="" asp-controller="@firstItem.Controller" asp-action="@firstItem.Action">@firstItem.Title </a>
+                                                </li>
+
+                                            }
+                                        </ul>
+                                    </li>
+                                }
+                            }
+                        }
+ *@
+
+                     
+
                        @*  <li class="pc-item pc-hasmenu">
                             <a href="#!" class="pc-link">
                                 Level 2.2<span class="pc-arrow">

@@ -3,27 +3,21 @@
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    // string role = Context.Request.HttpContext.Session.GetString("Role");
-    // var jsonData = Context.Request.HttpContext.Session.GetString("MenuMaster");
 }
 
-@* @if (!string.IsNullOrEmpty(role))
-{ *@
-    @* @if (role == "ADMIN")
-    { *@
         <div class="container-fluid">
             <div class="card-header bg-dark text-white">
                 <div class="d-flex align-items-baseline">
                     <h5 class="mx-auto font-weight-bolder">Registered Users List</h5>
+                   <a asp-action="CreateUser" class="btn btn-success text-white p-2 btn-sm" style="float:Right; font-size:smaller; margin-right: 5px;"><i class="fas fa-plus-square p-1"></i> Add</a>
                 </div>
             </div>
 
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover table-sm">
-                <thead class="thead-light">
+                <thead class="thead-light"> 
                     <tr class="text-center">
-                        <!-- Center-align all headers -->
                         <th style="text-align: center;">Sr. No</th>
                         <th style="text-align: center;">UserName</th>
                         <th style="text-align: center;">Action</th>

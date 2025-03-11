@@ -2,20 +2,15 @@
 @{
     ViewData["Title"] = "Edit";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    string role = Context.Request.HttpContext.Session.GetString("Role");
-    var jsonData = Context.Request.HttpContext.Session.GetString("MenuMaster");
 
 }
 
-@if (!string.IsNullOrEmpty(role))
-{
-    @if (role == "ADMIN")
-    {
-        <div class="containeratio col-md-12">
+
+   <div class="containeratio col-md-12">
             <div class="card-header bg-dark text-white">
-                <div class="d-flex align-items-baseline">
+                <div class="d-flex align-items-baseline p-2">
                     <h5 class="mx-auto font-weight-bolder">User Management Page</h5>
-                    <a asp-action="Index" class="btn btn-success text-white"><i class="fa fa-reply"></i> Back</a>
+                    <a asp-action="Index" class="btn btn-success text-white btn-sm"><i class="fa fa-reply"></i> Back</a>
                 </div>
             </div>
 
@@ -50,7 +45,7 @@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label asp-for="PageName" class="control-label"><b>Admin</b></label>
-                                <select id="demo" multiple class="form-control" asp-for="selectedpages" asp-items="@ViewBag.MainMenu" name="mainmenu" multiselect-select-all="true">
+                                <select id="demo" multiple class="form-control selectdrop"  asp-for="selectedpages" asp-items="@ViewBag.MainMenu" name="mainmenu" multiselect-select-all="true">
                                 </select>
                             </div>
                         </div>
@@ -58,7 +53,7 @@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label asp-for="PageName" class="control-label"><b>Masters</b></label>
-                                <select id="demo1" multiple class="form-control" asp-for="selectedpages" asp-items="@ViewBag.SubMenu" name="submenu" multiselect-select-all="true">
+                        <select id="demo1" multiple class="form-control selectdrop" asp-for="selectedpages" asp-items="@ViewBag.SubMenu" name="submenu" multiselect-select-all="true">
                                 </select>
                             </div>
                         </div>
@@ -66,7 +61,7 @@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label asp-for="PageName" class="control-label"><b>Operation</b></label>
-                                <select id="demo2" multiple class="form-control" asp-for="selectedpages" asp-items="@ViewBag.OprationMenu" name="oprationmenu" multiselect-select-all="true">
+                        <select id="demo2" multiple class="form-control selectdrop" asp-for="selectedpages" asp-items="@ViewBag.OprationMenu" name="oprationmenu" multiselect-select-all="true">
                                 </select>
                             </div>
                         </div>
@@ -74,7 +69,7 @@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label asp-for="PageName" class="control-label"><b>Marketing</b></label>
-                                <select id="demo4" multiple class="form-control" asp-items="@ViewBag.WmarketingMenu" asp-for="selectedpages" name="marketingmenu" multiselect-select-all="true">
+                        <select id="demo4" multiple class="form-control selectdrop" asp-items="@ViewBag.WmarketingMenu" asp-for="selectedpages" name="marketingmenu" multiselect-select-all="true">
                                 </select>
                             </div>
                         </div>
@@ -82,7 +77,7 @@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label asp-for="PageName" class="control-label"><b>Report</b></label>
-                                <select id="demo3" multiple class="form-control" asp-for="selectedpages" asp-items="@ViewBag.reportmenu" name="reportmenu" multiselect-select-all="true">
+                        <select id="demo3" multiple class="form-control selectdrop" asp-for="selectedpages" asp-items="@ViewBag.reportmenu" name="reportmenu" multiselect-select-all="true">
                                 </select>
                             </div>
                         </div>
@@ -91,13 +86,8 @@
 
                     <br />
                     <div class="row">
-                        <div class="col-md-6">
-                            @*<input type="submit" value="Create" class="btn btn-primary col-md-12" />*@
-                            <input type="submit" value="Save" class="btn btn-primary col-md-12" />
-                        </div>
-                        <div class="col-md-6">
-                            @*<a asp-action="Index" class="btn btn-danger col-md-12">Back</a> *@
-                            <a asp-action="Index" class="btn btn-danger col-md-12">Back to List</a>
+                        <div class="col-md-12">
+                            <input type="submit" value="Save" class="btn btn-primary btn-sm col-md-12" />
                         </div>
                     </div>
                     <br />
@@ -106,82 +96,22 @@
             </div>
             @*card end*@
         </div>
-    }
-    else if (role == "HOSITE")
-    {
-        @*  <div class="row">
-            <div class="col-xl-3 col-sm-6 mb-3">
-                <h3 style="color:red"><b>No Access !</b></h3>
-            </div>
-        </div> *@
-        <div class="container-fluid">
-            <div class="console.log( console.log(-danger console.log(-dismissible fade show">
-                <h6 class="console.log(-heading">
-                    <i class="bi-exclamation-octagon-fill"></i>
-                    No Access !!
-                </h6>
-                <p>
-                    You do not have access to this page. Please contact your administrator for assistance.
-                </p>
-                <hr>
-                <button type="button" class="btn-close" data-bs-dismiss="console.log("></button>
-            </div>
-        </div>
 
-    }
-    else if (role == "WAREHOUSE")
-    {
-        @* <div class="row">
-            <div class="col-xl-3 col-sm-6 mb-3">
-                <h3 style="color:red"><b>No Access !</b></h3>
-            </div>
-        </div> *@
-        <div class="container-fluid">
-            <div class="console.log( console.log(-danger console.log(-dismissible fade show">
-                <h6 class="console.log(-heading">
-                    <i class="bi-exclamation-octagon-fill"></i>
-                    No Access !!
-                </h6>
-                <p>
-                    You do not have access to this page. Please contact your administrator for assistance.
-                </p>
-                <hr>
-                <button type="button" class="btn-close" data-bs-dismiss="console.log("></button>
-            </div>
-        </div>
-    }
-}
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    @* <script src="~/js/multiselect-dropdown.js"></script> *@
+    <script>
+        $(document).ready(function () {
+
+
+            // $('#demo').select2({
+            //     placeholder: "--Select--",
+            //     allowClear: true,
+            //     width: '100%'
+            // });
+        });
+
+    </script>
 }
-<script>
-    // $(function () {
-    //     //Demo id has multiselect display
-    //     $('#demo').multiselect();
-    // });
-    // $('#demo').multiselect({
-    //     //select all function
-    //     includeSelectAllOption: true,
-    //     selectAllText: ' Select all',
-    // })
-    // $(function () {
-    //     //demo1 id has multiselect display
-    //     $('#demo1').multiselect();
-    // });
-    // $('#demo1').multiselect({
-    //     includeSelectAllOption: true,
-    //     selectAllText: ' Select all',
-    // })
-    // $(function () {
-    //     //demo1 id has multiselect display
-    //     $('#demo2').multiselect();
-    // });
-    // $('#demo2').multiselect({
-    //     includeSelectAllOption: true,
-    //     selectAllText: ' Select all',
-    // })
-</script>

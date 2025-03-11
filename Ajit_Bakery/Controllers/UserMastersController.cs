@@ -37,6 +37,7 @@ namespace Ajit_Bakery.Controllers
             //HttpContext.Session.Remove("DEPT_NAME");
             //HttpContext.Session.Remove("Role");
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            //_notyfyService.Warning("Logout Successfully !");
             return RedirectToAction("Login", "UserMasters"); // Redirect to login page
         }
 
@@ -78,6 +79,7 @@ namespace Ajit_Bakery.Controllers
                     };
 
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), properties);
+                    _notyfyService.Success("Login Successfully !");
                     return RedirectToAction("Index", "Home");
                     //if (user.UserPassward == loginPage.UserPassward)
                     //{
