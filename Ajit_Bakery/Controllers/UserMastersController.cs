@@ -96,7 +96,7 @@ namespace Ajit_Bakery.Controllers
                 else
                 {
                     _notyfyService.Warning("Invalid UserName!");
-                    return RedirectToAction("create", "LoginPages");
+                    return RedirectToAction("Login", "UserMasters");
                 }
             }
             catch (Exception ex)
@@ -104,7 +104,7 @@ namespace Ajit_Bakery.Controllers
                 //TempData["ExMessage"] = ex.Message;
                 //TempData["ExType"] = "error";
                 _notyfyService.Error(ex.Message);
-                return RedirectToAction("create", "LoginPages");
+                return RedirectToAction("Login", "UserMasters");
             }
         }
 
