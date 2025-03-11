@@ -1,0 +1,187 @@
+﻿@model Ajit_Bakery.Models.UserManagment
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string role = Context.Request.HttpContext.Session.GetString("Role");
+    var jsonData = Context.Request.HttpContext.Session.GetString("MenuMaster");
+
+}
+
+@if (!string.IsNullOrEmpty(role))
+{
+    @if (role == "ADMIN")
+    {
+        <div class="containeratio col-md-12">
+            <div class="card-header bg-dark text-white">
+                <div class="d-flex align-items-baseline">
+                    <h5 class="mx-auto font-weight-bolder">User Management Page</h5>
+                    <a asp-action="Index" class="btn btn-success text-white"><i class="fa fa-reply"></i> Back</a>
+                </div>
+            </div>
+
+            @*<h4>UserManagement</h4>*@
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="UserName" class="control-label"><b>Username</b></label>
+                                <input asp-for="UserName" class="form-control text-lowercase" style=" width: 480px;" readonly />
+                                <span asp-validation-for="UserName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="Role" class="control-label"><b>Role</b></label>
+                                <select asp-for="Role" id="role" asp-items="@ViewBag.role" onchange="role()" class="form-control" style="width: 480px;"></select>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label asp-for="PageName" class="control-label"><b>Page Access</b></label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="PageName" class="control-label"><b>Admin</b></label>
+                                <select id="demo" multiple class="form-control" asp-items="@ViewBag.MainMenu" asp-for="PageName" name="mainmenu" multiselect-select-all="true">
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="PageName" class="control-label"><b>Masters</b></label>
+                                <select id="demo1" multiple class="form-control" asp-items="@ViewBag.SubMenu" asp-for="PageName" name="submenu" multiselect-select-all="true">
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="PageName" class="control-label"><b>Operation</b></label>
+                                <select id="demo2" multiple class="form-control" asp-items="@ViewBag.OprationMenu" asp-for="PageName" name="oprationmenu" multiselect-select-all="true">
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="PageName" class="control-label"><b>Marketing</b></label>
+                                <select id="demo4" multiple class="form-control" asp-items="@ViewBag.WmarketingMenu" asp-for="PageName" name="marketingmenu" multiselect-select-all="true">
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="PageName" class="control-label"><b>Report</b></label>
+                                <select id="demo3" multiple class="form-control" asp-items="@ViewBag.reportmenu" asp-for="PageName" name="reportmenu" multiselect-select-all="true">
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <br />
+                    <div class="row">
+                        <div class="col-md-6">
+                            @*<input type="submit" value="Create" class="btn btn-primary col-md-12" />*@
+                            <input type="submit" value="Save" class="btn btn-primary col-md-12" />
+                        </div>
+                        <div class="col-md-6">
+                            @*<a asp-action="Index" class="btn btn-danger col-md-12">Back</a> *@
+                            <a asp-action="Index" class="btn btn-danger col-md-12">Back to List</a>
+                        </div>
+                    </div>
+                    <br />
+
+                </form>
+            </div>
+            @*card end*@
+        </div>
+    }
+    else if (role == "HOSITE")
+    {
+        @*  <div class="row">
+            <div class="col-xl-3 col-sm-6 mb-3">
+                <h3 style="color:red"><b>No Access !</b></h3>
+            </div>
+        </div> *@
+        <div class="container-fluid">
+            <div class="console.log( console.log(-danger console.log(-dismissible fade show">
+                <h6 class="console.log(-heading">
+                    <i class="bi-exclamation-octagon-fill"></i>
+                    No Access !!
+                </h6>
+                <p>
+                    You do not have access to this page. Please contact your administrator for assistance.
+                </p>
+                <hr>
+                <button type="button" class="btn-close" data-bs-dismiss="console.log("></button>
+            </div>
+        </div>
+
+    }
+    else if (role == "WAREHOUSE")
+    {
+        @* <div class="row">
+            <div class="col-xl-3 col-sm-6 mb-3">
+                <h3 style="color:red"><b>No Access !</b></h3>
+            </div>
+        </div> *@
+        <div class="container-fluid">
+            <div class="console.log( console.log(-danger console.log(-dismissible fade show">
+                <h6 class="console.log(-heading">
+                    <i class="bi-exclamation-octagon-fill"></i>
+                    No Access !!
+                </h6>
+                <p>
+                    You do not have access to this page. Please contact your administrator for assistance.
+                </p>
+                <hr>
+                <button type="button" class="btn-close" data-bs-dismiss="console.log("></button>
+            </div>
+        </div>
+    }
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+<script>
+    // $(function () {
+    //     //Demo id has multiselect display
+    //     $('#demo').multiselect();
+    // });
+    // $('#demo').multiselect({
+    //     //select all function
+    //     includeSelectAllOption: true,
+    //     selectAllText: ' Select all',
+    // })
+    // $(function () {
+    //     //demo1 id has multiselect display
+    //     $('#demo1').multiselect();
+    // });
+    // $('#demo1').multiselect({
+    //     includeSelectAllOption: true,
+    //     selectAllText: ' Select all',
+    // })
+    // $(function () {
+    //     //demo1 id has multiselect display
+    //     $('#demo2').multiselect();
+    // });
+    // $('#demo2').multiselect({
+    //     includeSelectAllOption: true,
+    //     selectAllText: ' Select all',
+    // })
+</script>

@@ -6,6 +6,7 @@ namespace Ajit_Bakery.Models
     public class TransportMaster
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         //[Column(TypeName = "varchar()")]
         public string DriverName { get; set; }

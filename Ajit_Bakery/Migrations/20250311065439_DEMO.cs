@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Ajit_Bakery.Migrations
 {
     /// <inheritdoc />
-    public partial class ajitbakery : Migration
+    public partial class DEMO : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -59,6 +59,23 @@ namespace Ajit_Bakery.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DialMaster", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MenuModel",
+                columns: table => new
+                {
+                    MenuId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ParentMenuId = table.Column<int>(type: "integer", nullable: true),
+                    icon = table.Column<string>(type: "text", nullable: true),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Controller = table.Column<string>(type: "text", nullable: false),
+                    Action = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MenuModel", x => x.MenuId);
                 });
 
             migrationBuilder.CreateTable(
@@ -136,6 +153,21 @@ namespace Ajit_Bakery.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserManagment",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserName = table.Column<string>(type: "text", nullable: false),
+                    PageName = table.Column<string>(type: "text", nullable: false),
+                    Role = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserManagment", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserMaster",
                 columns: table => new
                 {
@@ -169,6 +201,9 @@ namespace Ajit_Bakery.Migrations
                 name: "DialMaster");
 
             migrationBuilder.DropTable(
+                name: "MenuModel");
+
+            migrationBuilder.DropTable(
                 name: "OutletMaster");
 
             migrationBuilder.DropTable(
@@ -176,6 +211,9 @@ namespace Ajit_Bakery.Migrations
 
             migrationBuilder.DropTable(
                 name: "TransportMaster");
+
+            migrationBuilder.DropTable(
+                name: "UserManagment");
 
             migrationBuilder.DropTable(
                 name: "UserMaster");

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Ajit_Bakery.Migrations
 {
     [DbContext(typeof(DataDBContext))]
-    [Migration("20250311061030_ajitbakery")]
-    partial class ajitbakery
+    [Migration("20250311065439_DEMO")]
+    partial class DEMO
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -130,6 +130,37 @@ namespace Ajit_Bakery.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DialMaster");
+                });
+
+            modelBuilder.Entity("Ajit_Bakery.Models.MenuModel", b =>
+                {
+                    b.Property<int>("MenuId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("MenuId"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Controller")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ParentMenuId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("icon")
+                        .HasColumnType("text");
+
+                    b.HasKey("MenuId");
+
+                    b.ToTable("MenuModel");
                 });
 
             modelBuilder.Entity("Ajit_Bakery.Models.OutletMaster", b =>
@@ -298,6 +329,31 @@ namespace Ajit_Bakery.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TransportMaster");
+                });
+
+            modelBuilder.Entity("Ajit_Bakery.Models.UserManagment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("PageName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserManagment");
                 });
 
             modelBuilder.Entity("Ajit_Bakery.Models.UserMaster", b =>
