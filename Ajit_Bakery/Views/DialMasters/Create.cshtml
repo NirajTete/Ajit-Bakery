@@ -3,96 +3,189 @@
 @{
     ViewData["Title"] = "Create";
 }
+<div class="container-fluid">
+    <div class="card shadow-sm mt-3">
+        <div class="card-header bg-dark text-white py-2">
 
-<h1>Create</h1>
+            <div class="d-flex align-items-baseline">
+                <a asp-action="Index" asp-controller="DialMasters" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+                <h5 class="mx-auto text-white text-2xl font-semibold"> Product Master - Add</h5>
+            </div>
+        </div>
+        <div class="card-body p-2">
+            <form asp-action="Create" id="productForm" onsubmit="return validateForm()">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row">
+                    <div class="form-group col-sm-3">
+                        <label asp-for="DialCode" class="control-label">Dial Code</label>
+                        <input asp-for="DialCode" class="form-control" value="@ViewBag.dialcode" readonly required />
+                    </div>
+                    <div class="form-group col-sm-3">
+                        <label asp-for="DialShape" class="control-label">Dial Shape</label>
+                        <select asp-for="DialShape" class="form-control text-uppercase" id="DialShape" required>
+                            <option value="Round">Round</option>
+                            <option value="Square">Square</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group col-sm-3">
+                        <label asp-for="DialWg" class="control-label">Dial Wg</label>
+                        <input type="number" value="0" asp-for="DialWg" class="form-control" required min="1" max="50" />
+                    </div>
+                    <div class="form-group col-sm-3">
+                        <label asp-for="DialWgUom" class="control-label">Dial Uom</label>
+                        <select asp-for="DialWgUom" class="form-control text-uppercase" autocomplete="off" id="DialWgUom" required>
+                            <option>Gms</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-sm-2" id="diameterDiv">
+                        <label asp-for="DialDiameter" class="control-label">Dial Diameter</label>
+                        <input type="number" asp-for="DialDiameter" class="form-control" min="1" max="50" />
+                        <span asp-validation-for="DialDiameter" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-sm-2" id="lengthBreadthDiv">
+                        <label asp-for="DialLength" class="control-label">Dial Length</label>
+                        <input type="number" asp-for="DialLength" class="form-control" />
+                        <span asp-validation-for="DialLength" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-sm-2" id="breadthDiv">
+                        <label asp-for="DialBreadth" class="control-label">Dial Breadth</label>
+                        <input type="number" asp-for="DialBreadth" class="form-control" />
+                        <span asp-validation-for="DialBreadth" class="text-danger"></span>
+                    </div>
 
-<h4>DialMaster</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="DialCode" class="control-label"></label>
-                <input asp-for="DialCode" class="form-control" />
-                <span asp-validation-for="DialCode" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DialShape" class="control-label"></label>
-                <input asp-for="DialShape" class="form-control" />
-                <span asp-validation-for="DialShape" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DialWg" class="control-label"></label>
-                <input asp-for="DialWg" class="form-control" />
-                <span asp-validation-for="DialWg" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DialWgUom" class="control-label"></label>
-                <input asp-for="DialWgUom" class="form-control" />
-                <span asp-validation-for="DialWgUom" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DialDiameter" class="control-label"></label>
-                <input asp-for="DialDiameter" class="form-control" />
-                <span asp-validation-for="DialDiameter" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DialLength" class="control-label"></label>
-                <input asp-for="DialLength" class="form-control" />
-                <span asp-validation-for="DialLength" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DialBreadth" class="control-label"></label>
-                <input asp-for="DialBreadth" class="form-control" />
-                <span asp-validation-for="DialBreadth" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DialUom" class="control-label"></label>
-                <input asp-for="DialUom" class="form-control" />
-                <span asp-validation-for="DialUom" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DialArea" class="control-label"></label>
-                <input asp-for="DialArea" class="form-control" />
-                <span asp-validation-for="DialArea" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreateDate" class="control-label"></label>
-                <input asp-for="CreateDate" class="form-control" />
-                <span asp-validation-for="CreateDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Createtime" class="control-label"></label>
-                <input asp-for="Createtime" class="form-control" />
-                <span asp-validation-for="Createtime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ModifiedDate" class="control-label"></label>
-                <input asp-for="ModifiedDate" class="form-control" />
-                <span asp-validation-for="ModifiedDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Modifiedtime" class="control-label"></label>
-                <input asp-for="Modifiedtime" class="form-control" />
-                <span asp-validation-for="Modifiedtime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="User" class="control-label"></label>
-                <input asp-for="User" class="form-control" />
-                <span asp-validation-for="User" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+                    <div class="form-group col-sm-2">
+                        <label asp-for="LengthUom" class="control-label"> Length Uom</label>
+                        <select asp-for="LengthUom" class="form-control text-uppercase" id="LengthUom" required>
+                            <option value="CM">CM</option>
+                            <option value="MM">MM</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <label asp-for="DialArea" class="control-label"> Dial Area</label>
+                        <input type="number" value="0" readonly asp-for="DialArea" class="form-control" />
+                        <span asp-validation-for="DialArea" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row mb-3 p-2">
+                    <div class="form-group col-sm-12 ">
+                        <input type="submit" value="Save" class="btn btn-primary btn-sm col-md-12" />
+                    </div>
+                </div>
+            </form>
+
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function () {
+            function calculateArea() {
+                var shape = $("#DialShape").val();
+                var area = 0; // Default value if shape is not Square
+
+                if (shape === "Square") {
+                    var length = parseFloat($("#DialLength").val()) || 0;
+                    var breadth = parseFloat($("#DialBreadth").val()) || 0;
+                    area = length * breadth;
+                }
+
+                $("#DialArea").val(area.toFixed(2)); // Set calculated area or 0
+            }
+
+            // Trigger calculation when any relevant field changes
+            $("#DialLength, #DialBreadth, #DialShape").on("input change", function () {
+                calculateArea();
+            });
+
+            // Initial calculation on page load
+            calculateArea();
+        });
+        $(document).ready(function () {
+            $("#productForm").submit(function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                var formData = $(this).serialize(); // Serialize form data
+                console.log("formData : " + formData);
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("Create", "DialMasters")", // Replace with your controller name
+                    data: formData,
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: response.message,
+                                confirmButtonText: "OK"
+                            }).then(() => {
+                                window.location.href = "@Url.Action("Index", "DialMasters")"; // Redirect to Index
+                            });
+                            $("#productForm")[0].reset(); // Reset form after success
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: response.message
+                            });
+                            return;
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Something went wrong! Please try again.'
+                        });
+                    }
+                });
+            });
+        });
+
+        function validateForm() {
+            let isValid = true;
+            let fields = document.querySelectorAll(".required-field");
+
+            for (let field of fields) {
+                if (field.value.trim() === "") {
+                    alert("Please fill out all required fields.");
+                    field.focus(); // Focus on the first empty field
+                    return false; // Prevent form submission
+                }
+            }
+            return true; // Allow form submission if all fields are filled
+        }
+        $(document).ready(function () {
+            function toggleFields() {
+                var shape = $("#DialShape").val();
+
+                if (shape === "Round") {
+                    $("#diameterDiv").show();
+                    $("#lengthBreadthDiv, #breadthDiv").hide();
+                    $("#DialLength, #DialBreadth").val(""); // Clear Square values
+                } else if (shape === "Square") {
+                    $("#diameterDiv").hide();
+                    $("#lengthBreadthDiv, #breadthDiv").show();
+                    $("#DialDiameter").val(""); // Clear Round value
+                }
+            }
+
+            // Run on page load
+            toggleFields();
+
+            // Run when the dropdown changes
+            $("#DialShape").change(function () {
+                toggleFields();
+            });
+        });
+    </script>
 }

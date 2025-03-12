@@ -19,13 +19,29 @@ namespace Ajit_Bakery.Controllers
             _context = context;
         }
 
-        // GET: DialMasters
         public async Task<IActionResult> Index()
         {
-            return View(await _context.DialMaster.ToListAsync());
+            var listdata =await _context.DialMaster.OrderByDescending(a=>a.Id).ToListAsync();
+            foreach(var item in listdata)
+            {
+                if(item.DialShape == "Round")
+                {
+                    var calvalue1 = (item.DialDiameter).ToString();
+                    item.calvalue = calvalue1 + " " + item.LengthUom;
+                    item.areacalvalue = item.DialArea+" "+ item.LengthUom;
+                }
+                else
+                {
+                    var calvalue = item.DialLength + " X " + item.DialBreadth+ " "+item.LengthUom;
+                    item.calvalue = calvalue;
+                    item.areacalvalue = item.DialArea + " " + item.LengthUom;
+                }
+                var value = item.DialWg + " " + item.DialWgUom;
+                item.value = value;
+            }
+            return View(listdata);
         }
 
-        // GET: DialMasters/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -43,29 +59,36 @@ namespace Ajit_Bakery.Controllers
             return View(dialMaster);
         }
 
-        // GET: DialMasters/Create
         public IActionResult Create()
         {
+            int newId = (_context.DialMaster.Max(u => (int?)u.Id) ?? 0) + 1;
+            DateTime currentDateTime = DateTime.Now;
+            ViewBag.dialcode = "D0" + newId;
             return View();
         }
 
-        // POST: DialMasters/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,DialCode,DialShape,DialWg,DialWgUom,DialDiameter,DialLength,DialBreadth,DialUom,DialArea,CreateDate,Createtime,ModifiedDate,Modifiedtime,User")] DialMaster dialMaster)
+        public async Task<IActionResult> Create( DialMaster dialMaster)
         {
-            if (ModelState.IsValid)
+            try
             {
+                dialMaster.CreateDate = DateTime.Now.ToString("dd-MM-yyyy");
+                dialMaster.ModifiedDate = DateTime.Now.ToString("dd-MM-yyyy");
+                dialMaster.Createtime = DateTime.Now.ToString("HH:mm");
+                dialMaster.Modifiedtime = DateTime.Now.ToString("HH:mm");
+                dialMaster.User = "admin";
+
                 _context.Add(dialMaster);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return Json(new { success = true, message = "Created Successfully !" });
             }
-            return View(dialMaster);
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Warning : " + ex.Message });
+            }
         }
 
-        // GET: DialMasters/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -81,42 +104,25 @@ namespace Ajit_Bakery.Controllers
             return View(dialMaster);
         }
 
-        // POST: DialMasters/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,DialCode,DialShape,DialWg,DialWgUom,DialDiameter,DialLength,DialBreadth,DialUom,DialArea,CreateDate,Createtime,ModifiedDate,Modifiedtime,User")] DialMaster dialMaster)
+        public async Task<IActionResult> Edit(int id,  DialMaster dialMaster)
         {
-            if (id != dialMaster.Id)
+            try
             {
-                return NotFound();
+                dialMaster.ModifiedDate = DateTime.Now.ToString("dd-MM-yyyy");
+                dialMaster.Modifiedtime = DateTime.Now.ToString("HH:mm");
+                dialMaster.User = "admin";
+                _context.Update(dialMaster);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, message = "Updated Successfully !" });
             }
-
-            if (ModelState.IsValid)
+            catch (Exception ex)
             {
-                try
-                {
-                    _context.Update(dialMaster);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!DialMasterExists(dialMaster.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return Json(new { success = false, message = "Warning : " + ex.Message });
             }
-            return View(dialMaster);
         }
 
-        // GET: DialMasters/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -132,21 +138,6 @@ namespace Ajit_Bakery.Controllers
             }
 
             return View(dialMaster);
-        }
-
-        // POST: DialMasters/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var dialMaster = await _context.DialMaster.FindAsync(id);
-            if (dialMaster != null)
-            {
-                _context.DialMaster.Remove(dialMaster);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
         private bool DialMasterExists(int id)
