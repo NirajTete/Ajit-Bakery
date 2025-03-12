@@ -110,13 +110,11 @@ namespace Ajit_Bakery.Controllers
             }
         }
 
-        // GET: UserMasters
         public async Task<IActionResult> Index()
         {
             return View(await _context.UserMaster.ToListAsync());
         }
 
-        // GET: UserMasters/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -134,18 +132,14 @@ namespace Ajit_Bakery.Controllers
             return View(userMaster);
         }
 
-        // GET: UserMasters/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: UserMasters/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UserName,UserCode,UserDept,UserDesignation,UserContactNo,UserRole,CreateDate,Createtime,ModifiedDate,Modifiedtime,User")] UserMaster userMaster)
+        public async Task<IActionResult> Create(UserMaster userMaster)
         {
             if (ModelState.IsValid)
             {
@@ -156,7 +150,6 @@ namespace Ajit_Bakery.Controllers
             return View(userMaster);
         }
 
-        // GET: UserMasters/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -172,42 +165,25 @@ namespace Ajit_Bakery.Controllers
             return View(userMaster);
         }
 
-        // POST: UserMasters/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,UserName,UserCode,UserDept,UserDesignation,UserContactNo,UserRole,CreateDate,Createtime,ModifiedDate,Modifiedtime,User")] UserMaster userMaster)
+        public async Task<IActionResult> Edit(int id,  UserMaster userMaster)
         {
-            if (id != userMaster.Id)
+            try
             {
-                return NotFound();
+                userMaster.ModifiedDate = DateTime.Now.ToString("dd-MM-yyyy");
+                userMaster.Modifiedtime = DateTime.Now.ToString("HH:mm");
+                //userMaster.User = "admin";
+                _context.Update(userMaster);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, message = "Updated Successfully !" });
             }
-
-            if (ModelState.IsValid)
+            catch (Exception ex)
             {
-                try
-                {
-                    _context.Update(userMaster);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UserMasterExists(userMaster.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return Json(new { success = false, message = "Warning : " + ex.Message });
             }
-            return View(userMaster);
         }
 
-        // GET: UserMasters/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -223,21 +199,6 @@ namespace Ajit_Bakery.Controllers
             }
 
             return View(userMaster);
-        }
-
-        // POST: UserMasters/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var userMaster = await _context.UserMaster.FindAsync(id);
-            if (userMaster != null)
-            {
-                _context.UserMaster.Remove(userMaster);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
         private bool UserMasterExists(int id)

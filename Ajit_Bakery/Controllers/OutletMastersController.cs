@@ -19,13 +19,11 @@ namespace Ajit_Bakery.Controllers
             _context = context;
         }
 
-        // GET: OutletMasters
         public async Task<IActionResult> Index()
         {
             return View(await _context.OutletMaster.ToListAsync());
         }
 
-        // GET: OutletMasters/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -43,18 +41,14 @@ namespace Ajit_Bakery.Controllers
             return View(outletMaster);
         }
 
-        // GET: OutletMasters/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: OutletMasters/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,OutletCode,OutletName,OutletAddress,OutletContactNo,OutletContactPerson,CreateDate,Createtime,ModifiedDate,Modifiedtime,User")] OutletMaster outletMaster)
+        public async Task<IActionResult> Create(OutletMaster outletMaster)
         {
             if (ModelState.IsValid)
             {
@@ -65,7 +59,6 @@ namespace Ajit_Bakery.Controllers
             return View(outletMaster);
         }
 
-        // GET: OutletMasters/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -81,42 +74,25 @@ namespace Ajit_Bakery.Controllers
             return View(outletMaster);
         }
 
-        // POST: OutletMasters/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,OutletCode,OutletName,OutletAddress,OutletContactNo,OutletContactPerson,CreateDate,Createtime,ModifiedDate,Modifiedtime,User")] OutletMaster outletMaster)
+        public async Task<IActionResult> Edit(int id,OutletMaster outletMaster)
         {
-            if (id != outletMaster.Id)
+            try
             {
-                return NotFound();
+                outletMaster.ModifiedDate = DateTime.Now.ToString("dd-MM-yyyy");
+                outletMaster.Modifiedtime = DateTime.Now.ToString("HH:mm");
+                outletMaster.User = "admin";
+                _context.Update(outletMaster);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, message = "Updated Successfully !" });
             }
-
-            if (ModelState.IsValid)
+            catch (Exception ex)
             {
-                try
-                {
-                    _context.Update(outletMaster);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!OutletMasterExists(outletMaster.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return Json(new { success = false, message = "Warning : " + ex.Message });
             }
-            return View(outletMaster);
         }
 
-        // GET: OutletMasters/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -134,7 +110,6 @@ namespace Ajit_Bakery.Controllers
             return View(outletMaster);
         }
 
-        // POST: OutletMasters/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
