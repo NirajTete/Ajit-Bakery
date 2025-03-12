@@ -16596,7 +16596,7 @@ pre[class*=language-] > code {
   }
 }
 .pc-header .dropdown-user-profile {
-  min-width: 352px;
+  min-width: 252px;
   max-width: 100%;
   padding: 0;
   overflow: hidden;
