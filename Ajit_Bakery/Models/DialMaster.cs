@@ -23,7 +23,7 @@ namespace Ajit_Bakery.Models
         //[Column(TypeName = "varchar()")]
         public double DialBreadth { get; set; }
         //[Column(TypeName = "varchar()")]
-        public string DialUom { get; set; }
+        public string LengthUom { get; set; }
         //[Column(TypeName = "varchar()")]
         public string? DialArea { get; set; }
 
@@ -33,5 +33,11 @@ namespace Ajit_Bakery.Models
         public string? ModifiedDate { get; set; }
         public string? Modifiedtime { get; set; }
         public string? User { get; set; }
+        [NotMapped]
+        public string value { get; set; }
+        [NotMapped]
+        public string calvalue { get; set; }
+        [NotMapped]
+        public string areacalvalue { get; set; }
     }
 }
