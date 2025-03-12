@@ -25,6 +25,8 @@ namespace Ajit_Bakery.Models
         public string? Createtime { get; set; }
         public string? ModifiedDate { get; set; }
         public string? Modifiedtime { get; set; }
-        public string? User { get; set; }
+        [NotMapped]
+        public string? area { get; set;}
+        public string? User { get; set;}
     }
 }

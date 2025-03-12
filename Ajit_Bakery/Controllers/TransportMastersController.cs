@@ -86,34 +86,21 @@ namespace Ajit_Bakery.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,DriverName,DriverContactNo,VehicleNo,VehicleOwn,VehicleType,VehicleNoOfTyre,VehicleCapacity,VehicleVolume,CreateDate,Createtime,ModifiedDate,Modifiedtime,User")] TransportMaster transportMaster)
+        public async Task<IActionResult> Edit(int id,TransportMaster transportMaster)
         {
-            if (id != transportMaster.Id)
+            try
             {
-                return NotFound();
+                transportMaster.ModifiedDate = DateTime.Now.ToString("dd-MM-yyyy");
+                transportMaster.Modifiedtime = DateTime.Now.ToString("HH:mm");
+                transportMaster.User = "admin";
+                _context.Update(transportMaster);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, message = "Updated Successfully !" });
             }
-
-            if (ModelState.IsValid)
+            catch (Exception ex)
             {
-                try
-                {
-                    _context.Update(transportMaster);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!TransportMasterExists(transportMaster.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return Json(new { success = false, message = "Warning : " + ex.Message });
             }
-            return View(transportMaster);
         }
 
         // GET: TransportMasters/Delete/5

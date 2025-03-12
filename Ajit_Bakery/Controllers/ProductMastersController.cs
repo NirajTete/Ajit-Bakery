@@ -21,7 +21,6 @@ namespace Ajit_Bakery.Controllers
             _context = context;
         }
 
-        // GET: ProductMasters
         public async Task<IActionResult> Index()
         {
             var list = _context.ProductMaster.ToList();
@@ -38,7 +37,6 @@ namespace Ajit_Bakery.Controllers
             return View(list);
         }
 
-        // GET: ProductMasters/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -79,17 +77,12 @@ namespace Ajit_Bakery.Controllers
             return lstProducts;
         }
 
-
-        // GET: ProductMasters/Create
         public IActionResult Create()
         {
             ViewBag.Dial = GetDial();
             return View();
         }
 
-        // POST: ProductMasters/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProductMaster productMaster)
@@ -116,7 +109,6 @@ namespace Ajit_Bakery.Controllers
             }
         }
 
-        // GET: ProductMasters/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -151,7 +143,6 @@ namespace Ajit_Bakery.Controllers
             }
         }
 
-        // GET: ProductMasters/Delete/5
         [HttpGet]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -231,64 +222,5 @@ namespace Ajit_Bakery.Controllers
             return Json(new { success = true, code });
         }
 
-        //public ActionResult GETPROD_CODE(string selectedvalue)
-        //{
-        //    if (selectedvalue == null)
-        //    {
-        //        return Json(new { success = false, message = "Please enter the description !" });
-        //    }
-        //    if (!string.IsNullOrWhiteSpace(selectedvalue))
-        //    {
-        //        string normalizedProductCode = Regex.Replace(selectedvalue.Trim().ToUpper(), @"\s+", "");
-
-        //        var find = _context.ProductMaster.Where(a => a.ProductName.Trim().ToUpper() == selectedvalue.Trim().ToUpper()).FirstOrDefault();
-        //        if (find != null)
-        //        {
-        //            return Json(new { success = false, message = "Product description already exists in the database." });
-        //        }
-        //    }
-
-        //    selectedvalue.Trim();
-        //    //var prefix = _context.companymaster.Select(a => a.cprefix.Trim()).FirstOrDefault();
-        //    var prefix = "AJIT";
-        //    var getLast = _context.ProductMaster
-        //                        .OrderByDescending(a => a.Id).Where(a => a.ProductCode != "-")
-        //                        .Select(a => a.ProductCode.Trim())
-        //                        .FirstOrDefault();
-
-        //    string letters = getLast.Substring(0, 3);
-
-        //    string digits = getLast.Substring(3);
-        //    int maxId = int.Parse(digits) + 1; // Increment maxId by 1
-
-        //    var categoryId = prefix + "-" + maxId;
-
-        //    var srno = maxId;
-        //    var code = "";
-        //    if (srno.ToString().Length == 1)
-        //    {
-        //        code = prefix + "0000" + maxId;
-        //    }
-        //    else if (srno.ToString().Length == 2)
-        //    {
-        //        code = prefix + "000" + maxId;
-        //    }
-        //    else if (srno.ToString().Length == 3)
-        //    {
-        //        code = prefix + "00" + maxId;
-        //    }
-        //    else if (srno.ToString().Length == 4)
-        //    {
-        //        code = prefix + "0" + maxId;
-        //    }
-        //    else if (srno.ToString().Length == 5)
-        //    {
-        //        code = prefix + maxId;
-        //    }
-
-        //    TempData["GeneratedProductCode"] = code;
-
-        //    return Json(new { success = true, code });
-        //}
     }
 }

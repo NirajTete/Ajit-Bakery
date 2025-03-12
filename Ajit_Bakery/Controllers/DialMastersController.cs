@@ -55,7 +55,24 @@ namespace Ajit_Bakery.Controllers
             {
                 return NotFound();
             }
-
+            if (dialMaster.DialShape == "Round")
+            {
+                var calvalue1 = (dialMaster.DialDiameter).ToString();
+                dialMaster.calvalue = calvalue1 + " " + dialMaster.LengthUom;
+                dialMaster.areacalvalue = dialMaster.DialArea + " " + dialMaster.LengthUom;
+                dialMaster.CreateDate = dialMaster.CreateDate + " " + dialMaster.Createtime;
+                dialMaster.ModifiedDate = dialMaster.ModifiedDate + " " + dialMaster.Modifiedtime;
+            }
+            else
+            {
+                var calvalue = dialMaster.DialLength + " X " + dialMaster.DialBreadth + " " + dialMaster.LengthUom;
+                dialMaster.calvalue = calvalue;
+                dialMaster.areacalvalue = dialMaster.DialArea + " " + dialMaster.LengthUom;
+                dialMaster.CreateDate = dialMaster.CreateDate + " " + dialMaster.Createtime;
+                dialMaster.ModifiedDate = dialMaster.ModifiedDate + " " + dialMaster.Modifiedtime;
+            }
+            var value = dialMaster.DialWg + " " + dialMaster.DialWgUom;
+            dialMaster.value = value;
             return View(dialMaster);
         }
 
@@ -125,19 +142,30 @@ namespace Ajit_Bakery.Controllers
 
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var dialMaster = await _context.DialMaster
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (dialMaster == null)
+                var productMaster = await _context.DialMaster
+                    .FirstOrDefaultAsync(m => m.Id == id);
+                if (productMaster == null)
+                {
+                    return Json(new { success = false, message = "Data not found in master ! " });
+                }
+                else
+                {
+                    _context.DialMaster.Remove(productMaster);
+                    _context.SaveChanges();
+                    return Json(new { success = true, message = "Deleted Successfully !" });
+                }
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+                return Json(new { success = false, message = "WWarning : " + ex.Message });
             }
-
-            return View(dialMaster);
         }
 
         private bool DialMasterExists(int id)

@@ -19,13 +19,16 @@ namespace Ajit_Bakery.Controllers
             _context = context;
         }
 
-        // GET: BoxMasters
         public async Task<IActionResult> Index()
         {
-            return View(await _context.BoxMaster.ToListAsync());
+            var list = await _context.BoxMaster.OrderByDescending(a=>a.Id).ToListAsync();
+            foreach(var item in list)
+            {
+                item.area = item.BoxLength + " X " + item.BoxBreadth + " X " + item.BoxHeight;
+            }
+            return View(list);
         }
 
-        // GET: BoxMasters/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -40,21 +43,18 @@ namespace Ajit_Bakery.Controllers
                 return NotFound();
             }
 
+            boxMaster.area = boxMaster.BoxLength + " X " + boxMaster.BoxBreadth + " X " + boxMaster.BoxHeight;
             return View(boxMaster);
         }
 
-        // GET: BoxMasters/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: BoxMasters/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,BoxNumber,BoxLength,BoxBreadth,BoxHeight,BoxUom,BoxArea,CreateDate,Createtime,ModifiedDate,Modifiedtime,User")] BoxMaster boxMaster)
+        public async Task<IActionResult> Create( BoxMaster boxMaster)
         {
             if (ModelState.IsValid)
             {
@@ -65,7 +65,6 @@ namespace Ajit_Bakery.Controllers
             return View(boxMaster);
         }
 
-        // GET: BoxMasters/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -81,42 +80,25 @@ namespace Ajit_Bakery.Controllers
             return View(boxMaster);
         }
 
-        // POST: BoxMasters/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,BoxNumber,BoxLength,BoxBreadth,BoxHeight,BoxUom,BoxArea,CreateDate,Createtime,ModifiedDate,Modifiedtime,User")] BoxMaster boxMaster)
+        public async Task<IActionResult> Edit(int id,  BoxMaster boxMaster)
         {
-            if (id != boxMaster.Id)
+            try
             {
-                return NotFound();
+                boxMaster.ModifiedDate = DateTime.Now.ToString("dd-MM-yyyy");
+                boxMaster.Modifiedtime = DateTime.Now.ToString("HH:mm");
+                boxMaster.User = "admin";
+                _context.Update(boxMaster);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, message = "Updated Successfully !" });
             }
-
-            if (ModelState.IsValid)
+            catch (Exception ex)
             {
-                try
-                {
-                    _context.Update(boxMaster);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!BoxMasterExists(boxMaster.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return Json(new { success = false, message = "Warning : " + ex.Message });
             }
-            return View(boxMaster);
         }
 
-        // GET: BoxMasters/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -132,21 +114,6 @@ namespace Ajit_Bakery.Controllers
             }
 
             return View(boxMaster);
-        }
-
-        // POST: BoxMasters/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var boxMaster = await _context.BoxMaster.FindAsync(id);
-            if (boxMaster != null)
-            {
-                _context.BoxMaster.Remove(boxMaster);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
         private bool BoxMasterExists(int id)

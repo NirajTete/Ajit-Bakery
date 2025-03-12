@@ -21,13 +21,11 @@ namespace Ajit_Bakery.Controllers
             _context = context; _notifyService = notifyService;
         }
 
-        // GET: UserTypes
         public async Task<IActionResult> Index()
         {
             return View(await _context.UserType.ToListAsync());
         }
 
-        // GET: UserTypes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -45,15 +43,11 @@ namespace Ajit_Bakery.Controllers
             return View(userType);
         }
 
-        // GET: UserTypes/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: UserTypes/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(UserType userType)
@@ -67,7 +61,6 @@ namespace Ajit_Bakery.Controllers
             return View(userType);
         }
 
-        // GET: UserTypes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -83,42 +76,25 @@ namespace Ajit_Bakery.Controllers
             return View(userType);
         }
 
-        // POST: UserTypes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id,UserType userType)
         {
-            if (id != userType.user_id)
+            try
             {
-                return NotFound();
+                //userType.ModifiedDate = DateTime.Now.ToString("dd-MM-yyyy");
+                //userType.Modifiedtime = DateTime.Now.ToString("HH:mm");
+                //userType.User = "admin";
+                _context.Update(userType);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, message = "Updated Successfully !" });
             }
-
-            if (ModelState.IsValid)
+            catch (Exception ex)
             {
-                try
-                {
-                    _context.Update(userType);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UserTypeExists(userType.user_id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return Json(new { success = false, message = "Warning : " + ex.Message });
             }
-            return View(userType);
         }
 
-        // GET: UserTypes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -136,20 +112,6 @@ namespace Ajit_Bakery.Controllers
             return View(userType);
         }
 
-        // POST: UserTypes/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var userType = await _context.UserType.FindAsync(id);
-            if (userType != null)
-            {
-                _context.UserType.Remove(userType);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
 
         private bool UserTypeExists(int id)
         {
