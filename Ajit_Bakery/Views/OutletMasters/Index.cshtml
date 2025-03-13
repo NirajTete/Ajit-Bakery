@@ -4,67 +4,68 @@
     ViewData["Title"] = "Index";
 }
 
-<div class="container-fluid">
-    <div class="card shadow-sm mt-3">
-        <div class="card-header bg-dark text-white py-2">
-            <div class="d-flex align-items-baseline">
-                <a asp-action="Index" asp-controller="Home" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
-                <h5 class="mx-auto text-white text-2xl font-semibold"> Outlet Master</h5>
-                <a asp-action="Create" class="btn btn-success btn-sm text-white">
-                    <i class="fas fa-plus-square"></i> Add
-                </a>
-            </div>
-        </div>
-        <div class="card-body p-2">
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover table-sm" id="dataTable">
-                    <thead class="thead-light">
-                        <tr class="text-center small">
-                            <th class="text-center">Sr.No.</th>
-                            <th>Outlet Code</th>
-                            <th>Outlet Name</th>
-                            <th>Outlet Address </th>
-                            <th>Outlet Contact.No.</th>
-                            <th>Outlet Contact Person</th>
-                            <th class="text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody class="small text-center">
-                        @{
-                            int counter = 1;
-                        }
-                        @foreach (var item in Model)
-                        {
-                            <tr>
-                                <td class="text-center">@counter</td>
-                                <td>@Html.DisplayFor(modelItem => item.OutletCode)</td>
-                                <td>@Html.DisplayFor(modelItem => item.OutletName)</td>
-                                <td>@Html.DisplayFor(modelItem => item.OutletAddress)</td>
-                                <td>@Html.DisplayFor(modelItem => item.OutletContactNo)</td>
-                                <td>@Html.DisplayFor(modelItem => item.OutletContactPerson)</td>
-                                <td class="text-center">
-                                    <div class="btn-group btn-group-sm" role="group">
-                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-success" title="Edit">
-                                            <i class="fas fa-pencil-alt"></i>
-                                        </a>
-                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-warning" title="Details">
-                                            <i class="fa fa-eye"></i>
-                                        </a>
-                                        <a href="javascript:void(0);" class="btn btn-danger delete-btn" data-id="@item.Id" title="Delete">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </a>
 
-                                    </div>
-                                </td>
-                            </tr>
-                            counter++;
-                        }
-                    </tbody>
-                </table>
-            </div>
+<div class="card">
+    <div class="card-header bg-dark text-white py-2">
+        <div class="d-flex align-items-baseline">
+            <a asp-action="Index" asp-controller="Home" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+            <h5 class="mx-auto text-white text-2xl font-semibold"> Outlet Master</h5>
+            <a asp-action="Create" class="btn btn-success btn-sm text-white">
+                <i class="fas fa-plus-square"></i> Add
+            </a>
+        </div>
+    </div>
+    <div class="card-body mt-4">
+        <div class="table table-responsive">
+            <table class="table table-bordered table-hover table-sm" id="OutletMaster">
+                <thead class="thead-light">
+                    <tr class="text-center small">
+                        <th class="text-center">Sr.No.</th>
+                        <th>Outlet Code</th>
+                        <th>Outlet Name</th>
+                        <th>Outlet Address </th>
+                        <th>Outlet Contact.No.</th>
+                        <th>Outlet Contact Person</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="small text-center">
+                    @{
+                        int counter = 1;
+                    }
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-center">@counter</td>
+                            <td>@Html.DisplayFor(modelItem => item.OutletCode)</td>
+                            <td>@Html.DisplayFor(modelItem => item.OutletName)</td>
+                            <td>@Html.DisplayFor(modelItem => item.OutletAddress)</td>
+                            <td>@Html.DisplayFor(modelItem => item.OutletContactNo)</td>
+                            <td>@Html.DisplayFor(modelItem => item.OutletContactPerson)</td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-success" title="Edit">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-warning" title="Details">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                    <a href="javascript:void(0);" class="btn btn-danger delete-btn" data-id="@item.Id" title="Delete">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+
+                                </div>
+                            </td>
+                        </tr>
+                        counter++;
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
+
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 @section Scripts {
@@ -73,7 +74,7 @@
     }
     <script>
         $(document).ready(function () {
-            $('#dataTable').DataTable({
+            $('#OutletMaster').DataTable({
                 dom: 'Bfrtip', // Add button controls
                 buttons: [
                     {
