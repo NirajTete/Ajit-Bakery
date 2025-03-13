@@ -1,0 +1,194 @@
+﻿@model Ajit_Bakery.Models.ProductionCapture
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+
+<div class="container-fluid">
+    <div class="card shadow-sm mt-3">
+        <div class="card-header bg-dark text-white py-2">
+            <div class="d-flex align-items-baseline">
+                <a asp-action="Index" asp-controller="ProductionCaptures" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+                <h5 class="mx-auto text-white text-2xl font-semibold"> Production Capture - Upload Excel</h5>
+            </div>
+        </div>
+        <div class="card-body p-2">
+            <div>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row">
+                    <div class="form-group col-sm-2">
+                        <label asp-for="Production_Id" class="control-label"></label>
+                        <input type="text" asp-for="Production_Id" id="Production_Id" class="form-control" value="@ViewBag.ProductionId" readonly required />
+                        <span asp-validation-for="Production_Id" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Download Excel Button -->
+                    <a onclick="exportToExcel()" id="exportButton" class="btn btn-success text-white btn-sm">
+                        <i class="fas fa-file-excel"></i> Download Excel
+                    </a>
+                    <!-- Upload Form -->
+                    <form id="uploadForm" enctype="multipart/form-data" method="post" asp-action="UploadExcel" class="d-flex align-items-center">
+                        <input type="file" id="fileInput" name="file" accept=".xlsx, .xls" required class="form-control form-control-sm me-2" />
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="fas fa-upload"></i> Save
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $('#uploadForm').on('submit', function (event) {
+            event.preventDefault(); // Prevent default form submission
+            console.log("call");
+            var formData = new FormData(this);
+            var Production_Id = $("#Production_Id").val();
+            $.ajax({
+                url: '/ProductionCaptures/UploadExcel', // Replace with your actual controller and action
+                type: 'POST',
+                data: formData,
+                contentType: false, // Needed for file upload
+                processData: false, // Needed for file upload
+                success: function (response) {
+                    console.log("Responce Get : " + response.success);
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message
+                        }).then(function () {
+                            $('#fileInput').val('');
+                            window.location.href = '/ProductionCaptures/Index'; // Adjust the URL as needed
+                        });
+                        return;
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message
+                        });
+                        $('#fileInput').val(''); // Reset the file input field
+                        return;
+                    }
+                },
+                error: function (xhr, status, error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while processing the file. Please try again.'
+                    });
+                    $('#fileInput').val(''); // Reset the file input field
+                    return;
+                }
+            });
+        });
+
+        function exportToExcel() {
+            $.ajax({
+                url: "/ProductionCaptures/ExportExcel",
+                type: "GET",
+                xhrFields: {
+                    responseType: 'blob' // Ensures the response is treated as a binary file
+                },
+                success: function (data, status, xhr) {
+                    var filename = "ExcelExport.xlsx";
+                    var disposition = xhr.getResponseHeader('Content-Disposition');
+
+                    if (disposition && disposition.indexOf('filename=') !== -1) {
+                        var matches = disposition.match(/filename\*?=(?:UTF-8'')?([^;]*)/);
+                        if (matches && matches[1]) {
+                            filename = decodeURIComponent(matches[1]).replace(/['"]/g, '');
+                        }
+                    }
+
+                    // Create a blob and trigger the download
+                    var blob = new Blob([data], { type: xhr.getResponseHeader('Content-Type') });
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                },
+                error: function () {
+                    alert("Failed to download the file.");
+                }
+            });
+        }
+        $(document).ready(function () {
+            function calculateArea() {
+                var length = parseFloat($("#BoxLength").val()) || 0;
+                var breadth = parseFloat($("#BoxBreadth").val()) || 0;
+                var area = length * breadth;
+                $("#BoxArea").val(area);
+            }
+
+            $("#BoxLength, #BoxBreadth").on("input", calculateArea);
+        });
+        $(document).ready(function () {
+            // $("#productForm").submit(function (event) {
+            //     event.preventDefault(); // Prevent default form submission
+
+            //     var formData = $(this).serialize(); // Serialize form data
+            //     console.log("formData : " + formData);
+            //     $.ajax({
+            //         type: "POST",
+            //         url: "@Url.Action("Create", "ProductionCaptures")", // Replace with your controller name
+            //         data: formData,
+            //         success: function (response) {
+            //             if (response.success) {
+            //                 Swal.fire({
+            //                     icon: 'success',
+            //                     title: 'Success!',
+            //                     text: response.message,
+            //                     confirmButtonText: "OK"
+            //                 }).then(() => {
+            //                     window.location.href = "@Url.Action("Index", "ProductionCaptures")"; // Redirect to Index
+            //                 });
+            //                 $("#productForm")[0].reset(); // Reset form after success
+            //             } else {
+            //                 Swal.fire({
+            //                     icon: 'error',
+            //                     title: 'Error!',
+            //                     text: response.message
+            //                 });
+            //                 return;
+            //             }
+            //         },
+            //         error: function () {
+            //             Swal.fire({
+            //                 icon: 'error',
+            //                 title: 'Error!',
+            //                 text: 'Something went wrong! Please try again.'
+            //             });
+            //         }
+            //     });
+            // });
+        });
+        function validateForm() {
+            let isValid = true;
+            let fields = document.querySelectorAll(".required-field");
+
+            for (let field of fields) {
+                if (field.value.trim() === "") {
+                    alert("Please fill out all required fields.");
+                    field.focus(); // Focus on the first empty field
+                    return false; // Prevent form submission
+                }
+            }
+            return true; // Allow form submission if all fields are filled
+        }
+    </script>
+}
+
+    
