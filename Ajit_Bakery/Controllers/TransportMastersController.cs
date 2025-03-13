@@ -19,13 +19,11 @@ namespace Ajit_Bakery.Controllers
             _context = context;
         }
 
-        // GET: TransportMasters
         public async Task<IActionResult> Index()
         {
             return View(await _context.TransportMaster.ToListAsync());
         }
 
-        // GET: TransportMasters/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -39,33 +37,38 @@ namespace Ajit_Bakery.Controllers
             {
                 return NotFound();
             }
-
+            transportMaster.CreateDate = transportMaster.CreateDate + " " + transportMaster.Createtime;
+            transportMaster.ModifiedDate = transportMaster.ModifiedDate + " " + transportMaster.Modifiedtime;
             return View(transportMaster);
         }
 
-        // GET: TransportMasters/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: TransportMasters/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,DriverName,DriverContactNo,VehicleNo,VehicleOwn,VehicleType,VehicleNoOfTyre,VehicleCapacity,VehicleVolume,CreateDate,Createtime,ModifiedDate,Modifiedtime,User")] TransportMaster transportMaster)
+        public async Task<IActionResult> Create( TransportMaster transportMaster)
         {
-            if (ModelState.IsValid)
+            try
             {
+                transportMaster.CreateDate = DateTime.Now.ToString("dd-MM-yyyy");
+                transportMaster.ModifiedDate = DateTime.Now.ToString("dd-MM-yyyy");
+                transportMaster.Createtime = DateTime.Now.ToString("HH:mm");
+                transportMaster.Modifiedtime = DateTime.Now.ToString("HH:mm");
+                transportMaster.User = "admin";
+
                 _context.Add(transportMaster);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return Json(new { success = true, message = "Created Successfully !" });
             }
-            return View(transportMaster);
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Warning : " + ex.Message });
+            }
         }
 
-        // GET: TransportMasters/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -81,9 +84,6 @@ namespace Ajit_Bakery.Controllers
             return View(transportMaster);
         }
 
-        // POST: TransportMasters/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id,TransportMaster transportMaster)
@@ -103,38 +103,34 @@ namespace Ajit_Bakery.Controllers
             }
         }
 
-        // GET: TransportMasters/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var transportMaster = await _context.TransportMaster
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (transportMaster == null)
+                var productMaster = await _context.TransportMaster
+                    .FirstOrDefaultAsync(m => m.Id == id);
+                if (productMaster == null)
+                {
+                    return Json(new { success = false, message = "Data not found in master ! " });
+                }
+                else
+                {
+                    _context.TransportMaster.Remove(productMaster);
+                    _context.SaveChanges();
+                    return Json(new { success = true, message = "Deleted Successfully !" });
+                }
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+                return Json(new { success = false, message = "WWarning : " + ex.Message });
             }
-
-            return View(transportMaster);
         }
 
-        // POST: TransportMasters/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var transportMaster = await _context.TransportMaster.FindAsync(id);
-            if (transportMaster != null)
-            {
-                _context.TransportMaster.Remove(transportMaster);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
 
         private bool TransportMasterExists(int id)
         {

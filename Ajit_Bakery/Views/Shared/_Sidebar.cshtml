@@ -5,7 +5,7 @@
     var menubar = User.Claims.FirstOrDefault(a => a.Type == "Menu").Value;
     var userName = User.Identity.Name.ToUpper();
     var userRole = User.FindFirstValue(ClaimTypes.Role);
-    
+
     // var unitNameClaim = ViewBag.UnitName;
     // var plantNameClaim = ViewBag.PlantName;
 }
@@ -20,17 +20,17 @@
         </div>
         <div class="navbar-content">
             <ul class="pc-navbar">
-              @*   <li class="pc-item pc-caption">
-                    <label>Navigation</label>
+                @*   <li class="pc-item pc-caption">
+                <label>Navigation</label>
                 </li> *@
                 @* <li class="pc-item">
-                    <a class="pc-link" asp-controller="Home" asp-action="Index">
-                        <span class="pc-micon">
-                            <i class="ph ph-gauge"></i>
-                        </span><span class="pc-mtext" >Dashboard</span>
-                    </a>
+                <a class="pc-link" asp-controller="Home" asp-action="Index">
+                <span class="pc-micon">
+                <i class="ph ph-gauge"></i>
+                </span><span class="pc-mtext" >Dashboard</span>
+                </a>
                 </li>
- *@
+                *@
                 <li class="pc-item">
                     <a class="pc-link" asp-controller="Home" asp-action="Index">
                         <span class="pc-micon">
@@ -46,7 +46,7 @@
                 </li>
                 <li class="pc-item pc-hasmenu">
                     <a href="#!" class="pc-link">
-                        <span class="pc-micon"> <i class="ph ph-tree-structure"></i> </span><span class="pc-mtext">Masters</span><span class="pc-arrow">
+                        <span class="pc-micon"> <i class="fa fa-database"></i> </span><span class="pc-mtext">Masters</span><span class="pc-arrow">
                             <i data-feather="chevron-right"></i>
                         </span>
                     </a>
@@ -58,6 +58,30 @@
                         <li class="pc-item"><a class="pc-link" asp-controller="TransportMasters" asp-action="Index">Transport Master</a></li>
                         <li class="pc-item"><a class="pc-link" asp-controller="UserManagments" asp-action="Index">User Managments</a></li>
                         <li class="pc-item"><a class="pc-link" asp-controller="UserMasters" asp-action="Index">User Master</a></li>
+
+                    </ul>
+                </li>
+                <li class="pc-item pc-hasmenu">
+                    <a href="#!" class="pc-link">
+                        <span class="pc-micon"> <i class="fa fa-cogs"></i> </span><span class="pc-mtext">Operations</span><span class="pc-arrow">
+                            <i data-feather="chevron-right"></i>
+                        </span>
+                    </a>
+                    <ul class="pc-submenu">
+                        <li class="pc-item"><a class="pc-link" asp-controller="ProductionCapture" asp-action="Index">Production Capture</a></li>
+                        <li class="pc-item"><a class="pc-link" asp-controller="SaveProduction" asp-action="Index">Save Production </a></li>
+                        <li class="pc-item"><a class="pc-link" asp-controller="Packaging" asp-action="Index">Packaging</a></li>
+                        <li class="pc-item"><a class="pc-link" asp-controller="TransferToDispatch" asp-action="Index">Transfer To Dispatch</a></li>
+                        <li class="pc-item"><a class="pc-link" asp-controller="Dispatch" asp-action="Index">Dispatch</a></li>
+                    </ul>
+                </li>
+
+            </ul>
+
+        </div>
+    </div>
+</nav>
+<!-- [ Sidebar Menu ] end -->
 @*                         @if (!string.IsNullOrEmpty(menubar))
                         {
                             var menuData = JsonConvert.DeserializeObject<List<MenuModel>>(menubar);
@@ -89,9 +113,9 @@
                         }
  *@
 
-                     
 
-                       @*  <li class="pc-item pc-hasmenu">
+
+@*  <li class="pc-item pc-hasmenu">
                             <a href="#!" class="pc-link">
                                 Level 2.2<span class="pc-arrow">
                                     <i data-feather="chevron-right"></i>
@@ -113,13 +137,3 @@
                                 </li>
                             </ul>
                         </li> *@
-                     
-                    </ul>
-                </li>              
-
-            </ul>
-           
-        </div>
-    </div>
-</nav>
-<!-- [ Sidebar Menu ] end -->

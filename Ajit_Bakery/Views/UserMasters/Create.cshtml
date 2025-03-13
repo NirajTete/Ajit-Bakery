@@ -4,80 +4,136 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<div class="container-fluid">
+    <div class="card shadow-sm mt-3">
+        <div class="card-header bg-dark text-white py-2">
 
-<h4>UserMaster</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="UserName" class="control-label"></label>
-                <input asp-for="UserName" class="form-control" />
-                <span asp-validation-for="UserName" class="text-danger"></span>
+            <div class="d-flex align-items-baseline">
+                <a asp-action="Index" asp-controller="UserMasters" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+                <h5 class="mx-auto text-white text-2xl font-semibold"> User Master - Add</h5>
             </div>
-            <div class="form-group">
-                <label asp-for="UserCode" class="control-label"></label>
-                <input asp-for="UserCode" class="form-control" />
-                <span asp-validation-for="UserCode" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UserDept" class="control-label"></label>
-                <input asp-for="UserDept" class="form-control" />
-                <span asp-validation-for="UserDept" class="text-danger"></span>
-            </div>
-           @*  <div class="form-group">
-                <label asp-for="UserDesignation" class="control-label"></label>
-                <input asp-for="UserDesignation" class="form-control" />
-                <span asp-validation-for="UserDesignation" class="text-danger"></span>
-            </div> *@
-            <div class="form-group">
-                <label asp-for="UserContactNo" class="control-label"></label>
-                <input asp-for="UserContactNo" class="form-control" />
-                <span asp-validation-for="UserContactNo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UserRole" class="control-label"></label>
-                <input asp-for="UserRole" class="form-control" />
-                <span asp-validation-for="UserRole" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreateDate" class="control-label"></label>
-                <input asp-for="CreateDate" class="form-control" />
-                <span asp-validation-for="CreateDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Createtime" class="control-label"></label>
-                <input asp-for="Createtime" class="form-control" />
-                <span asp-validation-for="Createtime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ModifiedDate" class="control-label"></label>
-                <input asp-for="ModifiedDate" class="form-control" />
-                <span asp-validation-for="ModifiedDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Modifiedtime" class="control-label"></label>
-                <input asp-for="Modifiedtime" class="form-control" />
-                <span asp-validation-for="Modifiedtime" class="text-danger"></span>
-            </div>
-           @*  <div class="form-group">
-                <label asp-for="User" class="control-label"></label>
-                <input asp-for="User" class="form-control" />
-                <span asp-validation-for="User" class="text-danger"></span>
-            </div> *@
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
+        <div class="card-body p-2">
+            <form asp-action="Create" id="productForm" onsubmit="return validateForm()">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row p-3">
+                    <div class="form-group col-sm-2 ">
+                        <label asp-for="UserCode" class="control-label">User Code</label>
+                        <input asp-for="UserCode" readonly data-uppercase autocomplete="off" value="@ViewBag.usercode" class="form-control" id="uomcode" required />
+                    </div>
+                    <div class="form-group col-sm-3 ">
+                        <label asp-for="UserName" class="control-label">Unit Name</label>
+                        <input asp-for="UserName" data-uppercase autocomplete="off" class="form-control" id="uomname" required />
+                    </div>
+                    <div class="form-group col-sm-4 ">
+                        <label asp-for="Email" class="control-label">Unit Email</label>
+                        <input asp-for="Email" data-uppercase autocomplete="off" class="form-control" id="uomcode" required />
+                    </div>
+                    <div class="form-group col-sm-3 ">
+                        <label asp-for="UserPassward" class="control-label">User Passward</label>
+                        <input asp-for="UserPassward" data-uppercase autocomplete="off" class="form-control" id="uomcode" required />
+                    </div>
+                </div>
+                <div class="row  p-3">
+                    <div class="form-group col-sm-3">
+                        <label asp-for="UserDept" class="control-label">User Dept</label>
+                        <select asp-for="UserDept" class="form-control text-uppercase" autocomplete="off" onchange="dropdownChanged()" id="customerName" required>
+                            <option value="Manufacturing">Manufacturing</option>
+                            <option value="Account">Account</option>
+                            <option value="Production">Production</option>
+                            <option value="Dispatch">Dispatch</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-sm-3 ">
+                        <label asp-for="UserContactNo" class="control-label">User Contact No.</label>
+                        <input asp-for="UserContactNo" data-uppercase autocomplete="off" class="form-control" id="uomcode" required maxlength="10" title="Enter exactly 10 digits" />
+                    </div>
+                    <div class="form-group col-sm-3 ">
+                        <label asp-for="UserRole" class="control-label">User Role</label>
+                        <input asp-for="UserRole" data-uppercase autocomplete="off" class="form-control" value="User" id="uomcode" readonly required />
+                    </div>
+                </div>
+                <div class="row mb-3 p-2">
+                    <div class="form-group col-sm-12 ">
+                        <input type="submit" value="Save" class="btn btn-primary btn-sm col-md-12" />
+                    </div>
+                </div>
+            </form>
+
+        </div>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            function calculateArea() {
+                var length = parseFloat($("#BoxLength").val()) || 0;
+                var breadth = parseFloat($("#BoxBreadth").val()) || 0;
+                var area = length * breadth;
+                $("#BoxArea").val(area);
+            }
+
+            $("#BoxLength, #BoxBreadth").on("input", calculateArea);
+        });
+        $(document).ready(function () {
+            $("#productForm").submit(function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                var formData = $(this).serialize(); // Serialize form data
+                console.log("formData : " + formData);
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("Create", "UserMasters")", // Replace with your controller name
+                    data: formData,
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: response.message,
+                                confirmButtonText: "OK"
+                            }).then(() => {
+                                window.location.href = "@Url.Action("Index", "UserMasters")"; // Redirect to Index
+                            });
+                            $("#productForm")[0].reset(); // Reset form after success
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: response.message
+                            });
+                            return;
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Something went wrong! Please try again.'
+                        });
+                    }
+                });
+            });
+        });
+
+        function validateForm() {
+            let isValid = true;
+            let fields = document.querySelectorAll(".required-field");
+
+            for (let field of fields) {
+                if (field.value.trim() === "") {
+                    alert("Please fill out all required fields.");
+                    field.focus(); // Focus on the first empty field
+                    return false; // Prevent form submission
+                }
+            }
+            return true; // Allow form submission if all fields are filled
+        }
+
+    </script>
 }

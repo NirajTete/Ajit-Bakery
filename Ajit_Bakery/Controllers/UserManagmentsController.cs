@@ -445,17 +445,10 @@ namespace Ajit_Bakery.Controllers
                     ModelState.AddModelError("", "User already exists.");
                     return View(user_master);
                 }
-                
-                // Generate new ID
                 int newId = (_context.UserMaster.Max(u => (int?)u.Id) ?? 0) + 1;
                 DateTime currentDateTime = DateTime.Now;
                 ViewBag.usercode = "U" + newId;
-                // Create new user entry
                 user_master.Id = newId;
-                //user_master.CreateDate = currentDateTime.Date;  // Keeps only date, time set to 00:00:00
-                //user_master.Createtime = new DateTime(1, 1, 1, currentDateTime.Hour, currentDateTime.Minute, currentDateTime.Second); // Keeps only time
-                //user_master.ModifiedDate = currentDateTime.Date; // Keeps only date
-                //user_master.Modifiedtime = new DateTime(1, 1, 1, currentDateTime.Hour, currentDateTime.Minute, currentDateTime.Second); // Keeps only time
                 user_master.CreateDate = DateTime.Now.ToString("dd-MM-yyyy");
                 user_master.ModifiedDate = DateTime.Now.ToString("dd-MM-yyyy");
                 user_master.Createtime = DateTime.Now.ToString("HH:mm");

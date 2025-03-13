@@ -4,90 +4,116 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<div class="container-fluid">
+    <div class="card shadow-sm mt-3">
+        <div class="card-header bg-dark text-white py-2">
 
-<h4>TransportMaster</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="DriverName" class="control-label"></label>
-                <input asp-for="DriverName" class="form-control" />
-                <span asp-validation-for="DriverName" class="text-danger"></span>
+            <div class="d-flex align-items-baseline">
+                <a asp-action="Index" asp-controller="TransportMasters" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+                <h5 class="mx-auto text-white text-2xl font-semibold"> Transport Master - Add</h5>
             </div>
-            <div class="form-group">
-                <label asp-for="DriverContactNo" class="control-label"></label>
-                <input asp-for="DriverContactNo" class="form-control" />
-                <span asp-validation-for="DriverContactNo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="VehicleNo" class="control-label"></label>
-                <input asp-for="VehicleNo" class="form-control" />
-                <span asp-validation-for="VehicleNo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="VehicleOwn" class="control-label"></label>
-                <input asp-for="VehicleOwn" class="form-control" />
-                <span asp-validation-for="VehicleOwn" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="VehicleType" class="control-label"></label>
-                <input asp-for="VehicleType" class="form-control" />
-                <span asp-validation-for="VehicleType" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="VehicleNoOfTyre" class="control-label"></label>
-                <input asp-for="VehicleNoOfTyre" class="form-control" />
-                <span asp-validation-for="VehicleNoOfTyre" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="VehicleCapacity" class="control-label"></label>
-                <input asp-for="VehicleCapacity" class="form-control" />
-                <span asp-validation-for="VehicleCapacity" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="VehicleVolume" class="control-label"></label>
-                <input asp-for="VehicleVolume" class="form-control" />
-                <span asp-validation-for="VehicleVolume" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreateDate" class="control-label"></label>
-                <input asp-for="CreateDate" class="form-control" />
-                <span asp-validation-for="CreateDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Createtime" class="control-label"></label>
-                <input asp-for="Createtime" class="form-control" />
-                <span asp-validation-for="Createtime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ModifiedDate" class="control-label"></label>
-                <input asp-for="ModifiedDate" class="form-control" />
-                <span asp-validation-for="ModifiedDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Modifiedtime" class="control-label"></label>
-                <input asp-for="Modifiedtime" class="form-control" />
-                <span asp-validation-for="Modifiedtime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="User" class="control-label"></label>
-                <input asp-for="User" class="form-control" />
-                <span asp-validation-for="User" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
+        <div class="card-body p-2">
+            <form asp-action="Create" id="productForm" onsubmit="return validateForm()">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row">
+                    <div class="form-group col-sm-4">
+                        <label asp-for="DriverName" class="control-label">Driver Name</label>
+                        <input type="text" asp-for="DriverName" id="DriverName" class="form-control" required />
+                        <span asp-validation-for="DriverName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <label asp-for="DriverContactNo" class="control-label">Driver Contact No.</label>
+                        <input type="text" asp-for="DriverContactNo" class="form-control" required
+                               pattern="\d{10}" title="Please enter exactly 10 digits" maxlength="10" />
+                    </div>
+
+                    <div class="form-group col-sm-3">
+                        <label asp-for="VehicleNo" class="control-label">Vehicle No.</label>
+                        <input type="text" asp-for="VehicleNo" class="form-control" required />
+                    </div>
+                    <div class="form-group col-sm-3">
+                        <label asp-for="VehicleOwn" class="control-label">Box Contact No.</label>
+                        <select asp-for="VehicleOwn" class="form-control text-uppercase" autocomplete="off" id="VehicleOwn" required>
+                            <option>Self</option>
+                            <option>Contractor</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-3 p-2">
+                    <div class="form-group col-sm-12 ">
+                        <input type="submit" value="Save" class="btn btn-primary btn-sm col-md-12" />
+                    </div>
+                </div>
+            </form>
+
+        </div>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        
+        $(document).ready(function () {
+            $("#productForm").submit(function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                var formData = $(this).serialize(); // Serialize form data
+                console.log("formData : " + formData);
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("Create", "TransportMasters")", // Replace with your controller name
+                    data: formData,
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: response.message,
+                                confirmButtonText: "OK"
+                            }).then(() => {
+                                window.location.href = "@Url.Action("Index", "TransportMasters")"; // Redirect to Index
+                            });
+                            $("#productForm")[0].reset(); // Reset form after success
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: response.message
+                            });
+                            return;
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Something went wrong! Please try again.'
+                        });
+                    }
+                });
+            });
+        });
+
+        function validateForm() {
+            let isValid = true;
+            let fields = document.querySelectorAll(".required-field");
+
+            for (let field of fields) {
+                if (field.value.trim() === "") {
+                    alert("Please fill out all required fields.");
+                    field.focus(); // Focus on the first empty field
+                    return false; // Prevent form submission
+                }
+            }
+            return true; // Allow form submission if all fields are filled
+        }
+
+    </script>
 }
+
+    

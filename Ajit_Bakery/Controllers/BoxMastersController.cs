@@ -24,7 +24,7 @@ namespace Ajit_Bakery.Controllers
             var list = await _context.BoxMaster.OrderByDescending(a=>a.Id).ToListAsync();
             foreach(var item in list)
             {
-                item.area = item.BoxLength + " X " + item.BoxBreadth + " X " + item.BoxHeight;
+                item.area = item.BoxLength + " X " + item.BoxBreadth + " X " + item.BoxHeight + " "+item.BoxUom;
             }
             return View(list);
         }
@@ -36,15 +36,21 @@ namespace Ajit_Bakery.Controllers
                 return NotFound();
             }
 
-            var boxMaster = await _context.BoxMaster
+            var dialMaster = await _context.BoxMaster
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (boxMaster == null)
+            if (dialMaster == null)
             {
                 return NotFound();
             }
-
-            boxMaster.area = boxMaster.BoxLength + " X " + boxMaster.BoxBreadth + " X " + boxMaster.BoxHeight;
-            return View(boxMaster);
+           
+            var calvalue = dialMaster.BoxLength + " X " + dialMaster.BoxBreadth + " " + dialMaster.BoxHeight;
+            dialMaster.area = calvalue + " "+dialMaster.BoxUom;
+            dialMaster.BoxUom = dialMaster.BoxArea + " "+dialMaster.BoxUom;
+           
+            dialMaster.CreateDate = dialMaster.CreateDate + " " + dialMaster.Createtime;
+            dialMaster.ModifiedDate = dialMaster.ModifiedDate + " " + dialMaster.Modifiedtime;
+           
+            return View(dialMaster);
         }
 
         public IActionResult Create()
@@ -56,13 +62,22 @@ namespace Ajit_Bakery.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create( BoxMaster boxMaster)
         {
-            if (ModelState.IsValid)
+            try
             {
+                boxMaster.CreateDate = DateTime.Now.ToString("dd-MM-yyyy");
+                boxMaster.ModifiedDate = DateTime.Now.ToString("dd-MM-yyyy");
+                boxMaster.Createtime = DateTime.Now.ToString("HH:mm");
+                boxMaster.Modifiedtime = DateTime.Now.ToString("HH:mm");
+                boxMaster.User = "admin";
+
                 _context.Add(boxMaster);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return Json(new { success = true, message = "Created Successfully !" });
             }
-            return View(boxMaster);
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Warning : " + ex.Message });
+            }
         }
 
         public async Task<IActionResult> Edit(int? id)
@@ -81,7 +96,6 @@ namespace Ajit_Bakery.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id,  BoxMaster boxMaster)
         {
             try
@@ -101,19 +115,30 @@ namespace Ajit_Bakery.Controllers
 
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var boxMaster = await _context.BoxMaster
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (boxMaster == null)
+                var productMaster = await _context.BoxMaster
+                    .FirstOrDefaultAsync(m => m.Id == id);
+                if (productMaster == null)
+                {
+                    return Json(new { success = false, message = "Data not found in master ! " });
+                }
+                else
+                {
+                    _context.BoxMaster.Remove(productMaster);
+                    _context.SaveChanges();
+                    return Json(new { success = true, message = "Deleted Successfully !" });
+                }
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+                return Json(new { success = false, message = "WWarning : " + ex.Message });
             }
-
-            return View(boxMaster);
         }
 
         private bool BoxMasterExists(int id)

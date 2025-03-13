@@ -1,14 +1,11 @@
-﻿@model Ajit_Bakery.Models.UserMaster
+﻿@* @model Ajit_Bakery.Models.UserMaster
 @{
     Layout = null;
 }
 <!doctype html>
 <html lang="en">
-<!-- [Head] start -->
-
 <head>
     <title>Login | Gradient Able Dashboard Template</title>
-    <!-- [Meta] -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -17,37 +14,21 @@
     <meta name="keywords"
           content="Bootstrap admin template, Dashboard UI Kit, Dashboard Template, Backend Panel, react dashboard, angular dashboard" />
     <meta name="author" content="codedthemes" />
-
-    <!-- [Favicon] icon -->
     <link rel="icon" href="../assets/images/favicon.svg" type="image/x-icon" />
-    <!-- [Google Font : Poppins] icon -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
-
-    <!-- [Tabler Icons] https://tablericons.com -->
     <link rel="stylesheet" href="../assets/fonts/tabler-icons.min.css" />
-    <!-- [Feather Icons] https://feathericons.com -->
     <link rel="stylesheet" href="../assets/fonts/feather.css" />
-    <!-- [Font Awesome Icons] https://fontawesome.com/icons -->
     <link rel="stylesheet" href="../assets/fonts/fontawesome.css" />
-    <!-- [Material Icons] https://fonts.google.com/icons -->
     <link rel="stylesheet" href="../assets/fonts/material.css" />
-    <!-- [Template CSS Files] -->
     <link rel="stylesheet" href="../assets/css/style.css" id="main-style-link" />
     <link rel="stylesheet" href="../assets/css/style-preset.css" />
-
 </head>
-<!-- [Head] end -->
-<!-- [Body] Start -->
-
 <body data-pc-header="header-1" data-pc-preset="preset-1" data-pc-sidebar-theme="light" data-pc-sidebar-caption="true" data-pc-direction="ltr" data-pc-theme="light">
-    <!-- [ Pre-loader ] start -->
     <div class="loader-bg">
         <div class="loader-track">
             <div class="loader-fill"></div>
         </div>
     </div>
-    <!-- [ Pre-loader ] End -->
-
     <div class="auth-main v1 bg-grd-primary">
         <div class="auth-wrapper">
             <div class="auth-form" >
@@ -55,7 +36,6 @@
                     <div class="card my-5">
                         <div class="card-body">
                             <div class="text-center">
-                                @* <img src="../assets/images/logo-dark.svg" alt="images" class="img-fluid mb-4" /> *@
                                 <h5 style="color:rgb(78, 152, 253);">Ajit Bakery</h5>
                                 <h4 class="f-w-500 mb-1">Login with your email</h4>
                                 <p class="mb-4">Don't have an Account? <a href="../pages/register-v1.html" class="link-primary ms-1">Create Account</a></p>
@@ -83,8 +63,6 @@
             </div>
         </div>
     </div>
-    <!-- [ Main Content ] end -->
-    <!-- Required Js -->
     <script src="../assets/js/plugins/popper.min.js"></script>
     <script src="../assets/js/plugins/simplebar.min.js"></script>
     <script src="../assets/js/plugins/bootstrap.min.js"></script>
@@ -124,5 +102,98 @@
 
 
 </body>
-<!-- [Body] end -->
+</html> *@
+
+
+
+
+@model Ajit_Bakery.Models.UserMaster
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Ajit Bakery | Login</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="description" content="Ajit Bakery Login Page - Authentic Taste, Quality Baked Goods" />
+    <meta name="author" content="Ajit Bakery" />
+
+    <link rel="icon" href="../assets/images/ajit-bakery-logo.png" type="image/png" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../assets/css/style.css" />
+    <style>
+        body {
+            background: url('../assets/images/bakery-bg.jpg') no-repeat center center;
+            background-size: cover;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 80px auto;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+            .login-container h4 {
+                color: #D2691E;
+                font-weight: 600;
+            }
+
+        .btn-custom {
+            background: #D2691E;
+            color: #fff;
+            font-weight: 500;
+        }
+
+            .btn-custom:hover {
+                background: #D2691E;
+                color: #fff;
+            }
+
+        .forgot-password {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login-container">
+            <div class="text-center">
+                <img src="../images/logo.png" alt="Ajit Bakery" width="80" class="mb-3" />
+                <h4>Welcome to Ajit Bakery</h4>
+                <p class="text-muted">Delighting Nagpur with Authentic Taste</p>
+            </div>
+            <form asp-action="Login" asp-controller="UserMasters">
+                <div class="form-group mb-3">
+                    <label for="UserName">Username</label>
+                    <input type="text" asp-for="UserName" class="form-control" placeholder="Enter Username" required />
+                </div>
+                <div class="form-group mb-3">
+                    <label for="UserPassward">Password</label>
+                    <input type="password" asp-for="UserPassward" class="form-control" placeholder="Enter Password" required />
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" asp-for="KeepLoogedIn" />
+                        <label class="form-check-label">Remember me</label>
+                    </div>
+                    <a href="#" class="forgot-password">Forgot Password?</a>
+                </div>
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-custom">Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
+
