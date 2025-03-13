@@ -27,73 +27,81 @@ namespace Ajit_Bakery.Controllers
             _context = context;
             _webHostEnvironment = webHostEnvironment;
         }
+
+
         [HttpPost]
         public async Task<IActionResult> UploadExcel(IFormFile file)
         {
             if (file == null || file.Length == 0)
             {
-                return BadRequest("Please upload a valid Excel file.");
+                return Json(new { success = false, message = "No file uploaded!" });
             }
 
             try
             {
-                ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // Set license
-                var Production_Id = GetProductionId();
+                List<ProductionCapture> productionList = new List<ProductionCapture>();
 
                 using (var stream = new MemoryStream())
                 {
                     await file.CopyToAsync(stream);
+                    ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // 🔹 Fix for EPPlus License Issue
+
                     using (var package = new ExcelPackage(stream))
                     {
-                        var worksheet = package.Workbook.Worksheets[0]; // First sheet
+                        ExcelWorksheet worksheet = package.Workbook.Worksheets[0]; // Read first sheet
                         int rowCount = worksheet.Dimension.Rows;
                         int colCount = worksheet.Dimension.Columns;
 
-                        List<ProductionCapture> productionList = new List<ProductionCapture>();
+                        // Identify dynamic outlet columns
+                        Dictionary<int, string> outletColumns = new Dictionary<int, string>();
 
-                        for (int row = 2; row <= rowCount; row++) // Start from row 2 (skip header)
+                        for (int col = 3; col <= colCount - 1; col++) // Start from 3rd column, ignore last "Total" column
                         {
-                            string productName = worksheet.Cells[row, 1].Value?.ToString().Trim();
-                            string unit = worksheet.Cells[row, 2].Value?.ToString().Trim();
-                            int totalQty = 0;
-                            string selectedOutlet = ""; // Store only the first outlet with qty > 0
-
-                            for (int col = 3; col <= colCount - 1; col++) // Loop through outlet columns
+                            string outletName = worksheet.Cells[1, col].Text.Trim(); // Read header row for outlet names
+                            if (!string.IsNullOrEmpty(outletName) && outletName.ToLower() != "total")
                             {
-                                string outletName = worksheet.Cells[1, col].Value?.ToString().Trim(); // Outlet names from header
-                                int qty = int.TryParse(worksheet.Cells[row, col].Value?.ToString().Trim(), out int result) ? result : 0;
-
-                                if (qty > 0)
-                                {
-                                    // If first non-zero outlet found, store it
-                                    if (string.IsNullOrEmpty(selectedOutlet))
-                                    {
-                                        selectedOutlet = outletName;
-                                    }
-                                    totalQty += qty;
-                                }
-                            }
-
-                            // Add to the list only if TotalQty is > 0
-                            if (totalQty > 0)
-                            {
-                                productionList.Add(new ProductionCapture
-                                {
-                                    Production_Id = Guid.NewGuid().ToString(), // Generate unique ID
-                                    ProductName = productName,
-                                    Unit = unit,
-                                    OutletName = selectedOutlet, // First non-zero outlet
-                                    TotalQty = totalQty,
-                                    Production_Date = DateTime.Now.ToString("dd-MM-yyyy"),
-                                    Production_Time = DateTime.Now.ToString("HH:mm")
-                                });
+                                outletColumns[col] = outletName;
                             }
                         }
 
-                        _context.ProductionCapture.AddRange(productionList);
-                        await _context.SaveChangesAsync();
+                        // Process rows dynamically
+                        for (int row = 2; row <= rowCount; row++) // Skip header row
+                        {
+                            string productName = worksheet.Cells[row, 1].Text.Trim();
+                            string unit = worksheet.Cells[row, 2].Text.Trim();
+
+                            foreach (var outlet in outletColumns)
+                            {
+                                int colIndex = outlet.Key;
+                                string outletName = outlet.Value;
+
+                                int qty = worksheet.Cells[row, colIndex].Value != null
+                                    ? Convert.ToInt32(worksheet.Cells[row, colIndex].Value)
+                                    : 0;
+
+                                if (qty > 0)
+                                {
+                                    ProductionCapture production = new ProductionCapture
+                                    {
+                                        Production_Id = Guid.NewGuid().ToString(),
+                                        ProductName = productName,
+                                        Unit = unit,
+                                        OutletName = outletName,
+                                        TotalQty = qty,
+                                        Production_Date = DateTime.Now.ToString("yyyy-MM-dd"),
+                                        Production_Time = DateTime.Now.ToString("HH:mm:ss")
+                                    };
+
+                                    productionList.Add(production);
+                                }
+                            }
+                        }
                     }
                 }
+
+                // Save to database
+                await _context.ProductionCapture.AddRangeAsync(productionList);
+                await _context.SaveChangesAsync();
 
                 return Json(new { success = true, message = "Data uploaded successfully!" });
             }
@@ -102,6 +110,7 @@ namespace Ajit_Bakery.Controllers
                 return Json(new { success = false, message = "Error processing file: " + ex.Message });
             }
         }
+
 
 
         public IActionResult ExportExcel()
