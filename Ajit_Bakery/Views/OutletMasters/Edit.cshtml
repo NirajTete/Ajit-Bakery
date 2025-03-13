@@ -1,79 +1,129 @@
 ﻿@model Ajit_Bakery.Models.OutletMaster
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Create";
 }
 
-<h1>Edit</h1>
+<div class="container-fluid">
+    <div class="card shadow-sm mt-3">
+        <div class="card-header bg-dark text-white py-2">
 
-<h4>OutletMaster</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="OutletCode" class="control-label"></label>
-                <input asp-for="OutletCode" class="form-control" />
-                <span asp-validation-for="OutletCode" class="text-danger"></span>
+            <div class="d-flex align-items-baseline">
+                <a asp-action="Index" asp-controller="OutletMasters" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+                <h5 class="mx-auto text-white text-2xl font-semibold"> Outlet Master - Edit</h5>
             </div>
-            <div class="form-group">
-                <label asp-for="OutletName" class="control-label"></label>
-                <input asp-for="OutletName" class="form-control" />
-                <span asp-validation-for="OutletName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="OutletAddress" class="control-label"></label>
-                <input asp-for="OutletAddress" class="form-control" />
-                <span asp-validation-for="OutletAddress" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="OutletContactNo" class="control-label"></label>
-                <input asp-for="OutletContactNo" class="form-control" />
-                <span asp-validation-for="OutletContactNo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="OutletContactPerson" class="control-label"></label>
-                <input asp-for="OutletContactPerson" class="form-control" />
-                <span asp-validation-for="OutletContactPerson" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreateDate" class="control-label"></label>
-                <input asp-for="CreateDate" class="form-control" />
-                <span asp-validation-for="CreateDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Createtime" class="control-label"></label>
-                <input asp-for="Createtime" class="form-control" />
-                <span asp-validation-for="Createtime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ModifiedDate" class="control-label"></label>
-                <input asp-for="ModifiedDate" class="form-control" />
-                <span asp-validation-for="ModifiedDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Modifiedtime" class="control-label"></label>
-                <input asp-for="Modifiedtime" class="form-control" />
-                <span asp-validation-for="Modifiedtime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="User" class="control-label"></label>
-                <input asp-for="User" class="form-control" />
-                <span asp-validation-for="User" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
+        <div class="card-body p-2">
+            <form asp-action="Create" id="productForm" onsubmit="return validateForm()">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row">
+                    <div class="form-group col-sm-2">
+                        <label asp-for="OutletCode" class="control-label"></label>
+                        <input type="text" asp-for="OutletCode" id="OutletCode"  class="form-control" readonly required />
+                        <span asp-validation-for="OutletCode" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-sm-5">
+                        <label asp-for="OutletName" class="control-label">Outlet Name</label>
+                        <input type="text" asp-for="OutletName" class="form-control" required />
+                    </div>
+                    <div class="form-group col-sm-5">
+                        <label asp-for="OutletContactPerson" class="control-label">Outlet Contact Person</label>
+                        <input type="text" asp-for="OutletContactPerson" class="form-control" required />
+                    </div>
+                    <div class="form-group col-sm-3">
+                        <label asp-for="OutletContactNo" class="control-label">Box Contact No.</label>
+                        <input type="text" asp-for="OutletContactNo" id="OutletContactNo" class="form-control"
+                               maxlength="10" pattern="[0-9]{10}" title="Enter exactly 10 digits" required />
+                        <span asp-validation-for="OutletContactNo" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-sm-9">
+                        <label asp-for="OutletAddress" class="control-label">Outlet Address</label>
+                        <input type="text" asp-for="OutletAddress" class="form-control" required />
+                    </div>
+                </div>
+                <div class="row" style="display:none">
+                    <div class="form-group col-sm-2">
+                        <label asp-for="CreateDate" class="control-label"> Dial Area</label>
+                        <input type="text" readonly asp-for="CreateDate" class="form-control" />
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <label asp-for="Createtime" class="control-label"> Dial Area</label>
+                        <input type="text" readonly asp-for="Createtime" class="form-control" />
+                    </div>
+                </div>
+                <div class="row mb-3 p-2">
+                    <div class="form-group col-sm-12 ">
+                        <input type="submit" value="Edit" class="btn btn-primary btn-sm col-md-12" />
+                    </div>
+                </div>
+            </form>
+
+        </div>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+
+        $(document).ready(function () {
+            $("#productForm").submit(function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                var formData = $(this).serialize(); // Serialize form data
+                console.log("formData : " + formData);
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("Edit", "OutletMasters")", // Replace with your controller name
+                    data: formData,
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: response.message,
+                                confirmButtonText: "OK"
+                            }).then(() => {
+                                window.location.href = "@Url.Action("Index", "OutletMasters")"; // Redirect to Index
+                            });
+                            $("#productForm")[0].reset(); // Reset form after success
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: response.message
+                            });
+                            return;
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Something went wrong! Please try again.'
+                        });
+                    }
+                });
+            });
+        });
+
+        function validateForm() {
+            let isValid = true;
+            let fields = document.querySelectorAll(".required-field");
+
+            for (let field of fields) {
+                if (field.value.trim() === "") {
+                    alert("Please fill out all required fields.");
+                    field.focus(); // Focus on the first empty field
+                    return false; // Prevent form submission
+                }
+            }
+            return true;
+        }
+
+    </script>
 }
+

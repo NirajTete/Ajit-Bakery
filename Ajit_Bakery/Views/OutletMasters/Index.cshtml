@@ -72,6 +72,63 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
+        $(document).ready(function () {
+            $('#dataTable').DataTable({
+                dom: 'Bfrtip', // Add button controls
+                buttons: [
+                    {
+                        extend: 'excel',
+                        title: 'DAK Report',
+                        filename: function () {
+                            return generateFilename('DAK_Report');
+                        },
+                        text: '<i class="fas fa-file-excel"></i> Export Excel',
+                        className: 'dt-button btn btn-success'
+                    },
+                    {
+                        extend: 'pdf',
+                        title: 'DAK Report',
+                        filename: function () {
+                            return generateFilename('DAK_Report');
+                        },
+                        text: '<i class="fas fa-file-pdf"></i> Export PDF',
+                        className: 'dt-button btn btn-danger',
+                        // orientation: 'landscape',
+                        pageSize: 'A4',
+                        customize: function (doc) {
+                            doc.styles.title = {
+                                fontSize: 16,
+                                bold: true,
+                                alignment: 'center'
+                            };
+                        }
+                    },
+                    {
+                        extend: 'csv',
+                        filename: function () {
+                            return generateFilename('DAK_Report');
+                        },
+                        text: '<i class="fas fa-file-csv"></i> Export CSV',
+                        className: 'dt-button btn btn-info'
+                    },
+                    {
+                        extend: 'print',
+                        title: 'DAK Report',
+                        text: '<i class="fas fa-print"></i> Print',
+                        className: 'dt-button btn btn-primary'
+                    }
+                ],
+                info: false, ordering: false,
+            });
+        });
+
+        function generateFilename(baseName) {
+            const now = new Date();
+            const date = now.toISOString().slice(0, 10).replace(/-/g, '_'); // Format: YYYY_MM_DD
+            return `${baseName}_${date}`;
+        }
+    </script>
+    <script>
         document.querySelectorAll(".delete-btn").forEach(button => {
             button.addEventListener("click", function () {
                 let productId = this.getAttribute("data-id");

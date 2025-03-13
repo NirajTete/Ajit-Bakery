@@ -67,7 +67,63 @@
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    }    <script>
+                 $(document).ready(function () {
+                     $('#dataTable').DataTable({
+                         dom: 'Bfrtip', // Add button controls
+                         buttons: [
+                             {
+                                 extend: 'excel',
+                                 title: 'DAK Report',
+                                 filename: function () {
+                                     return generateFilename('DAK_Report');
+                                 },
+                                 text: '<i class="fas fa-file-excel"></i> Export Excel',
+                                 className: 'dt-button btn btn-success'
+                             },
+                             {
+                                 extend: 'pdf',
+                                 title: 'DAK Report',
+                                 filename: function () {
+                                     return generateFilename('DAK_Report');
+                                 },
+                                 text: '<i class="fas fa-file-pdf"></i> Export PDF',
+                                 className: 'dt-button btn btn-danger',
+                                 // orientation: 'landscape',
+                                 pageSize: 'A4',
+                                 customize: function (doc) {
+                                     doc.styles.title = {
+                                         fontSize: 16,
+                                         bold: true,
+                                         alignment: 'center'
+                                     };
+                                 }
+                             },
+                             {
+                                 extend: 'csv',
+                                 filename: function () {
+                                     return generateFilename('DAK_Report');
+                                 },
+                                 text: '<i class="fas fa-file-csv"></i> Export CSV',
+                                 className: 'dt-button btn btn-info'
+                             },
+                             {
+                                 extend: 'print',
+                                 title: 'DAK Report',
+                                 text: '<i class="fas fa-print"></i> Print',
+                                 className: 'dt-button btn btn-primary'
+                             }
+                         ],
+                         info: false, ordering: false,
+                     });
+                 });
+
+                 function generateFilename(baseName) {
+                     const now = new Date();
+                     const date = now.toISOString().slice(0, 10).replace(/-/g, '_'); // Format: YYYY_MM_DD
+                     return `${baseName}_${date}`;
+                 }
+    </script>
     <script>
         document.querySelectorAll(".delete-btn").forEach(button => {
             button.addEventListener("click", function () {
@@ -111,53 +167,5 @@
 
 
     </script>
-}
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.DriverName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DriverContactNo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.VehicleNo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.VehicleOwn)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.VehicleType)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.VehicleNoOfTyre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.VehicleCapacity)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.VehicleVolume)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreateDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Createtime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ModifiedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Modifiedtime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
 }
 

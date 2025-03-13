@@ -112,7 +112,8 @@ namespace Ajit_Bakery.Controllers
 
         public async Task<IActionResult> Index()
         {
-            return View(await _context.UserMaster.ToListAsync());
+            var list = await _context.UserMaster.OrderByDescending(a=>a.Id).ToListAsync();
+            return View(list);
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -128,12 +129,15 @@ namespace Ajit_Bakery.Controllers
             {
                 return NotFound();
             }
-
+            userMaster.CreateDate = userMaster.CreateDate + " " + userMaster.Createtime;
+            userMaster.ModifiedDate = userMaster.ModifiedDate + " " + userMaster.Modifiedtime;
             return View(userMaster);
         }
 
         public IActionResult Create()
         {
+            int maxId = _context.UserMaster.Any() ? _context.UserMaster.Max(e => e.Id) + 1 : 1;
+            ViewBag.usercode = "U" + maxId;
             return View();
         }
 
@@ -141,13 +145,23 @@ namespace Ajit_Bakery.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(UserMaster userMaster)
         {
-            if (ModelState.IsValid)
+            try
             {
+                int maxId = _context.UserMaster.Any() ? _context.UserMaster.Max(e => e.Id) + 1 : 1;
+                userMaster.CreateDate = DateTime.Now.ToString("dd-MM-yyyy");
+                userMaster.ModifiedDate = DateTime.Now.ToString("dd-MM-yyyy");
+                userMaster.Createtime = DateTime.Now.ToString("HH:mm");
+                userMaster.Modifiedtime = DateTime.Now.ToString("HH:mm");
+                //userMaster.User = "admin";
+                userMaster.Id = maxId;
                 _context.Add(userMaster);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return Json(new { success = true, message = "Created Successfully !" });
             }
-            return View(userMaster);
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Warning : " + ex.Message });
+            }
         }
 
         public async Task<IActionResult> Edit(int? id)
@@ -186,19 +200,30 @@ namespace Ajit_Bakery.Controllers
 
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var userMaster = await _context.UserMaster
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (userMaster == null)
+                var productMaster = await _context.UserMaster
+                    .FirstOrDefaultAsync(m => m.Id == id);
+                if (productMaster == null)
+                {
+                    return Json(new { success = false, message = "Data not found in master ! " });
+                }
+                else
+                {
+                    _context.UserMaster.Remove(productMaster);
+                    _context.SaveChanges();
+                    return Json(new { success = true, message = "Deleted Successfully !" });
+                }
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+                return Json(new { success = false, message = "WWarning : " + ex.Message });
             }
-
-            return View(userMaster);
         }
 
         private bool UserMasterExists(int id)

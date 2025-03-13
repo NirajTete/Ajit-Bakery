@@ -21,7 +21,8 @@ namespace Ajit_Bakery.Controllers
 
         public async Task<IActionResult> Index()
         {
-            return View(await _context.OutletMaster.ToListAsync());
+            var list = await _context.OutletMaster.ToListAsync();
+            return View(list);
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -37,12 +38,15 @@ namespace Ajit_Bakery.Controllers
             {
                 return NotFound();
             }
-
+            outletMaster.CreateDate = outletMaster.CreateDate + " " + outletMaster.Createtime;
+            outletMaster.ModifiedDate = outletMaster.ModifiedDate + " " + outletMaster.Modifiedtime;
             return View(outletMaster);
         }
 
         public IActionResult Create()
         {
+            int maxId = _context.UserMaster.Any() ? _context.UserMaster.Max(e => e.Id) + 1 : 1;
+            ViewBag.outletcode = "OUTLET" + maxId;
             return View();
         }
 
@@ -50,13 +54,22 @@ namespace Ajit_Bakery.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(OutletMaster outletMaster)
         {
-            if (ModelState.IsValid)
+            try
             {
+                outletMaster.CreateDate = DateTime.Now.ToString("dd-MM-yyyy");
+                outletMaster.ModifiedDate = DateTime.Now.ToString("dd-MM-yyyy");
+                outletMaster.Createtime = DateTime.Now.ToString("HH:mm");
+                outletMaster.Modifiedtime = DateTime.Now.ToString("HH:mm");
+                outletMaster.User = "admin";
+
                 _context.Add(outletMaster);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return Json(new { success = true, message = "Created Successfully !" });
             }
-            return View(outletMaster);
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Warning : " + ex.Message });
+            }
         }
 
         public async Task<IActionResult> Edit(int? id)
@@ -95,19 +108,30 @@ namespace Ajit_Bakery.Controllers
 
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var outletMaster = await _context.OutletMaster
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (outletMaster == null)
+                var productMaster = await _context.OutletMaster
+                    .FirstOrDefaultAsync(m => m.Id == id);
+                if (productMaster == null)
+                {
+                    return Json(new { success = false, message = "Data not found in master ! " });
+                }
+                else
+                {
+                    _context.OutletMaster.Remove(productMaster);
+                    _context.SaveChanges();
+                    return Json(new { success = true, message = "Deleted Successfully !" });
+                }
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+                return Json(new { success = false, message = "WWarning : " + ex.Message });
             }
-
-            return View(outletMaster);
         }
 
         [HttpPost, ActionName("Delete")]
