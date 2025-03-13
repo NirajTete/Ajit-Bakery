@@ -39,3 +39,11 @@
 .dt-buttons .btn i {
     margin-right: 5px;
 }
+
+body {
+    background-color: #e3e3e3;
+}
+
+.bg-brand-color-13 {
+    background: linear-gradient(to right, #5b9dff, #38e366) !important;
+}

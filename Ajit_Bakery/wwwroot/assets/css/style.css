@@ -13928,6 +13928,10 @@ textarea.form-control-lg {
   background: linear-gradient(to right, #2d0102, #091991);
 }
 
+/*.bg-brand-color-13 {
+    background: linear-gradient(to right, #5b9dff, #38e366);
+}
+*/
 /*====== brand color css ends ======*/
 /*====== text-color, background color css starts ======*/
 .bg-light-facebook {
@@ -16367,7 +16371,7 @@ pre[class*=language-] > code {
   }
 }
 .pc-header {
-  background: var(--pc-header-background);
+/*  background: var(--pc-header-background);*/
   color: var(--pc-header-color);
   min-height: 60px;
   box-shadow: var(--pc-header-shadow);
