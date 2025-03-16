@@ -4,75 +4,359 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<div class="card">
+    <div class="card-header bg-dark text-white py-2">
+        <div class="d-flex align-items-baseline">
+            <a asp-action="Index" asp-controller="SaveProductions" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+            <h4 class="mx-auto text-white text-2xl font-semibold"> Save Production </h4>
+            <a asp-action="Create" class="btn btn-success btn-sm text-white">
+                <i class="fas fa-plus-square"></i> Save Production
+            </a>
+        </div>
+    </div>
+    <div class="card-body mt-4">
+        <div class="row">
+            <form asp-action="Create" id="SaveProduction" onsubmit="return validateForm()">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row">
+                    <div class="form-group col-sm-4">
+                        <label asp-for="Production_Id" class="control-label fw-bold small"></label>
+                        <select asp-for="Production_Id" id="Production_Id" required class="form-control text-uppercase" asp-items="@ViewBag.GetProduction_Id" onchange="OnProduction_IdChange()">
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-sm-3">
+                        <label asp-for="ProductName" class="control-label fw-bold small fw-bold small"></label>
+                        <select asp-for="ProductName" class="form-control text-uppercase" id="ProductName" required>
+                            <option value="0">Select Product</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-sm-1">
+                        <label  class="control-label fw-bold small">Qty</label>
+                        <input class="form-control" id="count"  style="height:5vh; font-size: 20px; color: green; font-weight: 650;" required readonly />
+                    </div>
+                    <div class="form-group col-sm-3">
+                        <label asp-for="ProductGrossWg" class="control-label fw-bold small"></label>
+                        <input asp-for="ProductGrossWg" class="form-control" required onchange="Refresh()" />
+                    </div>
+                    <div class="form-group col-sm-3">
+                        <label asp-for="ProductGrossWg_Uom" class="control-label fw-bold small"></label>
+                        <select asp-for="ProductGrossWg_Uom" required class="form-control text-uppercase" onchange="OnUomChange()">
+                            <option>KGS</option>
+                            <option>GMS</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <label asp-for="ProductGrossWgValue" class="control-label fw-bold small"></label>
+                        <input asp-for="ProductGrossWgValue" required id="ProductGrossWgValue" style="height:5vh; font-size: 16px; color:brown; font-weight: 650;" readonly class="form-control" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-sm-2">
+                        <label asp-for="DialShape" class="control-label fw-bold small">Dial Shape</label>
+                        <select asp-for="DialShape" class="form-control text-uppercase" id="DialShape" onchange="GetDialShape()" required>
+                            <option  value="" >Dial-Shape</option>
+                            <option value="Circle">Circle</option>
+                            <option value="Square">Square</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <label asp-for="DialCode" class="control-label fw-bold small"></label>
+                        <select asp-for="DialCode" class="form-control text-uppercase" id="DialCode" onchange="GetDialCodes()" required></select>
+                    </div>
+                    <div class="form-group col-sm-3">
+                        <label asp-for="DialTierWg" class="control-label fw-bold small"></label>
+                        <input asp-for="DialTierWg" onchange="OnDialWgChange()" id="DialTierWg" required class="form-control" />
+                    </div>
+                    <div class="form-group col-sm-3">
+                        <label asp-for="DialTierWg_Uom" class="control-label fw-bold small"></label>
+                        <input asp-for="DialTierWg_Uom"  id="DialTierWg_Uom" required readonly class="form-control" />
+                        <span asp-validation-for="DialTierWg_Uom" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <label asp-for="DialTierWgValue" class="control-label fw-bold small"></label>
+                        <input asp-for="DialTierWgValue" id="DialTierWgValue" required readonly class="form-control" style="height:5vh; font-size: 16px; color:blueviolet; font-weight: 650;" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-sm-2">
+                        <label asp-for="TotalNetWg" class="control-label fw-bold small"></label>
+                        <input asp-for="TotalNetWg" style="height:5vh; font-size: 16px; color: green; font-weight: 650;" readonly id="TotalNetWg" required class="form-control" />
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <label asp-for="TotalNetWg_Uom" class="control-label fw-bold small">Uom</label>
+                        <input asp-for="TotalNetWg_Uom" style="height:5vh; font-size: 16px; color: green; font-weight: 650;" required readonly id="TotalNetWg_Uom" class="form-control" />
+                    </div>
+                </div>
+                <div class="row mb-3 p-2">
+                    <div class="form-group col-sm-12 ">
+                        <input type="submit" value="Save" class="btn btn-primary btn-sm col-md-12" />
+                    </div>
+                </div>
+               
+            </form>
+        </div>
 
-<h4>SaveProduction</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="ProductName" class="control-label"></label>
-                <input asp-for="ProductName" class="form-control" />
-                <span asp-validation-for="ProductName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ProductGrossWg" class="control-label"></label>
-                <input asp-for="ProductGrossWg" class="form-control" />
-                <span asp-validation-for="ProductGrossWg" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DialTierWg" class="control-label"></label>
-                <input asp-for="DialTierWg" class="form-control" />
-                <span asp-validation-for="DialTierWg" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DialTierWg_Uom" class="control-label"></label>
-                <input asp-for="DialTierWg_Uom" class="form-control" />
-                <span asp-validation-for="DialTierWg_Uom" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DialCode" class="control-label"></label>
-                <input asp-for="DialCode" class="form-control" />
-                <span asp-validation-for="DialCode" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TotalNetWg" class="control-label"></label>
-                <input asp-for="TotalNetWg" class="form-control" />
-                <span asp-validation-for="TotalNetWg" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TotalNetWg_Uom" class="control-label"></label>
-                <input asp-for="TotalNetWg_Uom" class="form-control" />
-                <span asp-validation-for="TotalNetWg_Uom" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Qty" class="control-label"></label>
-                <input asp-for="Qty" class="form-control" />
-                <span asp-validation-for="Qty" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SaveProduction_Date" class="control-label"></label>
-                <input asp-for="SaveProduction_Date" class="form-control" />
-                <span asp-validation-for="SaveProduction_Date" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SaveProduction_Time" class="control-label"></label>
-                <input asp-for="SaveProduction_Time" class="form-control" />
-                <span asp-validation-for="SaveProduction_Time" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $("#ProductName").change(function () {
+            var productName = $(this).val(); // Get selected product name
+            var Production_Id = $("#Production_Id").val(); // Get selected product name
+
+            if (productName) {
+                $.ajax({
+                    url: "/SaveProductions/GetProductDetails",  // Update with your actual API/Action URL
+                    type: "GET",
+                    data: { productName: productName, Production_Id: Production_Id },
+                    dataType: "json",
+                    success: function (response) {
+                        console.log("Response:", response);
+
+                        if (response.success) {
+                            // Example: Update fields based on response
+                            $("#count").val(response.data);
+                        } else {
+                            alert("Product details not found.");
+                        }
+                    },
+                    error: function () {
+                        alert("Error fetching product details.");
+                    }
+                });
+            }
+        });
+        function OnProduction_IdChange() {
+            var Production_Id = $("#Production_Id").val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("GetOutlets", "SaveProductions")", // Replace with your controller
+                data: { Production_Id: Production_Id },
+                success: function (response) {
+                    if (response.success) {
+                        console.log("response.data : " + JSON.stringify(response.data));
+                        var $dropdown = $("#ProductName");  // Get the select element
+                        $dropdown.empty();  // Clear previous options
+
+                        // Iterate over response data and append options
+                        $.each(response.data, function (index, item) {
+                            var option = $("<option>")
+                                .val(item.value)  // Set option value
+                                .text(item.text)  // Set option text
+                                .prop("disabled", item.disabled)  // Set disabled property
+                                .prop("selected", item.selected); // Set selected property
+
+                            $dropdown.append(option);
+                        });
+                        //bind into Outlet_Name id
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning!',
+                            text: response.message
+                        });
+                        return;
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'Something went wrong! Please try again.'
+                    });
+                }
+            });
+
+        }
+
+        function validateForm() {
+            let isValid = true;
+            let fields = document.querySelectorAll(".required-field");
+
+            for (let field of fields) {
+                if (field.value.trim() === "") {
+                    alert("Please fill out all required fields.");
+                    field.focus(); // Focus on the first empty field
+                    return false; // Prevent form submission
+                }
+            }
+            return true; // Allow form submission if all fields are filled
+        }
+
+        $(document).ready(function () {
+            $("#SaveProduction").submit(function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                //check furst
+                let countValue = parseInt($("#count").val()) || 0;
+                if (countValue === 0) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "You Can't Proceed!",
+                        text: "You have already completed all production for this Product ID.",
+                        confirmButtonText: "OK"
+                    }).then(() => {
+                        window.location.href = "@Url.Action("Index", "SaveProductions")"; // Redirect to Index
+                        return;
+                    });
+                }
+                //end
+
+                Swal.fire({
+                    title: "Generate Sticker?",
+                    text: "Do you want to generate a sticker for this production?",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes",
+                    cancelButtonText: "No"
+                }).then((result) => {
+                    let generateStickerValue = result.isConfirmed ? 1 : 0;
+
+                    // Append the value to form data
+                    let formData = $(this).serialize() + "&generatesticker=" + generateStickerValue;
+                    console.log("formData : " + formData);
+
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("Create", "SaveProductions")", // Replace with your controller
+                        data: formData,
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success!',
+                                    text: response.message,
+                                    confirmButtonText: "OK"
+                                }).then(() => {
+                                    window.location.href = "@Url.Action("Index", "SaveProductions")"; // Redirect to Index
+                                });
+                                $("#SaveProduction")[0].reset(); // Reset form after success
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error!',
+                                    text: response.message
+                                });
+                                return;
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: 'Something went wrong! Please try again.'
+                            });
+                        }
+                    });
+                });
+            });
+        });
+        function calculateTotalNetWeight() {
+            // Get values in grams
+            let productGrossWg = parseFloat(document.getElementById("ProductGrossWgValue").value) || 0;
+            let dialTierWg = parseFloat(document.getElementById("DialTierWgValue").value) || 0;
+
+            // Convert to kilograms
+            let totalNetWeight = (productGrossWg + dialTierWg) / 1000;
+
+            // Set the result in TotalNetWg
+            document.getElementById("TotalNetWg").value = totalNetWeight.toFixed(3) ; // 3 decimal places
+            document.getElementById("TotalNetWg_Uom").value = "KGS"; // 3 decimal places
+        }
+        function OnDialWgChange(){
+            var DialTierWg = $("#DialTierWg").val();
+            var DialTierWg_Uom = $("#DialTierWg_Uom").val();
+            console.log(DialTierWg_Uom);
+            $("#DialTierWgValue").val(DialTierWg + " " + DialTierWg_Uom);
+        }
+        function Refresh(){
+            OnUomChange();
+            calculateTotalNetWeight();
+        }
+        function OnUomChange() {
+            var uom = $("#ProductGrossWg_Uom").val(); // Get selected UOM (KGS/GMS)
+            var weight = parseFloat($("#ProductGrossWg").val()) || 0; // Get entered weight, default to 0
+
+            var convertedWeight = 0;
+
+            if (uom === "KGS") {
+                convertedWeight = weight * 1000; // Convert KGS to GMS
+            } else {
+                convertedWeight = weight; // Already in GMS
+            }
+
+            $("#ProductGrossWgValue").val(convertedWeight + " GMS"); // Set converted value
+        }
+        function GetDialShape() {
+            // alert("call");
+            var dialShape = $("#DialShape").val(); // Get selected DialShape value
+
+            $.ajax({
+                url: '/SaveProductions/GetDialShape',  // Update this with your actual controller
+                type: 'GET',
+                data: { shape: dialShape },
+                success: function (response) {
+                    console.log("data : " + JSON.stringify(response.data));
+                    // Bind data to DialCode dropdown
+                    var dialCodeDropdown = $("#DialCode");
+                    dialCodeDropdown.empty(); // Clear previous options
+                    dialCodeDropdown.append('<option value="">Select Dial</option>'); // Default option
+
+                    $.each(response.data, function (index, item) {
+                        dialCodeDropdown.append('<option value="' + item.dialCode + '">' + item.dialCode + '</option>');
+                    });
+
+                    // // If DialTierWg is returned, update the input field
+                    // if (response.dialTierWg) {
+                    //     $("#DialTierWg").val(response.dialTierWg);
+                    // } else {
+                    //     $("#DialTierWg").val(''); // Clear if no data
+                    // }
+                },
+                error: function () {
+                    alert("Error fetching data. Please try again.");
+                }
+            });
+            //OnDialWgChange();
+        }
+        function GetDialCodes() {
+            //alert("call");
+
+            var DialCode = $("#DialCode").val(); // Get selected DialCode value
+
+            $.ajax({
+                url: '/SaveProductions/GetDialCodes',  // Ensure correct controller name
+                type: 'GET',
+                data: { DialCode: DialCode }, // Pass correct parameter
+                dataType: 'json', // Ensure response is JSON
+                success: function (response) {
+                    console.log("Response Data:", response);
+
+                    if (response.success && response.data) {
+                        $("#DialTierWg").val(response.data.dialWg); // Set value
+                        $("#DialTierWg_Uom").val(response.data.dialWgUom); // Set value
+                    } else {
+                        $("#DialTierWg").val(''); // Clear field if no data found
+                        alert("No data found for this Dial Code.");
+                    }
+                    OnDialWgChange();
+                    calculateTotalNetWeight();
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error:", status, error);
+                    alert("Error fetching data. Please try again.");
+                }
+            });
+        }
+    </script>
 }
+

@@ -24,7 +24,9 @@ namespace Ajit_Bakery.Data
         //OPERATIONS
         public DbSet<Ajit_Bakery.Models.ProductionCapture> ProductionCapture { get; set; } 
         public DbSet<Ajit_Bakery.Models.SaveProduction> SaveProduction { get; set; }
-
+        public DbSet<Ajit_Bakery.Models.Packaging> Packaging { get; set; }
+        //STICKER
+        public DbSet<Ajit_Bakery.Models.Sticker> Sticker { get; set; }
         //ID TO GENERATE PRODUCTION 
         public DbSet<Ajit_Bakery.Models.ProductionIds> ProductionIds { get; set; }
     }

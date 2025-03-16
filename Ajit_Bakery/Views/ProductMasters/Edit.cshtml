@@ -18,17 +18,17 @@
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="row">
                     <div class="form-group col-sm-2">
-                        <label asp-for="ProductCode" class="control-label"></label>
+                        <label asp-for="ProductCode" class="control-label fw-bold small"></label>
                         <input type="text" asp-for="ProductCode" id="ProductCode" readonly class="form-control" required />
                         <span asp-validation-for="ProductCode" class="text-danger"></span>
                     </div>
                     <div class="form-group col-sm-4">
-                        <label asp-for="ProductName" class="control-label"></label>
+                        <label asp-for="ProductName" class="control-label fw-bold small"></label>
                         <input type="text" asp-for="ProductName" id="ProductName" onchange="GetProCode()" class="form-control" required />
                         <span asp-validation-for="ProductName" class="text-danger"></span>
                     </div>
                     <div class="form-group col-sm-3">
-                        <label asp-for="Category" class="control-label"></label>
+                        <label asp-for="Category" class="control-label fw-bold small"></label>
                         <select asp-for="Category" class="form-control text-uppercase" autocomplete="off" id="Category" required>
                             <option>Regular</option>
                             <option>Fancy</option>
@@ -36,7 +36,7 @@
                         </select>
                     </div>
                     <div class="form-group col-sm-3">
-                        <label asp-for="Uom" class="control-label"></label>
+                        <label asp-for="Uom" class="control-label fw-bold small"></label>
                         <select asp-for="Uom" class="form-control text-uppercase" autocomplete="off" id="Uom" required>
                             <option value="Kgs">Kgs</option>
                             <option value="PCs">PCs</option>
@@ -46,28 +46,28 @@
                 </div>
                 <div class="row">
                     <div class="form-group col-sm-2">
-                        <label asp-for="Qty" class="control-label"></label>
+                        <label asp-for="Qty" class="control-label fw-bold small"></label>
                         <input type="number" value="1" asp-for="Qty" class="form-control" required min="1" max="10" />
                         <span asp-validation-for="Qty" class="text-danger"></span>
                     </div>
                     <div class="form-group col-sm-2">
-                        <label asp-for="Unitqty" class="control-label">Unit Qty</label>
+                        <label asp-for="Unitqty" class="control-label fw-bold small">Unit Qty</label>
                         <input type="number" value="1000" asp-for="Unitqty" class="form-control" required />
                         <span asp-validation-for="Unitqty" class="text-danger"></span>
                     </div>
                     <div class="form-group col-sm-2">
-                        <label asp-for="PerGmRate" class="control-label">Per Gm Rate</label>
+                        <label asp-for="PerGmRate" class="control-label fw-bold small">Per Gm Rate</label>
                         <input type="number" asp-for="PerGmRate" min="1" max="50" class="form-control" required />
                         <span asp-validation-for="PerGmRate" class="text-danger"></span>
                     </div>
                     <div class="form-group col-sm-2">
-                        <label asp-for="MRP" class="control-label"></label>
+                        <label asp-for="MRP" class="control-label fw-bold small"></label>
                         <input type="number" asp-for="MRP" class="form-control" required />
                         <span asp-validation-for="MRP" class="text-danger"></span>
                     </div>
 
                     <div class="form-group col-sm-2">
-                        <label asp-for="Dial" class="control-label small w-600  "></label>
+                        <label asp-for="Dial" class="control-label fw-bold small small w-600  "></label>
                         <select id="Dial" class="form-control" asp-for="Dial" required>
                             <option>Circle</option>
                             <option>Square</option>
@@ -75,7 +75,7 @@
                         </select>
                     </div>
                     <div class="form-group col-sm-2">
-                        <label asp-for="Type" class="control-label"></label>
+                        <label asp-for="Type" class="control-label fw-bold small"></label>
                         <select id="Type" class="form-control" asp-for="Type" required>
                             <option>Cake</option>
                             <option>Pastry</option>
@@ -85,11 +85,11 @@
                 </div>
                 <div class="row" style="display:none">
                     <div class="form-group col-sm-2">
-                        <label asp-for="CreateDate" class="control-label"> Dial Area</label>
+                        <label asp-for="CreateDate" class="control-label fw-bold small"> Dial Area</label>
                         <input type="text" readonly asp-for="CreateDate" class="form-control" />
                     </div>
                     <div class="form-group col-sm-2">
-                        <label asp-for="Createtime" class="control-label"> Dial Area</label>
+                        <label asp-for="Createtime" class="control-label fw-bold small"> Dial Area</label>
                         <input type="text" readonly asp-for="Createtime" class="form-control" />
                     </div>
                 </div>

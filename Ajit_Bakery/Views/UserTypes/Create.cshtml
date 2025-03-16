@@ -13,12 +13,12 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="usertype_name" class="control-label"></label>
+                <label asp-for="usertype_name" class="control-label fw-bold small"></label>
                 <input asp-for="usertype_name" class="form-control" />
                 <span asp-validation-for="usertype_name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="designation" class="control-label"></label>
+                <label asp-for="designation" class="control-label fw-bold small"></label>
                 <input asp-for="designation" class="form-control" />
                 <span asp-validation-for="designation" class="text-danger"></span>
             </div>

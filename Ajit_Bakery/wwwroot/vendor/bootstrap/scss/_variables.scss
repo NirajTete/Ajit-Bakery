@@ -528,7 +528,7 @@ $custom-control-indicator-border-color: $gray-500 !default;
 $custom-control-indicator-border-width: $input-border-width !default;
 
 $custom-control-indicator-disabled-bg:          $input-disabled-bg !default;
-$custom-control-label-disabled-color:           $gray-600 !default;
+$custom-control-label fw-bold small-disabled-color:           $gray-600 !default;
 
 $custom-control-indicator-checked-color:        $component-active-color !default;
 $custom-control-indicator-checked-bg:           $component-active-bg !default;

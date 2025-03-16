@@ -3188,7 +3188,7 @@ select[multiple].input-lg, textarea.input-lg {
     line-height: 30px
 }
 
-.has-success .checkbox, .has-success .checkbox-inline, .has-success .control-label, .has-success .help-block, .has-success .radio, .has-success .radio-inline, .has-success.checkbox label, .has-success.checkbox-inline label, .has-success.radio label, .has-success.radio-inline label {
+.has-success .checkbox, .has-success .checkbox-inline, .has-success .control-label fw-bold small, .has-success .help-block, .has-success .radio, .has-success .radio-inline, .has-success.checkbox label, .has-success.checkbox-inline label, .has-success.radio label, .has-success.radio-inline label {
     color: #3c763d
 }
 
@@ -3214,7 +3214,7 @@ select[multiple].input-lg, textarea.input-lg {
     color: #3c763d
 }
 
-.has-warning .checkbox, .has-warning .checkbox-inline, .has-warning .control-label, .has-warning .help-block, .has-warning .radio, .has-warning .radio-inline, .has-warning.checkbox label, .has-warning.checkbox-inline label, .has-warning.radio label, .has-warning.radio-inline label {
+.has-warning .checkbox, .has-warning .checkbox-inline, .has-warning .control-label fw-bold small, .has-warning .help-block, .has-warning .radio, .has-warning .radio-inline, .has-warning.checkbox label, .has-warning.checkbox-inline label, .has-warning.radio label, .has-warning.radio-inline label {
     color: #8a6d3b
 }
 
@@ -3240,7 +3240,7 @@ select[multiple].input-lg, textarea.input-lg {
     color: #8a6d3b
 }
 
-.has-error .checkbox, .has-error .checkbox-inline, .has-error .control-label, .has-error .help-block, .has-error .radio, .has-error .radio-inline, .has-error.checkbox label, .has-error.checkbox-inline label, .has-error.radio label, .has-error.radio-inline label {
+.has-error .checkbox, .has-error .checkbox-inline, .has-error .control-label fw-bold small, .has-error .help-block, .has-error .radio, .has-error .radio-inline, .has-error.checkbox label, .has-error.checkbox-inline label, .has-error.radio label, .has-error.radio-inline label {
     color: #a94442
 }
 
@@ -3311,7 +3311,7 @@ select[multiple].input-lg, textarea.input-lg {
             width: 100%
         }
 
-    .form-inline .control-label {
+    .form-inline .control-label fw-bold small {
         margin-bottom: 0;
         vertical-align: middle
     }
@@ -3353,7 +3353,7 @@ select[multiple].input-lg, textarea.input-lg {
 }
 
 @media (min-width:768px) {
-    .form-horizontal .control-label {
+    .form-horizontal .control-label fw-bold small {
         padding-top: 7px;
         margin-bottom: 0;
         text-align: right
@@ -3365,14 +3365,14 @@ select[multiple].input-lg, textarea.input-lg {
 }
 
 @media (min-width:768px) {
-    .form-horizontal .form-group-lg .control-label {
+    .form-horizontal .form-group-lg .control-label fw-bold small {
         padding-top: 11px;
         font-size: 18px
     }
 }
 
 @media (min-width:768px) {
-    .form-horizontal .form-group-sm .control-label {
+    .form-horizontal .form-group-sm .control-label fw-bold small {
         padding-top: 6px;
         font-size: 12px
     }
@@ -4760,7 +4760,7 @@ select[multiple].input-group-sm > .form-control, select[multiple].input-group-sm
             width: 100%
         }
 
-    .navbar-form .control-label {
+    .navbar-form .control-label fw-bold small {
         margin-bottom: 0;
         vertical-align: middle
     }

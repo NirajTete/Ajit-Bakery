@@ -25,8 +25,8 @@
     <link rel="stylesheet" href="~/assets/fonts/feather.css" />           <!-- Feather Icons -->
     <link rel="stylesheet" href="~/assets/fonts/fontawesome.css" />       <!-- Font Awesome -->
     <link rel="stylesheet" href="~/assets/fonts/material.css" />          <!-- Material Icons -->
-    <!-- [Map Vector CSS] -->
-    <link rel="stylesheet" href="~/assets/css/plugins/jsvectormap.min.css" />
+ @*    <!-- [Map Vector CSS] -->
+    <link rel="stylesheet" href="~/assets/css/plugins/jsvectormap.min.css" /> *@
 
     <!-- [Template Styles] -->
     <link rel="stylesheet" href="~/assets/css/style.css" id="main-style-link" />
@@ -57,8 +57,11 @@
     </div>
     <!-- [ Pre-loader ] End -->
 
-    <partial name="_Sidebar" />
+    <partial name="_Sidebar" /> 
     <partial name="_Header" />
+    @*@Html.Partial("_Sidebar")
+    @Html.Partial("_Header") *@
+
 
     <!-- [ Main Content ] start -->
     <div class="pc-container">
@@ -87,12 +90,12 @@
     <script src="~/assets/js/plugins/simplebar.min.js"></script>
     <script src="~/assets/js/plugins/feather.min.js"></script>
 
-    <!-- [ Page-Specific JS ] -->
+@*     <!-- [ Page-Specific JS ] -->
     <script src="~/assets/js/plugins/apexcharts.min.js"></script>
     <script src="~/assets/js/plugins/jsvectormap.min.js"></script>
     <script src="~/assets/js/plugins/world.js"></script>
     <script src="~/assets/js/plugins/world-merc.js"></script>
-    <script src="~/assets/js/pages/dashboard-sales.js"></script>
+    <script src="~/assets/js/pages/dashboard-sales.js"></script> *@
 
     <!-- [ Custom & Theme Scripts ] -->
     <script src="~/assets/js/fonts/custom-font.js"></script>
@@ -101,14 +104,14 @@
 
     <!-- DataTables Buttons CSS -->
     <link rel="stylesheet" href="~/datatable/buttons.dataTables.min.css" />
-
+@* 
     <!-- DataTables Buttons JS -->
     <script src="~/datatable/dataTables.buttons.min.js"></script>
     <script src="~/datatable/jszip.min.js"></script>
     <script src="~/datatable/pdfmake.min.js"></script>
     <script src="~/datatable/vfs_fonts.js"></script>
     <script src="~/datatable/buttons.html5.min.js"></script>
-    <script src="~/datatable/buttons.print.min.js"></script>
+    <script src="~/datatable/buttons.print.min.js"></script> *@
 
     <script src="~/vendor/jquery-easing/jquery.easing.compatibility.js"></script>
     <script src="~/vendor/jquery-easing/jquery.easing.js"></script>

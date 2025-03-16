@@ -1,0 +1,334 @@
+﻿@model Ajit_Bakery.Models.Packaging
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="card">
+    <div class="card-header bg-dark text-white py-2">
+        <div class="d-flex align-items-baseline">
+            <a asp-action="Index" asp-controller="Packagings" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+            <h4 class="mx-auto text-white text-2xl font-semibold"> Packaging - Add </h4>
+            <a asp-action="Create" class="btn btn-success btn-sm text-white">
+                <i class="fas fa-plus-square"></i> Packaging
+            </a>
+        </div>
+    </div>
+    <div class="card-body mt-4">
+        <div class="row">
+            <form asp-action="Create" id="Packaging" onsubmit="return validateForm()">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row">
+                    <div class="form-group col-sm-4">
+                        <label asp-for="Production_Id" class="control-label fw-bold small"></label>
+                        <select asp-for="Production_Id" id="Production_Id"  class="form-control text-uppercase" asp-items="@ViewBag.GetProduction_Id" onchange="OnProduction_IdChange()">
+                        </select>
+                    </div>
+                    <div class="form-group col-sm-4">
+                        <label asp-for="Outlet_Name" class="control-label fw-bold small fw-bold small"></label>
+                        <select asp-for="Outlet_Name" class="form-control text-uppercase" id="Outlet_Name" onchange="OnOutletChange()" ></select>
+                    </div>
+                    <div class="form-group col-sm-4">
+                        <label asp-for="Box_No" class="control-label fw-bold small fw-bold small"></label>
+                        <select asp-for="Box_No" class="form-control text-uppercase" id="Box_No" asp-items="@ViewBag.GetBoxNos" ></select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-sm-8">
+                        <label class="control-label fw-bold small">Scan Item Stickers</label>
+                        <input type="text" id="ScanItem" class="form-control" onkeypress="InsertScanData(event)" placeholder="Please scan item sticker here.." />
+                    </div>
+                    <div class="form-group  col-sm-2 mt-2">
+                        <label class="ccontrol-label fw-bold small">Scan Item Count</label>
+                        <input style="height:5vh; font-size: 20px; color: green; font-weight: 650;" id="qtypick"  class="form-control" type="text" value="0" readonly />
+                    </div>
+                    <div class="form-group  col-sm-2 mt-2">
+                        <label class="control-label fw-bold small">Remaining Count</label>
+                        <input style="height:5vh; font-size: 20px; color: red; font-weight: 650;" id="qtyremainig" class="form-control" type="text" value="0" readonly />
+                    </div>
+                </div>
+                <div class="row m-3" >
+                    <table class="table table-bordered table-striped table-sm" id="productTableBody">
+                        <thead class="small text-center">
+                            <tr>
+                                <th>Production Id</th>
+                                <th>Outlet Name</th>
+                                <th>Box No</th>
+                                <th>Product Name</th>
+                                <th>Qty</th>
+                                <th>Total Net Wg</th>
+                            </tr>
+                        </thead>
+                        <tbody class ="small text-center">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row mb-3 p-2">
+                    <div class="form-group col-sm-12 ">
+                        <input type="submit" value="Generate Reciept" class="btn btn-primary btn-sm col-md-12" />
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            $("#Packaging").submit(function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                Swal.fire({
+                    title: "Submit Form?",
+                    text: "Do you want to submit this production entry?",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes",
+                    cancelButtonText: "No"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        let formData = $(this).serialize(); // Serialize form data
+                        console.log("formData : " + formData);
+
+                        $.ajax({
+                            type: "POST",
+                            url: "@Url.Action("Create", "Packagings")", // Replace with your controller and action
+                            data: formData,
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Success!',
+                                        text: response.message,
+                                        confirmButtonText: "OK"
+                                    }).then(() => {
+                                        window.location.href = "@Url.Action("Index", "Packagings")"; // Redirect after success
+                                    });
+                                    $("#Packaging")[0].reset(); // Reset form
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error!',
+                                        text: response.message
+                                    });
+                                }
+                            },
+                            error: function () {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error!',
+                                    text: 'Something went wrong! Please try again.'
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+        });
+
+        function OnOutletChange() {
+            var Production_Id = $("#Production_Id").val();
+            var Outlet_Name = $("#Outlet_Name").val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("GetOutlet_NameData", "Packagings")", // Replace with your controller
+                data: { Production_Id: Production_Id, Outlet_Name: Outlet_Name },
+                success: function (response) {
+                    if (response.success) {
+                        console.log("Response Data: ", response);
+                        $("#qtypick").val(response.qtypick);
+                        $("#qtyremainig").val(response.qtyremainig);
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning!',
+                            text: response.message
+                        });
+                        $("#Outlet_Name").val("");
+                        $("#qtyremainig").val(0);
+                        $("#qtypick").val(0);
+                        return;
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'Something went wrong! Please try again.'
+                    });
+                }
+            });
+
+        }
+        function OnProduction_IdChange() {
+            var Production_Id = $("#Production_Id").val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("GetOutlets", "Packagings")", // Replace with your controller
+                data: { Production_Id: Production_Id },
+                success: function (response) {
+                    if (response.success) {
+                        console.log("response.data : " + JSON.stringify(response.data));
+                        var $dropdown = $("#Outlet_Name");  // Get the select element
+                        $dropdown.empty();  // Clear previous options
+
+                        // Iterate over response data and append options
+                        $.each(response.data, function (index, item) {
+                            var option = $("<option>")
+                                .val(item.value)  // Set option value
+                                .text(item.text)  // Set option text
+                                .prop("disabled", item.disabled)  // Set disabled property
+                                .prop("selected", item.selected); // Set selected property
+
+                            $dropdown.append(option);
+                        });
+                        //bind into Outlet_Name id
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning!',
+                            text: response.message
+                        });
+                        return;
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'Something went wrong! Please try again.'
+                    });
+                }
+            });
+
+        }
+        function InsertScanData(event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); // Prevent the default form submission
+
+                let Production_Id = $("#Production_Id").val().trim();
+                let Box_No = $("#Box_No").val().trim();
+                let scanvalue = $('#ScanItem').val().trim();
+                let outletName = $("#Outlet_Name").val().trim();
+
+                // ✅ Validation for  fields
+                let missingFields = [];
+                if (!outletName) missingFields.push("Outlet Name");
+                if (!Box_No) missingFields.push("Box No");
+
+                if (missingFields.length > 0) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Warning!",
+                        text: "Please fill: " + missingFields.join(", "),
+                    });
+                    $('#ScanItem').val("")
+                    return;
+                }
+
+                console.log("Before Splitting: " + scanvalue);
+
+                // ✅ Check if scanned value contains '#' and split it
+                if (scanvalue.includes("#")) {
+                    let parts = scanvalue.split("#").filter(x => x.trim()); // Remove empty values
+
+                    if (parts.length === 4) { // Ensure correct data structure
+                        let productcode = parts[0];
+                        let productname = parts[1];
+                        let wg = parseFloat(parts[2]);
+                        let mrp = parts[3];
+
+                        console.log("Code:", productcode);
+                        console.log("Product Name:", productname);
+                        console.log("Weight:", wg);
+                        console.log("MRP:", mrp);
+
+                        // ✅ Only allow processing if Box_No starts with "STB"
+                        $.ajax({
+                            url: '/Packagings/PickedData',
+                            type: 'POST',
+                            data: {
+                                productcode: productcode,
+                                productname: productname,
+                                wg: wg,
+                                mrp: mrp,
+                                Production_Id: Production_Id,
+                                Box_No: Box_No,
+                                outletName: outletName
+                            },
+                            success: function (response) {
+                                console.log("Response:", response);
+                                console.log("Response:", JSON.stringify(response));
+                                if (response.success) {
+                                    let newRow = `<tr>
+                                                <td>${Production_Id}</td>
+                                                <td>${outletName}</td>
+                                                <td>${Box_No}</td>
+                                                <td>${response.data.productName}</td>
+                                                <td>${response.data.qty}</td>
+                                                <td>${response.data.totalNetWg + " " + response.data.totalNetWg_Uom}</td>
+                                                </tr>`;
+
+                                    $("#productTableBody tbody").append(newRow);
+                                    $('#ScanItem').val("").focus();
+
+                                    //qtypick = qtypick, qtyremainig = valuefound
+
+                                    $("#qtyremainig").val(response.qtyremainig);
+                                    $("#qtypick").val(response.qtypick);
+
+                                    if(response.qtyremainig == 0){
+                                        $("#Outlet_Name").val("");
+                                        $("#Box_No").val("");
+                                        $("#qtyremainig").val(0);
+                                        $("#qtypick").val(0);
+                                        $("#ScanItem").val("");
+                                    }
+
+
+                                } else {
+                                    //Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to process item.' });
+                                    Swal.fire({
+                                        icon: "warning",
+                                        title: "Warning",
+                                        text: response.message,
+                                    });
+                                    $('#ScanItem').val("");
+                                }
+                                // OnOutletChange();
+                            },
+                            error: function (error) {
+                                console.error('Error:', error);
+                                Swal.fire({ icon: 'error', title: 'Error', text: 'Error: ' + error });
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Invalid Scan!",
+                            text: "Scanned item format is incorrect. Please scan again."
+                        });
+                    }
+                } else {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Invalid Scan!",
+                        text: "Scanned value must contain '#' separators."
+                    });
+                }
+
+                // ✅ Clear the scan input field after processing
+                $('#ScanItem').val("").focus();
+            }
+        }
+    </script>
+}
+

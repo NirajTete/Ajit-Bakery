@@ -90,7 +90,8 @@ namespace Ajit_Bakery.Controllers
 
             try
             {
-                productMaster.ProductName = productMaster.ProductName + " (" + productMaster.Qty + productMaster.Uom + ") ";
+                productMaster.ProductName = productMaster.ProductName ;
+                //productMaster.ProductName = productMaster.ProductName + " (" + productMaster.Qty + productMaster.Uom + ") ";
                 productMaster.CreateDate = DateTime.Now.ToString("dd-MM-yyyy");
                 productMaster.ModifiedDate = DateTime.Now.ToString("dd-MM-yyyy");
                 productMaster.Createtime = DateTime.Now.ToString("HH:mm");

@@ -7,24 +7,25 @@ namespace Ajit_Bakery.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Display(Name = "Sr.No")]
         public int Id { get; set; }
-        //[Column(TypeName = "varchar()")]
+        [Display(Name = "Dial Code.")]
         public string DialCode { get; set; }
-        //[Column(TypeName = "varchar()")]
+        [Display(Name = "Dial Shape")]
         public string DialShape { get; set; }
-        //[Column(TypeName = "varchar()")]
+        [Display(Name = "Dial Wg.")]
         public double DialWg { get; set; }
-        // [Column(TypeName = "varchar()")]
+        [Display(Name = "Dial Uom")]
         public string DialWgUom { get; set; }
-        //[Column(TypeName = "varchar()")]
+        [Display(Name = "Diameter")]
         public double DialDiameter { get; set; }
-        //[Column(TypeName = "varchar()")]
+        [Display(Name = "Length")]
         public double DialLength { get; set; }
-        //[Column(TypeName = "varchar()")]
+        [Display(Name = "Breadth")]
         public double DialBreadth { get; set; }
-        //[Column(TypeName = "varchar()")]
+        [Display(Name = "Unit")]
         public string LengthUom { get; set; }
-        //[Column(TypeName = "varchar()")]
+        [Display(Name = "Area")]
         public string? DialArea { get; set; }
 
         //ADDED

@@ -19,5 +19,8 @@ namespace Ajit_Bakery.Models
         public string Production_Date { get; set; }
         [Display(Name = "Production Time")]
         public string Production_Time { get; set; }
+        public string? User { get; set; }
+        public string? Status { get; set; }
+
     }
 }

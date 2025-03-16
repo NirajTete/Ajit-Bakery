@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Ajit_Bakery.Models.ProductionCapture>
+﻿@model IEnumerable<Ajit_Bakery.Models.Packaging>
 
 @{
     ViewData["Title"] = "Index";
@@ -8,25 +8,25 @@
     <div class="card-header bg-dark text-white py-2">
         <div class="d-flex align-items-baseline">
             <a asp-action="Index" asp-controller="Home" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
-            <h4 class="mx-auto text-white text-2xl font-semibold"> Production Capture </h4>
+            <h4 class="mx-auto text-white text-2xl font-semibold">  Packaging </h4>
             <a asp-action="Create" class="btn btn-success btn-sm text-white">
-                <i class="fas fa-plus-square"></i> Add
+                <i class="fas fa-plus-square"></i>  Packaging
             </a>
         </div>
     </div>
     <div class="card-body mt-4">
         <div class="table table-responsive">
-            <table id="ProductionCapture" class="table table-striped table-bordered" style="width:100%">
+            <table id="SavePackaging" class="table table-striped table-bordered" style="width:100%">
                 <thead class="thead-light">
                     <tr class="text-center small">
                         <th class="text-center">Sr.No.</th>
-                        <th class="text-center">Production Odr.Id.</th>
-                        <th class="text-center">Outlet Name</th>
-                        <th class="text-center">Product Name</th>
-                        <th class="text-center">Total Production Qty</th>
-                        <th class="text-center">Date</th>
-                        <th class="text-center">Status</th>
-                        @* <th class="text-center" style="display:none">Action</th> *@
+                        <th class="text-center">Production Id </th>
+                        <th class="text-center">Box No.</th>
+                        <th class="text-center">Product Name.</th>
+                        <th class="text-center">Qty</th>
+                        <th class="text-center">Total NetWg.</th>
+                        <th class="text-center">Packaging Dt.</th>
+                        <th class="text-center">Exp Dt.</th>
                     </tr>
                 </thead>
                 <tbody class="small text-center">
@@ -38,31 +38,12 @@
                         <tr>
                             <td class="text-center">@counter</td>
                             <td style="font-weight:600;color:rebeccapurple">@Html.DisplayFor(modelItem => item.Production_Id)</td>
-                            <td>@Html.DisplayFor(modelItem => item.OutletName)</td>
-                            <td>@Html.DisplayFor(modelItem => item.ProductName)</td>
-                            <td>@Html.DisplayFor(modelItem => item.TotalQty)</td>
-                            <td>@Html.DisplayFor(modelItem => item.Production_Date)</td>
-                            <td>
-                                @if (item.Status == "Pending")
-                                {
-                                    <span class="badge bg-warning fs-15 text-dark">Pending</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-success fs-15 text-dark">@(item.Status)</span>
-                                }
-                            </td>
-                            @* <td class="text-center" style="display:none">
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-success" title="Edit">
-                                        <i class="fas fa-pencil-alt"></i>
-                                    </a>
-                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-warning" title="Details">
-                                        <i class="fa fa-eye"></i>
-                                    </a>
-
-                                </div>
-                            </td> *@
+                            <td style="font-weight:600;color:green">@Html.DisplayFor(modelItem => item.Box_No)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Product_Name)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Qty)</td>
+                            <td>@Html.DisplayFor(modelItem => item.TotalNetWg_Uom)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Production_Dt)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Exp_Dt)</td>
                         </tr>
                         counter++;
                     }
@@ -79,7 +60,7 @@
     }
     <script>
         $(document).ready(function () {
-            $('#ProductionCapture').DataTable({
+            $('#SavePackaging').DataTable({
                 dom: 'Bfrtip', // Add button controls
                 buttons: [
                     {
@@ -150,7 +131,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: "@Url.Action("Delete", "ProductionCaptures")", // Replace with your controller name
+                            url: "@Url.Action("Delete", "SavePackagings")", // Replace with your controller name
                             data: { id: productId },
                             type: "GET",
                             success: function (response) {
@@ -174,13 +155,11 @@
                             }
                         });
                     }
-                ],
-                info: false,  ordering: false,
+                                        ],
+                    info: false, ordering: false,
+                                    });
             });
-        });
 
 
     </script>
 }
-
-

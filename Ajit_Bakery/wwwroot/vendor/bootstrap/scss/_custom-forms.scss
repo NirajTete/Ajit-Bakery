@@ -24,14 +24,14 @@
   z-index: -1; // Put the input behind the label so it doesn't overlay text
   opacity: 0;
 
-  &:checked ~ .custom-control-label::before {
+  &:checked ~ .custom-control-label fw-bold small::before {
     color: $custom-control-indicator-checked-color;
     border-color: $custom-control-indicator-checked-border-color;
     @include gradient-bg($custom-control-indicator-checked-bg);
     @include box-shadow($custom-control-indicator-checked-box-shadow);
   }
 
-  &:focus ~ .custom-control-label::before {
+  &:focus ~ .custom-control-label fw-bold small::before {
     // the mixin is not used here to make sure there is feedback
     @if $enable-shadows {
       box-shadow: $input-box-shadow, $input-focus-box-shadow;
@@ -40,11 +40,11 @@
     }
   }
 
-  &:focus:not(:checked) ~ .custom-control-label::before {
+  &:focus:not(:checked) ~ .custom-control-label fw-bold small::before {
     border-color: $custom-control-indicator-focus-border-color;
   }
 
-  &:not(:disabled):active ~ .custom-control-label::before {
+  &:not(:disabled):active ~ .custom-control-label fw-bold small::before {
     color: $custom-control-indicator-active-color;
     background-color: $custom-control-indicator-active-bg;
     border-color: $custom-control-indicator-active-border-color;
@@ -52,8 +52,8 @@
   }
 
   &:disabled {
-    ~ .custom-control-label {
-      color: $custom-control-label-disabled-color;
+    ~ .custom-control-label fw-bold small {
+      color: $custom-control-label fw-bold small-disabled-color;
 
       &::before {
         background-color: $custom-control-indicator-disabled-bg;
@@ -66,7 +66,7 @@
 //
 // Build the custom controls out of pseudo-elements.
 
-.custom-control-label {
+.custom-control-label fw-bold small {
   position: relative;
   margin-bottom: 0;
   vertical-align: top;
@@ -105,17 +105,17 @@
 // Tweak just a few things for checkboxes.
 
 .custom-checkbox {
-  .custom-control-label::before {
+  .custom-control-label fw-bold small::before {
     @include border-radius($custom-checkbox-indicator-border-radius);
   }
 
-  .custom-control-input:checked ~ .custom-control-label {
+  .custom-control-input:checked ~ .custom-control-label fw-bold small {
     &::after {
       background-image: $custom-checkbox-indicator-icon-checked;
     }
   }
 
-  .custom-control-input:indeterminate ~ .custom-control-label {
+  .custom-control-input:indeterminate ~ .custom-control-label fw-bold small {
     &::before {
       border-color: $custom-checkbox-indicator-indeterminate-border-color;
       @include gradient-bg($custom-checkbox-indicator-indeterminate-bg);
@@ -127,10 +127,10 @@
   }
 
   .custom-control-input:disabled {
-    &:checked ~ .custom-control-label::before {
+    &:checked ~ .custom-control-label fw-bold small::before {
       background-color: $custom-control-indicator-checked-disabled-bg;
     }
-    &:indeterminate ~ .custom-control-label::before {
+    &:indeterminate ~ .custom-control-label fw-bold small::before {
       background-color: $custom-control-indicator-checked-disabled-bg;
     }
   }
@@ -141,19 +141,19 @@
 // Tweak just a few things for radios.
 
 .custom-radio {
-  .custom-control-label::before {
+  .custom-control-label fw-bold small::before {
     // stylelint-disable-next-line property-blacklist
     border-radius: $custom-radio-indicator-border-radius;
   }
 
-  .custom-control-input:checked ~ .custom-control-label {
+  .custom-control-input:checked ~ .custom-control-label fw-bold small {
     &::after {
       background-image: $custom-radio-indicator-icon-checked;
     }
   }
 
   .custom-control-input:disabled {
-    &:checked ~ .custom-control-label::before {
+    &:checked ~ .custom-control-label fw-bold small::before {
       background-color: $custom-control-indicator-checked-disabled-bg;
     }
   }
@@ -167,7 +167,7 @@
 .custom-switch {
   padding-left: $custom-switch-width + $custom-control-gutter;
 
-  .custom-control-label {
+  .custom-control-label fw-bold small {
     &::before {
       left: -($custom-switch-width + $custom-control-gutter);
       width: $custom-switch-width;
@@ -188,7 +188,7 @@
     }
   }
 
-  .custom-control-input:checked ~ .custom-control-label {
+  .custom-control-input:checked ~ .custom-control-label fw-bold small {
     &::after {
       background-color: $custom-control-indicator-bg;
       transform: translateX($custom-switch-width - $custom-control-indicator-size);
@@ -196,7 +196,7 @@
   }
 
   .custom-control-input:disabled {
-    &:checked ~ .custom-control-label::before {
+    &:checked ~ .custom-control-label fw-bold small::before {
       background-color: $custom-control-indicator-checked-disabled-bg;
     }
   }
@@ -500,7 +500,7 @@
   }
 }
 
-.custom-control-label::before,
+.custom-control-label fw-bold small::before,
 .custom-file-label,
 .custom-select {
   @include transition($custom-forms-transition);

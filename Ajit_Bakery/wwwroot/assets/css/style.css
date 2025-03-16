@@ -20853,7 +20853,7 @@ select.form-control[data-multiselectsplitter-firstselect-selector], select.form-
 .custom-switch-v1.form-switch .form-check-input.input-light-dark:checked {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='4.1' fill='%23212529'/%3e%3c/svg%3e");
 }
-.custom-switch-v1 .custom-control-label::before {
+.custom-switch-v1 .custom-control-label fw-bold small::before {
   transition: 0.2s cubic-bezier(0.24, 0, 0.5, 1);
   height: 20px;
   width: 35px;
@@ -20861,7 +20861,7 @@ select.form-control[data-multiselectsplitter-firstselect-selector], select.form-
   top: 0;
   left: -2.55rem;
 }
-.custom-switch-v1 .custom-control-label::after {
+.custom-switch-v1 .custom-control-label fw-bold small::after {
   top: calc(0.15625rem - 2px);
   left: calc(-2.25rem - 4px);
   height: 19px;
@@ -20870,7 +20870,7 @@ select.form-control[data-multiselectsplitter-firstselect-selector], select.form-
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 0 0 rgba(0, 0, 0, 0.04), 0 4px 9px rgba(0, 0, 0, 0.13), 0 3px 3px rgba(0, 0, 0, 0.05);
   transition: 0.35s cubic-bezier(0.54, 1.6, 0.5, 1);
 }
-.custom-switch-v1 .custom-control-input:checked ~ .custom-control-label::after {
+.custom-switch-v1 .custom-control-input:checked ~ .custom-control-label fw-bold small::after {
   transform: translateX(0.95rem);
 }
 

@@ -10,7 +10,7 @@
             <a asp-action="Index" asp-controller="Home" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
             <h4 class="mx-auto text-white text-2xl font-semibold"> Save Production </h4>
             <a asp-action="Create" class="btn btn-success btn-sm text-white">
-                <i class="fas fa-plus-square"></i> Add
+                <i class="fas fa-plus-square"></i> Save Production
             </a>
         </div>
     </div>
@@ -20,11 +20,12 @@
                 <thead class="thead-light">
                     <tr class="text-center small">
                         <th class="text-center">Sr.No.</th>
+                        <th class="text-center">Production Id.</th>
                         <th class="text-center">Product Name.</th>
-                        <th class="text-center">Total NetWg.</th>
                         <th class="text-center">Qty</th>
-                        <th class="text-center">Date</th>
-                        <th class="text-center">Action</th>
+                        <th class="text-center">Total NetWg.</th>
+                        <th class="text-center">Production Dt.</th>
+                        <th class="text-center">Exp Dt.</th>
                     </tr>
                 </thead>
                 <tbody class="small text-center">
@@ -35,11 +36,13 @@
                     {
                         <tr>
                             <td class="text-center">@counter</td>
+                            <td style="font-weight:600;color:rebeccapurple">@Html.DisplayFor(modelItem => item.Production_Id)</td>
                             <td>@Html.DisplayFor(modelItem => item.ProductName)</td>
-                            <td>@Html.DisplayFor(modelItem => item.TotalNetWg_Uom)</td>
                             <td>@Html.DisplayFor(modelItem => item.Qty)</td>
+                            <td>@Html.DisplayFor(modelItem => item.TotalNetWg_Uom)</td>
                             <td>@Html.DisplayFor(modelItem => item.SaveProduction_Date)</td>
-                            <td class="text-center">
+                            <td>@Html.DisplayFor(modelItem => item.Exp_Date)</td>
+                            @* <td class="text-center" style="display:none">
                                 <div class="btn-group btn-group-sm" role="group">
                                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-success" title="Edit">
                                         <i class="fas fa-pencil-alt"></i>
@@ -47,12 +50,10 @@
                                     <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-warning" title="Details">
                                         <i class="fa fa-eye"></i>
                                     </a>
-                                    @*  <a href="javascript:void(0);" class="btn btn-danger delete-btn" data-id="@item.Id" title="Delete">
-                                <i class="fas fa-trash-alt"></i>
-                                </a> *@
+                                  
 
                                 </div>
-                            </td>
+                            </td> *@
                         </tr>
                         counter++;
                     }

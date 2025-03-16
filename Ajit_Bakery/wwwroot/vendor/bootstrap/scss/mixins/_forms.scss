@@ -136,7 +136,7 @@
   .custom-control-input {
     .was-validated &:#{$state},
     &.is-#{$state} {
-      ~ .custom-control-label {
+      ~ .custom-control-label fw-bold small {
         color: $color;
 
         &::before {
@@ -150,18 +150,18 @@
       }
 
       &:checked {
-        ~ .custom-control-label::before {
+        ~ .custom-control-label fw-bold small::before {
           border-color: lighten($color, 10%);
           @include gradient-bg(lighten($color, 10%));
         }
       }
 
       &:focus {
-        ~ .custom-control-label::before {
+        ~ .custom-control-label fw-bold small::before {
           box-shadow: 0 0 0 $input-focus-width rgba($color, .25);
         }
 
-        &:not(:checked) ~ .custom-control-label::before {
+        &:not(:checked) ~ .custom-control-label fw-bold small::before {
           border-color: $color;
         }
       }

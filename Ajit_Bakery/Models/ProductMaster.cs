@@ -7,17 +7,27 @@ namespace Ajit_Bakery.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Display(Name = "Sr.No.")]
         public int Id { get; set; }
+        [Display(Name = "Product Code")]
         public string ProductCode { get; set; }//Black Forest
+        [Display(Name = "Production Name")]
         public string ProductName { get; set; }//Black Forest
+        [Display(Name = "Qty")]
         public int Qty { get; set; }//1
+        [Display(Name = "Unit Qty in Gms")]
         public int Unitqty { get; set; }//1000
         [NotMapped]
         public string Unitqtyuom { get; set; }
+        [Display(Name = "Uom")]
         public string Uom { get; set; }//kg
+        [Display(Name = "Category")]
         public string Category { get; set; } = "NA";//cake
+        [Display(Name = "Type")]
         public string Type { get; set; } = "NA";
+        [Display(Name = "Per Gm Rate")]
         public string PerGmRate { get; set; } = "NA";
+        [Display(Name = "MRP. Rt")]
         public double MRP { get; set; } = 0;
         //public string? DialCode1 { get; set; } = "NA";
         //public string? DialCode2 { get; set; } = "NA";
@@ -27,6 +37,7 @@ namespace Ajit_Bakery.Models
         public string? ModifiedDate { get; set; }
         public string? Modifiedtime { get; set; }
         public string? User { get; set; }
+        [Display(Name = "Dial Sahpe")]
         public string? Dial { get; set; }
     }
 }

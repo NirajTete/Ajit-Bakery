@@ -1,0 +1,77 @@
+<xpml><page quantity='0' pitch='10.1 mm'></xpml>'Seagull:2.1:DP
+INPUT OFF
+VERBOFF
+INPUT ON
+SYSVAR(48) = 0
+ERROR 15,"FONT NOT FOUND"
+ERROR 18,"DISK FULL"
+ERROR 26,"PARAMETER TOO LARGE"
+ERROR 27,"PARAMETER TOO SMALL"
+ERROR 37,"CUTTER DEVICE NOT FOUND"
+ERROR 1003,"FIELD OUT OF LABEL"
+SYSVAR(35)=0
+OPEN "tmp:setup.sys" FOR OUTPUT AS #1
+PRINT#1,"Printing,Media,Print Area,Media Margin (X),0"
+PRINT#1,"Printing,Media,Clip Default,On"
+CLOSE #1
+SETUP "tmp:setup.sys"
+KILL "tmp:setup.sys"
+CLIP ON
+CLIP BARCODE ON
+LBLCOND 3,2
+<xpml></page></xpml><xpml><page quantity='1' pitch='10.1 mm'></xpml>CLL
+OPTIMIZE "BATCH" ON
+PP8,95:AN7
+BARSET "DATAMATRIX",1,1,3,66,0,7
+PB "AJIT00008#Strawberry - .5#5.046#800"
+PP83,116:NASC 8
+FT "CG Triumvirate Condensed Bold",6,0,99
+PT "Strawberry "
+PP83,92:FT "CG Triumvirate Condensed Bold",6,0,99
+PT "- .5"
+PP83,68:FT "CG Triumvirate Condensed Bold",6,0,99
+PT "5.046 KGS"
+PP83,44:FT "CG Triumvirate Condensed Bold",6,0,99
+PT "MRP:Rs."
+PP167,46:FT "CG Triumvirate Condensed Bold",7,0,99
+PT "800"
+PP279,95:BARSET "DATAMATRIX",1,1,3,66,0,7
+PB "AJIT00008#Strawberry - .5#5.046#800"
+PP354,116:FT "CG Triumvirate Condensed Bold",6,0,99
+PT "Strawberry "
+PP354,92:FT "CG Triumvirate Condensed Bold",6,0,99
+PT "- .5"
+PP354,68:FT "CG Triumvirate Condensed Bold",6,0,99
+PT "5.046 KGS"
+PP354,44:FT "CG Triumvirate Condensed Bold",6,0,99
+PT "MRP:Rs."
+PP438,46:FT "CG Triumvirate Condensed Bold",7,0,99
+PT "800"
+PP551,95:BARSET "DATAMATRIX",1,1,3,66,0,7
+PB "AJIT00008#Strawberry - .5#5.046#800"
+PP626,116:FT "CG Triumvirate Condensed Bold",6,0,99
+PT "Strawberry "
+PP626,92:FT "CG Triumvirate Condensed Bold",6,0,99
+PT "- .5"
+PP626,68:FT "CG Triumvirate Condensed Bold",6,0,99
+PT "5.046 KGS"
+PP626,44:FT "CG Triumvirate Condensed Bold",6,0,99
+PT "MRP:Rs."
+PP710,46:FT "CG Triumvirate Condensed Bold",7,0,99
+PT "800"
+PP822,95:BARSET "DATAMATRIX",1,1,3,66,0,7
+PB "AJIT00008#Strawberry - .5#5.046#800"
+PP897,116:FT "CG Triumvirate Condensed Bold",6,0,99
+PT "Strawberry "
+PP897,92:FT "CG Triumvirate Condensed Bold",6,0,99
+PT "- .5"
+PP897,68:FT "CG Triumvirate Condensed Bold",6,0,99
+PT "5.046 KGS"
+PP897,44:FT "CG Triumvirate Condensed Bold",6,0,99
+PT "MRP:Rs."
+PP981,46:FT "CG Triumvirate Condensed Bold",7,0,99
+PT "800"
+LAYOUT RUN ""
+PF
+PRINT KEY OFF
+<xpml></page></xpml><xpml><end/></xpml>

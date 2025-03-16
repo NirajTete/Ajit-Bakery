@@ -18,22 +18,22 @@
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="row">
                     <div class="form-group col-sm-4">
-                        <label asp-for="DriverName" class="control-label">Driver Name</label>
+                        <label asp-for="DriverName" class="control-label fw-bold small">Driver Name</label>
                         <input type="text" asp-for="DriverName" id="DriverName" class="form-control" required />
                         <span asp-validation-for="DriverName" class="text-danger"></span>
                     </div>
                     <div class="form-group col-sm-2">
-                        <label asp-for="DriverContactNo" class="control-label">Driver Contact No.</label>
+                        <label asp-for="DriverContactNo" class="control-label fw-bold small"> Contact No.</label>
                         <input type="text" asp-for="DriverContactNo" class="form-control" required
                                pattern="\d{10}" title="Please enter exactly 10 digits" maxlength="10" />
                     </div>
 
                     <div class="form-group col-sm-3">
-                        <label asp-for="VehicleNo" class="control-label">Vehicle No.</label>
+                        <label asp-for="VehicleNo" class="control-label fw-bold small">Vehicle No.</label>
                         <input type="text" asp-for="VehicleNo" class="form-control" required />
                     </div>
                     <div class="form-group col-sm-3">
-                        <label asp-for="VehicleOwn" class="control-label">Box Contact No.</label>
+                        <label asp-for="VehicleOwn" class="control-label fw-bold small"></label>
                         <select asp-for="VehicleOwn" class="form-control text-uppercase" autocomplete="off" id="VehicleOwn" required>
                             <option>Self</option>
                             <option>Contractor</option>

@@ -7,16 +7,17 @@ namespace Ajit_Bakery.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Display(Name = "Sr.No")]
         public int Id { get; set; }
-        //[Column(TypeName = "varchar()")]
+        [Display(Name = "Outlet Code")]
         public string OutletCode { get; set; }
-        //[Column(TypeName = "varchar()")]
+        [Display(Name = "Outlet Name")]
         public string OutletName { get; set; }
-        //[Column(TypeName = "varchar()")]
+        [Display(Name = "Address")]
         public string OutletAddress { get; set; }
-        //[Column(TypeName = "varchar()")]
+        [Display(Name = "Contact No.")]
         public string OutletContactNo { get; set; }
-        //[Column(TypeName = "varchar()")]
+        [Display(Name = "Contact Person")]
         public string OutletContactPerson { get; set; }
         //ADDED
         public string? CreateDate { get; set; }

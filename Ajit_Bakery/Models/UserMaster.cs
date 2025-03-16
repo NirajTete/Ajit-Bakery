@@ -7,20 +7,21 @@ namespace Ajit_Bakery.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Display(Name = "Sr.No.")]
         public int Id { get; set; }
-        //[Column(TypeName = "varchar()")]
+        [Display(Name = "User Name")]
         public string UserName { get; set; }
+        [Display(Name = "Email")]
         public string Email { get; set; }
+        [Display(Name = "Passward")]
         public string UserPassward { get; set; }
-        //[Column(TypeName = "varchar()")]
+        [Display(Name = "Code")]
         public string UserCode { get; set; }
-        //[Column(TypeName = "varchar()")]
+        [Display(Name = "Department")]
         public string UserDept { get; set; }
-        //[Column(TypeName = "varchar()")]
-        //public string UserDesignation { get; set; }
-        //[Column(TypeName = "varchar()")]
+        [Display(Name = "Contact No.")]
         public string UserContactNo { get; set; }
-        //[Column(TypeName = "varchar()")]
+        [Display(Name = "Role")]
         public string UserRole { get; set; }
         public bool KeepLoogedIn { get; set; } = false;
         //ADDED

@@ -45,8 +45,28 @@ namespace Ajit_Bakery.Controllers
 
         public IActionResult Create()
         {
-            int maxId = _context.UserMaster.Any() ? _context.UserMaster.Max(e => e.Id) + 1 : 1;
-            ViewBag.outletcode = "OUTLET" + maxId;
+            var code = "OUTLET";
+            var getlast = _context.OutletMaster
+                            .Where(a => a.OutletCode.StartsWith(code))
+                            .OrderByDescending(a => a.OutletCode)
+                            .Select(a => a.OutletCode)
+                            .FirstOrDefault();
+
+            int nextNumber = 1; // Default value if no records exist
+
+            if (getlast != null && getlast.StartsWith(code))
+            {
+                var find = getlast.Substring(code.Length); // Extract numeric part
+
+                if (int.TryParse(find, out int lastNumber))
+                {
+                    nextNumber = lastNumber + 1; // Increment the number
+                }
+            }
+
+            var newOutletCode = code + nextNumber; // Generate the new outlet code
+
+            ViewBag.outletcode = newOutletCode;
             return View();
         }
 

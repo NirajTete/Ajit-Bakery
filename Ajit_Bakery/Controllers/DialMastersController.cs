@@ -90,6 +90,17 @@ namespace Ajit_Bakery.Controllers
         {
             try
             {
+                var data = "D";
+                if(dialMaster.DialShape == "Circle")
+                {
+                    data = data + "C"+dialMaster.DialDiameter+"*"+dialMaster.DialDiameter;
+                    dialMaster.DialCode = data;
+                }
+                else
+                {
+                    data = data + "S" + dialMaster.DialLength + "*" + dialMaster.DialBreadth;
+                    dialMaster.DialCode = data;
+                }
                 dialMaster.CreateDate = DateTime.Now.ToString("dd-MM-yyyy");
                 dialMaster.ModifiedDate = DateTime.Now.ToString("dd-MM-yyyy");
                 dialMaster.Createtime = DateTime.Now.ToString("HH:mm");

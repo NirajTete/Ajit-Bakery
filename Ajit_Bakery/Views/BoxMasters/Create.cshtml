@@ -18,31 +18,31 @@
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="row">
                     <div class="form-group col-sm-2">
-                        <label asp-for="BoxNumber" class="control-label"></label>
+                        <label asp-for="BoxNumber" class="control-label fw-bold small"></label>
                         <input type="text" asp-for="BoxNumber" id="BoxNumber"  class="form-control" required />
                         <span asp-validation-for="BoxNumber" class="text-danger"></span>
                     </div>
                     <div class="form-group col-sm-2">
-                        <label asp-for="BoxUom" class="control-label"></label>
+                        <label asp-for="BoxUom" class="control-label fw-bold small"></label>
                         <select asp-for="BoxUom" class="form-control text-uppercase" autocomplete="off" id="Category" required>
                             <option>CM</option>
                             <option>MM</option>
                         </select>
                     </div>
                     <div class="form-group col-sm-2">
-                        <label asp-for="BoxLength" class="control-label">Box Length</label>
+                        <label asp-for="BoxLength" class="control-label fw-bold small">Box Length</label>
                         <input type="number" asp-for="BoxLength" min="1" max="100" class="form-control" required />
                     </div>
                     <div class="form-group col-sm-2">
-                        <label asp-for="BoxBreadth" class="control-label">Box Breadth</label>
+                        <label asp-for="BoxBreadth" class="control-label fw-bold small">Box Breadth</label>
                         <input type="number" asp-for="BoxBreadth" min="1" max="100" class="form-control" required />
                     </div>
                     <div class="form-group col-sm-2">
-                        <label asp-for="BoxHeight" class="control-label">Box Height</label>
+                        <label asp-for="BoxHeight" class="control-label fw-bold small">Box Height</label>
                         <input type="number" asp-for="BoxHeight" min="1" max="100" class="form-control" required />
                     </div>
                     <div class="form-group col-sm-2">
-                        <label asp-for="BoxArea" class="control-label">Box Area</label>
+                        <label asp-for="BoxArea" class="control-label fw-bold small">Box Area</label>
                         <input type="number" asp-for="BoxArea" readonly class="form-control" required />
                     </div>
                 </div>
@@ -113,7 +113,6 @@
                 });
             });
         });
-
         function validateForm() {
             let isValid = true;
             let fields = document.querySelectorAll(".required-field");
@@ -127,6 +126,5 @@
             }
             return true; // Allow form submission if all fields are filled
         }
-
     </script>
 }
