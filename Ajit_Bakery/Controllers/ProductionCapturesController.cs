@@ -28,12 +28,14 @@ namespace Ajit_Bakery.Controllers
             _config = config;
             _webHostEnvironment = webHostEnvironment;
         }
+
+
         [HttpPost]
         public async Task<IActionResult> UploadExcel(IFormFile file)
         {
             if (file == null || file.Length == 0)
             {
-                return BadRequest("Please upload a valid Excel file.");
+                return Json(new { success = false, message = "No file uploaded!" });
             }
 
             try
@@ -44,9 +46,11 @@ namespace Ajit_Bakery.Controllers
                 using (var stream = new MemoryStream())
                 {
                     await file.CopyToAsync(stream);
+                    ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // 🔹 Fix for EPPlus License Issue
+
                     using (var package = new ExcelPackage(stream))
                     {
-                        var worksheet = package.Workbook.Worksheets[0]; // First sheet
+                        ExcelWorksheet worksheet = package.Workbook.Worksheets[0]; // Read first sheet
                         int rowCount = worksheet.Dimension.Rows;
                         int colCount = worksheet.Dimension.Columns;
 

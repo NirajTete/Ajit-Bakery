@@ -41,9 +41,11 @@
 }
 
 body {
-    background-color: #e3e3e3;
+    /*    background-color: #e3e3e3;*/
+    background-color: #f9f9f9;
 }
 
 .bg-brand-color-13 {
-    background: linear-gradient(to right, #5b9dff, #38e366) !important;
+    /*    background: linear-gradient(to right, #5b9dff, #38e366) !important;*/
+    background: linear-gradient(to right, #5b9dff, #f78914) !important;
 }
