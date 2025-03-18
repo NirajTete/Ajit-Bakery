@@ -1,0 +1,129 @@
+﻿@model Ajit_Bakery.Models.Dispatch
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Dispatch</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="ProductionId" class="control-label"></label>
+                <input asp-for="ProductionId" class="form-control" />
+                <span asp-validation-for="ProductionId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProductName" class="control-label"></label>
+                <input asp-for="ProductName" class="form-control" />
+                <span asp-validation-for="ProductName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="OutletName" class="control-label"></label>
+                <input asp-for="OutletName" class="form-control" />
+                <span asp-validation-for="OutletName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReceiptNo" class="control-label"></label>
+                <input asp-for="ReceiptNo" class="form-control" />
+                <span asp-validation-for="ReceiptNo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DCNo" class="control-label"></label>
+                <input asp-for="DCNo" class="form-control" />
+                <span asp-validation-for="DCNo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BoxNo" class="control-label"></label>
+                <input asp-for="BoxNo" class="form-control" />
+                <span asp-validation-for="BoxNo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Production_Date" class="control-label"></label>
+                <input asp-for="Production_Date" class="form-control" />
+                <span asp-validation-for="Production_Date" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Production_Time" class="control-label"></label>
+                <input asp-for="Production_Time" class="form-control" />
+                <span asp-validation-for="Production_Time" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SaveProduction_Date" class="control-label"></label>
+                <input asp-for="SaveProduction_Date" class="form-control" />
+                <span asp-validation-for="SaveProduction_Date" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SaveProduction_Time" class="control-label"></label>
+                <input asp-for="SaveProduction_Time" class="form-control" />
+                <span asp-validation-for="SaveProduction_Time" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Packaging_Date" class="control-label"></label>
+                <input asp-for="Packaging_Date" class="form-control" />
+                <span asp-validation-for="Packaging_Date" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Packaging_Time" class="control-label"></label>
+                <input asp-for="Packaging_Time" class="form-control" />
+                <span asp-validation-for="Packaging_Time" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TransferToDispatch_Date" class="control-label"></label>
+                <input asp-for="TransferToDispatch_Date" class="form-control" />
+                <span asp-validation-for="TransferToDispatch_Date" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TransferToDispatch_Time" class="control-label"></label>
+                <input asp-for="TransferToDispatch_Time" class="form-control" />
+                <span asp-validation-for="TransferToDispatch_Time" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Dispatch_Date" class="control-label"></label>
+                <input asp-for="Dispatch_Date" class="form-control" />
+                <span asp-validation-for="Dispatch_Date" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Dispatch_Time" class="control-label"></label>
+                <input asp-for="Dispatch_Time" class="form-control" />
+                <span asp-validation-for="Dispatch_Time" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="VehicleDriverContactNo" class="control-label"></label>
+                <input asp-for="VehicleDriverContactNo" class="form-control" />
+                <span asp-validation-for="VehicleDriverContactNo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="VehicleNumber" class="control-label"></label>
+                <input asp-for="VehicleNumber" class="form-control" />
+                <span asp-validation-for="VehicleNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="VehicleDriverName" class="control-label"></label>
+                <input asp-for="VehicleDriverName" class="form-control" />
+                <span asp-validation-for="VehicleDriverName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="VehicleOwn" class="control-label"></label>
+                <input asp-for="VehicleOwn" class="form-control" />
+                <span asp-validation-for="VehicleOwn" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

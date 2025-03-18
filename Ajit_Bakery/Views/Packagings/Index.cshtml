@@ -26,6 +26,7 @@
                         <th class="text-center">Qty</th>
                         <th class="text-center">Total NetWg.</th>
                         <th class="text-center">Packaging Dt.</th>
+                        <th class="text-center">Production Dt.</th>
                         <th class="text-center">Exp Dt.</th>
                     </tr>
                 </thead>
@@ -42,6 +43,7 @@
                             <td>@Html.DisplayFor(modelItem => item.Product_Name)</td>
                             <td>@Html.DisplayFor(modelItem => item.Qty)</td>
                             <td>@Html.DisplayFor(modelItem => item.TotalNetWg_Uom)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Packaging_Date)</td>
                             <td>@Html.DisplayFor(modelItem => item.Production_Dt)</td>
                             <td>@Html.DisplayFor(modelItem => item.Exp_Dt)</td>
                         </tr>

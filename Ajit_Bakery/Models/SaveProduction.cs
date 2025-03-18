@@ -46,6 +46,8 @@ namespace Ajit_Bakery.Models
         public string? Box_No { get; set; }
         [Display(Name = "Packaging Dt.")]
         public string? Packaging_Date { get; set; }
+        [Display(Name = "Packaging Time.")]
+        public string? Packaging_Time { get; set; }
         public int? Packaging_Flag { get; set; } = 0;
         public string Production_Id {  get; set; }
     }

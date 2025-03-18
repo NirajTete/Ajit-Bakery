@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Ajit_Bakery.Models
 {
@@ -24,7 +25,24 @@ namespace Ajit_Bakery.Models
         public string Exp_Dt { get; set; }
         [Display(Name = "Production Id")]
         public string Production_Id { get; set; }
+        [Display(Name = "DispatchReady Flag")]
+        public int? DispatchReady_Flag { get; set; } = 0;
+        [Display(Name = "Packaging Date.")]
+        public string? Packaging_Date { get; set; }
+        [Display(Name = "Packaging Time.")]
+        public string? Packaging_Time { get; set; }
         [Display(Name = "Reciept Id.")]
         public string? Reciept_Id { get; set; }
+
+
+        public int? Dispatch_Flag { get; set; } = 0;
+        public string? DispatchReady_Date { get; set; }
+        public string? DispatchReady_Time { get; set; } 
+        public string? DCNo { get; set; }
+
+        [NotMapped]
+        public string Category { get; set; }
+
+
     }
 }

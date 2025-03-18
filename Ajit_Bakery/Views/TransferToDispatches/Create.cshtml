@@ -1,0 +1,319 @@
+﻿@model Ajit_Bakery.Models.TransferToDispatch
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="card">
+    <div class="card-header bg-dark text-white py-2">
+        <div class="d-flex align-items-baseline">
+            <a asp-action="Index" asp-controller="TransferToDispatches" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+            <h4 class="mx-auto text-white text-2xl font-semibold"> Scan Receipts To Dispatch </h4>
+           
+        </div>
+    </div>
+    <div class="card-body mt-4">
+        <div class="row">
+            <form asp-action="Create" id="TransferToDispatch">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row">
+                    <div class="form-group col-sm-10">
+                        <label class="control-label fw-bold small">Scan Receipt Barcode</label>
+                        <input type="text" id="ScanItem" class="form-control" onkeypress="InsertScanData(event)" placeholder="Please scan receipt barcode here for single outlet.." />
+                    </div>
+                    <div class="form-group  col-sm-2 mt-2">
+                        <label class="ccontrol-label fw-bold small">Scan Count</label>
+                        <input style="height:5vh; font-size: 20px; color: green; font-weight: 650;" id="qtypick" class="form-control" type="text" value="0" readonly />
+                    </div>
+                   
+                </div>
+                <div class="row m-3">
+                    <table class="table table-bordered table-striped table-sm" id="productTableBody">
+                        <thead class="small text-center">
+                            <tr>
+                                <th>Production Id</th>
+                                <th>Outlet Name</th>
+                                <th>Box No</th>
+                                <th>Product Name</th>
+                                <th>Qty</th>
+                                <th>Total Net Wg</th>
+                            </tr>
+                        </thead>
+                        <tbody class="small text-center">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row mb-3 p-2">
+                    <div class="form-group col-sm-12 ">
+                        <input type="submit" value="Generate DC" class="btn btn-primary btn-sm col-md-12" />
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<div id="spinner" style="display: none;">
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+    <p class="mt-2" style="font-weight:600">Please wait...</p>
+</div>
+<style>
+    #spinner {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000; /* Ensure it's above other content */
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+</style>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            $("#TransferToDispatch").submit(function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                Swal.fire({
+                    title: "Submit Form?",
+                    text: "Do you want to submit this entry?",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes",
+                    cancelButtonText: "No"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        let formData = $(this).serialize(); // Serialize form data
+                        console.log("formData : " + formData);
+                        $('#spinner').show();
+                        $.ajax({
+                            type: "POST",
+                            url: "@Url.Action("Create", "TransferToDispatches")",
+                            data: formData,
+                            success: function (response) {
+                                console.log("response : " + response);
+                                if (response.success) {
+                                    $('#spinner').hide();
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Success!',
+                                        text: "Successfully Done !",
+                                        confirmButtonText: "OK"
+                                    }).then(() => {
+                                        window.location.href = "@Url.Action("Index", "TransferToDispatches")"; // Redirect to Index
+                                    });
+                                }
+                                else{
+                                    $('#spinner').hide();
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Warning!',
+                                        text: response.message,
+                                        timer: 5000
+                                    });
+                                }
+                                $("#TransferToDispatch")[0].reset(); // Reset form
+                            },
+                            error: function () {
+                                $('#spinner').hide();
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error!',
+                                    text: response.message,
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+        });
+        function InsertScanData(event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); // Prevent the default form submission
+
+                let scanvalue = $('#ScanItem').val().trim();
+
+                console.log("Before Splitting: " + scanvalue);
+
+                if (scanvalue.includes("$")) {
+                    let parts = scanvalue.split("$").filter(x => x.trim()); // Remove empty values
+
+                    if (parts.length === 2) { // Ensure correct data structure
+                        let boxno = parts[0];
+                        let receiptno = parts[1];
+
+                        console.log("boxno:", boxno);
+                        console.log("receiptno:", receiptno);
+
+                        $.ajax({
+                            url: '/TransferToDispatches/PickedData',
+                            type: 'POST',
+                            data: { boxno: boxno, receiptno: receiptno },
+                            success: function (response) {
+                                console.log("Response:", response);
+                            // {
+                            // "production_Id": "PID250361",
+                            // "outlet_Name": "GOKULPETH SHOP",
+                            // "box_No": "D-B-244",
+                            // "product_Name": "Strawberry - .5",
+                            // "qty": 1,
+                            // "totalNetWg": 5.046,
+                            // "totalNetWg_Uom": "KGS"
+                            // }
+                                if (response.success) {
+                                    response.data.forEach(item => {
+                                        let newRow = `<tr>
+                                                    <td>${item.production_Id}</td>
+                                                    <td>${item.outlet_Name}</td>
+                                                    <td>${item.box_No}</td>
+                                                    <td>${item.product_Name}</td>
+                                            <td>${item.qty}</td>
+                                            <td>${item.totalNetWg + " " + item.totalNetWg_Uom}</td>
+                                        </tr>`;
+
+                                        $("#productTableBody").append(newRow);
+                                    });
+
+                                    $('#ScanItem').val("").focus();
+                                    $("#qtypick").val(response.qtypick);
+
+                                    if (response.qtypick == 0) {
+                                        $("#qtypick").val(0);
+                                        $("#ScanItem").val("");
+                                    }
+
+                                } else {
+                                    Swal.fire({
+                                        icon: "warning",
+                                        title: "Warning",
+                                        text: response.message,
+                                    });
+                                    $('#ScanItem').val("");
+                                }
+                            },
+                            error: function (error) {
+                                console.error('Error:', error);
+                                Swal.fire({ icon: 'error', title: 'Error', text: 'Error: ' + error });
+                            }
+                        });
+
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Invalid Scan!",
+                            text: "Scanned item format is incorrect. Please scan again."
+                        });
+                    }
+                } else {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Invalid Scan!",
+                        text: "Scanned value must contain '$' separators."
+                    });
+                }
+
+                $('#ScanItem').val("").focus();
+            }
+        }
+
+        // function InsertScanData(event) {
+        //     if (event.key === "Enter") {
+        //         event.preventDefault(); // Prevent the default form submission
+
+        //         let scanvalue = $('#ScanItem').val().trim();
+
+        //         console.log("Before Splitting: " + scanvalue);
+
+        //         if (scanvalue.includes("$")) {
+        //             let parts = scanvalue.split("$").filter(x => x.trim()); // Remove empty values
+
+        //             if (parts.length === 2) { // Ensure correct data structure
+        //                 let boxno = parts[0];
+        //                 let receiptno = parts[1];
+
+        //                 console.log("boxno:", boxno);
+        //                 console.log("receiptno:", receiptno);
+
+        //                 $.ajax({
+        //                     url: '/TransferToDispatches/PickedData',
+        //                     type: 'POST',
+        //                     data: {
+        //                         boxno: boxno,
+        //                         receiptno: receiptno,
+        //                     },
+        //                     success: function (response) {
+        //                         console.log("Response:", response);
+        //                         console.log("Response:", JSON.stringify(response));
+        //                         if (response.success) {
+        //                             let newRow = `<tr>
+        //                                                 <td>${Production_Id}</td>
+        //                                                 <td>${outletName}</td>
+        //                                                 <td>${Box_No}</td>
+        //                                                 <td>${response.data.productName}</td>
+        //                                                 <td>${response.data.qty}</td>
+        //                                                 <td>${response.data.totalNetWg + " " + response.data.totalNetWg_Uom}</td>
+        //                                                 </tr>`;
+
+        //                             $("#productTableBody tbody").append(newRow);
+        //                             $('#ScanItem').val("").focus();
+
+        //                             $("#qtypick").val(response.qtypick);
+
+        //                             if (response.qtyremainig == 0) {
+        //                                 $("#qtypick").val(0);
+        //                                 $("#ScanItem").val("");
+        //                             }
+
+
+        //                         } else {
+        //                             //Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to process item.' });
+        //                             Swal.fire({
+        //                                 icon: "warning",
+        //                                 title: "Warning",
+        //                                 text: response.message,
+        //                             });
+        //                             $('#ScanItem').val("");
+        //                         }
+        //                         // OnOutletChange();
+        //                     },
+        //                     error: function (error) {
+        //                         console.error('Error:', error);
+        //                         Swal.fire({ icon: 'error', title: 'Error', text: 'Error: ' + error });
+        //                     }
+        //                 });
+        //             } else {
+        //                 Swal.fire({
+        //                     icon: "error",
+        //                     title: "Invalid Scan!",
+        //                     text: "Scanned item format is incorrect. Please scan again."
+        //                 });
+        //             }
+        //         } else {
+        //             Swal.fire({
+        //                 icon: "warning",
+        //                 title: "Invalid Scan!",
+        //                 text: "Scanned value must contain '#' separators."
+        //             });
+        //         }
+
+        //         // ✅ Clear the scan input field after processing
+        //         $('#ScanItem').val("").focus();
+        //     }
+        // }
+    </script>
+}
+

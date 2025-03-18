@@ -1,0 +1,298 @@
+﻿@model Ajit_Bakery.Models.Dispatch
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="card">
+    <div class="card-header bg-dark text-white py-2">
+        <div class="d-flex align-items-baseline">
+            <a asp-action="Index" asp-controller="Dispatches" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+            <h4 class="mx-auto text-white text-2xl font-semibold"> Scan Receipts To Dispatch </h4>
+
+        </div>
+    </div>
+    <div class="card-body mt-4">
+        <div class="row">
+            <form asp-action="Create" id="TransferToDispatch">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row">
+                    <div class="form-group col-sm-4">
+                        <label asp-for="ProductionId" class="control-label fw-bold small"></label>
+                        <select asp-for="ProductionId" id="Production_Id" class="form-control text-uppercase" asp-items="@ViewBag.GetProduction_Id" onchange="OnProduction_IdChange()">
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-sm-10">
+                        <label class="control-label fw-bold small">Scan Receipt Barcode</label>
+                        <input type="text" id="ScanItem" class="form-control" onkeypress="InsertScanData(event)" placeholder="Please scan receipt barcode here for single outlet.." />
+                    </div>
+                    <div class="form-group  col-sm-2 mt-2">
+                        <label class="control-label fw-bold small">Scan Count</label>
+                        <input style="height:5vh; font-size: 20px; color: green; font-weight: 650;" id="qtypick" class="form-control" type="text" value="0" readonly />
+                    </div>
+                </div>
+                <div class="row" style="display:none" id="TransportDetails">
+                    <div class="form-group col-sm-2">
+                        <label asp-for="VehicleOwn" class="control-label fw-bold small">Vehicle Own</label>
+                        <select asp-for="VehicleOwn" class="form-control text-uppercase" autocomplete="off" onchange="VehicleOwnChange()" id="VehicleOwn" required>
+                            <option value="" >Select Type</option>
+                            <option>Self</option>
+                            <option>Contractor</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-sm-4" >
+                        <label asp-for="VehicleDriverName" class="control-label fw-bold small">Driver Name</label>
+                        <select asp-for="VehicleDriverName" class="form-control text-uppercase" id="VehicleDriverName" required>
+                        </select>
+                    </div>
+                    <div class="form-group col-sm-3">
+                        <label asp-for="VehicleNumber" class="control-label fw-bold small">Vehicle Number</label>
+                        <input type="text"  asp-for="VehicleNumber" class="form-control" required min="1" max="50" />
+                    </div>
+                    <div class="form-group col-sm-3">
+                        <label asp-for="VehicleDriverContactNo" class="control-label fw-bold small">Driver Contact No.</label>
+                        <input type="text" asp-for="VehicleDriverContactNo" class="form-control" required
+                               pattern="\d{10}" title="Please enter exactly 10 digits" maxlength="10" />
+                    </div>
+                </div>
+                <div class="row m-3">
+                    <table class="table table-bordered table-striped table-sm" id="productTableBody">
+                        <thead class="small text-center">
+                            <tr>
+                                <th>Production Id</th>
+                                <th>Outlet Name</th>
+                                <th>Box No</th>
+                                <th>Product Name</th>
+                                <th>Qty</th>
+                                <th>Total Net Wg</th>
+                            </tr>
+                        </thead>
+                        <tbody class="small text-center">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row mb-3 p-2">
+                    <div class="form-group col-sm-12 ">
+                        <input type="submit" value="Generate DC" class="btn btn-primary btn-sm col-md-12" />
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<div id="spinner" style="display: none;">
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+    <p class="mt-2" style="font-weight:600">Please wait...</p>
+</div>
+<style>
+    #spinner {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000; /* Ensure it's above other content */
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+</style>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function VehicleOwnChange() {
+            var VehicleOwn = $("#VehicleOwn").val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("GetVehicleOwn", "Dispatches")", // Ensure correct Controller Name
+                data: { VehicleOwn: VehicleOwn },
+                success: function (response) {
+                    if (response.sucess) {
+                        console.log("Response Data: ", response);
+                        $("#VehicleDriverName").empty();
+                        $.each(response.data, function (index, item) {
+                            $("#VehicleDriverName").append(
+                                $("<option></option>").val(item.value).text(item.text)
+                            );
+                        });
+
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning!',
+                            text: response.message
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'Something went wrong! Please try again.'
+                    });
+                }
+            });
+        }
+
+        // function CourierChange() {
+        //     console.log("Courier dropdown changed");
+        //     var valueget = $("#extcourier").val();
+        //     if (valueget === "addNewCou") {
+        //         $('#addNewCourierModal').modal('show'); // Show the Courier modal
+        //     }
+        // }
+        $(document).ready(function () {
+            $("#TransferToDispatch").submit(function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                Swal.fire({
+                    title: "Submit Form?",
+                    text: "Do you want to submit this entry?",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes",
+                    cancelButtonText: "No"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        let formData = $(this).serialize(); // Serialize form data
+                        console.log("formData : " + formData);
+                        $('#spinner').show();
+                        $.ajax({
+                            type: "POST",
+                            url: "@Url.Action("Create", "Dispatches")",
+                            data: formData,
+                            success: function (response) {
+                                console.log("response : " + response);
+                                if (response.success) {
+                                    $('#spinner').hide();
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Success!',
+                                        text: "Successfully Done !",
+                                        confirmButtonText: "OK"
+                                    }).then(() => {
+                                        window.location.href = "@Url.Action("Index", "Dispatches")"; // Redirect to Index
+                                    });
+                                }
+                                else {
+                                    $('#spinner').hide();
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Warning!',
+                                        text: response.message,
+                                        timer: 5000
+                                    });
+                                }
+                                $("#TransferToDispatch")[0].reset(); // Reset form
+                            },
+                            error: function () {
+                                $('#spinner').hide();
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error!',
+                                    text: response.message,
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+        });
+        function InsertScanData(event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); // Prevent the default form submission
+
+                let scanvalue = $('#ScanItem').val().trim();
+
+                console.log("Before Splitting: " + scanvalue);
+
+                if (scanvalue.includes("$")) {
+                    let parts = scanvalue.split("$").filter(x => x.trim()); // Remove empty values
+
+                    if (parts.length === 2) { // Ensure correct data structure
+                        let boxno = parts[0];
+                        let receiptno = parts[1];
+
+                        console.log("boxno:", boxno);
+                        console.log("receiptno:", receiptno);
+
+                        $.ajax({
+                            url: '/Dispatches/PickedData',
+                            type: 'POST',
+                            data: { boxno: boxno, receiptno: receiptno },
+                            success: function (response) {
+                                console.log("Response:", response);
+                                
+                                if (response.success) {
+                                    response.data.forEach(item => {
+                                        let newRow = `<tr>
+                                                            <td>${item.production_Id}</td>
+                                                            <td>${item.outlet_Name}</td>
+                                                            <td>${item.box_No}</td>
+                                                            <td>${item.product_Name}</td>
+                                                    <td>${item.qty}</td>
+                                                    <td>${item.totalNetWg + " " + item.totalNetWg_Uom}</td>
+                                                </tr>`;
+
+                                        $("#productTableBody").append(newRow);
+                                    });
+
+                                    $('#ScanItem').val("").focus();
+                                    $("#qtypick").val(response.qtypick);
+
+                                    if (response.qtypick == 0) {
+                                        $("#qtypick").val(0);
+                                        $("#ScanItem").val("");
+                                    }
+
+                                } else {
+                                    Swal.fire({
+                                        icon: "warning",
+                                        title: "Warning",
+                                        text: response.message,
+                                    });
+                                    $('#ScanItem').val("");
+                                }
+                            },
+                            error: function (error) {
+                                console.error('Error:', error);
+                                Swal.fire({ icon: 'error', title: 'Error', text: 'Error: ' + error });
+                            }
+                        });
+
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Invalid Scan!",
+                            text: "Scanned item format is incorrect. Please scan again."
+                        });
+                    }
+                } else {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Invalid Scan!",
+                        text: "Scanned value must contain '$' separators."
+                    });
+                }
+
+                $('#ScanItem').val("").focus();
+            }
+        }
+
+    </script>
+}
+

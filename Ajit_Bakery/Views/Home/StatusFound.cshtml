@@ -1,0 +1,161 @@
+﻿@model IEnumerable<Ajit_Bakery.Models.StatusFound>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+<div class="card">
+    <div class="card-header bg-dark text-white py-2">
+        <div class="d-flex align-items-baseline">
+            <a asp-action="Index" asp-controller="Home" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+            <h5 class="mx-auto text-white text-2xl font-semibold"> Status Found </h5>
+            @* <a asp-action="Create" class="btn btn-success btn-sm text-white">
+                <i class="fas fa-plus-square"></i> Add
+            </a> *@
+        </div>
+    </div>
+    <div class="card-body mt-4">
+        <div class="table table-responsive">
+            <table class="table table-bordered table-hover table-sm" id="OutletMaster">
+                <thead class="thead-light text-center">
+                    <tr class=" small">
+                        <th class="text-center">Sr.No.</th>
+                        <th>Production Id</th>
+                        <th>Outlet Name</th>
+                        <th>Process</th>
+                        <th>Date Time </th>
+                        <th>Qty</th>
+                        <th>Status Found</th>
+                    </tr>
+                </thead>
+                <tbody class="small text-center">
+                    @{
+                        int counter = 1;
+                    }
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-center">@counter</td>
+                            <td>@Html.DisplayFor(modelItem => item.productionid)</td>
+                            <td>@Html.DisplayFor(modelItem => item.outletname)</td>
+                            <td>@Html.DisplayFor(modelItem => item.process)</td>
+                            <td>@Html.DisplayFor(modelItem => item.datetime)</td>
+                            <td>@Html.DisplayFor(modelItem => item.qty)</td>
+                            <td>@Html.DisplayFor(modelItem => item.status)</td>
+                        </tr>
+                        counter++;
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            $('#OutletMaster').DataTable({
+                dom: 'Bfrtip', // Add button controls
+                buttons: [
+                    {
+                        extend: 'excel',
+                        title: 'DAK Report',
+                        filename: function () {
+                            return generateFilename('DAK_Report');
+                        },
+                        text: '<i class="fas fa-file-excel"></i> Export Excel',
+                        className: 'dt-button btn btn-success'
+                    },
+                    {
+                        extend: 'pdf',
+                        title: 'DAK Report',
+                        filename: function () {
+                            return generateFilename('DAK_Report');
+                        },
+                        text: '<i class="fas fa-file-pdf"></i> Export PDF',
+                        className: 'dt-button btn btn-danger',
+                        // orientation: 'landscape',
+                        pageSize: 'A4',
+                        customize: function (doc) {
+                            doc.styles.title = {
+                                fontSize: 16,
+                                bold: true,
+                                alignment: 'center'
+                            };
+                        }
+                    },
+                    {
+                        extend: 'csv',
+                        filename: function () {
+                            return generateFilename('DAK_Report');
+                        },
+                        text: '<i class="fas fa-file-csv"></i> Export CSV',
+                        className: 'dt-button btn btn-info'
+                    },
+                    {
+                        extend: 'print',
+                        title: 'DAK Report',
+                        text: '<i class="fas fa-print"></i> Print',
+                        className: 'dt-button btn btn-primary'
+                    }
+                ],
+                info: false, ordering: false,
+            });
+        });
+
+        function generateFilename(baseName) {
+            const now = new Date();
+            const date = now.toISOString().slice(0, 10).replace(/-/g, '_'); // Format: YYYY_MM_DD
+            return `${baseName}_${date}`;
+        }
+    </script>
+    <script>
+        document.querySelectorAll(".delete-btn").forEach(button => {
+            button.addEventListener("click", function () {
+                let productId = this.getAttribute("data-id");
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You won't be able to revert this!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Yes, delete it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "@Url.Action("Delete", "OutletMasters")", // Replace with your controller name
+                            data: { id: productId },
+                            type: "GET",
+                            success: function (response) {
+                                Swal.fire({
+                                    title: "Deleted!",
+                                    text: response.message,
+                                    icon: "success",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                                $("a[data-id='" + productId + "']").closest("tr").remove();
+                            },
+                            error: function () {
+                                Swal.fire({
+                                    title: "Error!",
+                                    text: "Something went wrong. Try again!",
+                                    icon: "error"
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}

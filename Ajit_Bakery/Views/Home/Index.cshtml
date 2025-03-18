@@ -15,15 +15,30 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3 col-xl-3">
+   @*  <div class="col-md-3 col-xl-3">
         <div class="card bg-grd-success order-card">
             <div class="card-body">
-                <h6 class="text-white">Total Sales</h6>
-                <h2 class="text-end text-white"><i class="feather icon-tag float-start"></i><span>1641</span> </h2>
-                <p class="m-b-0">This Month<span class="float-end">213</span></p>
+                <h6 class="text-white">Status Found</h6>
+                <h2 class="text-end text-white"><i class="feather icon-tag float-start"></i><span>@ViewBag.PendingOrders</span> </h2>
+                <p class="m-b-0">This Month<span class="float-end">@ViewBag.TotalOrders</span></p>
             </div>
         </div>
+    </div> *@
+    <div class="col-md-3 col-xl-3">
+        <a href="@Url.Action("StatusFound", "Home")" style="text-decoration: none;">
+            <div class="card bg-grd-success order-card">
+                <div class="card-body">
+                    <h6 class="text-white">Status Found</h6>
+                    <h2 class="text-end text-white">
+                        <i class="feather icon-tag float-start"></i>
+                        <span>@ViewBag.PendingOrders</span>
+                    </h2>
+                    <p class="m-b-0">This Month<span class="float-end">@ViewBag.TotalOrders</span></p>
+                </div>
+            </div>
+        </a>
     </div>
+
     <div class="col-md-3 col-xl-3">
         <div class="card bg-grd-warning order-card">
             <div class="card-body">

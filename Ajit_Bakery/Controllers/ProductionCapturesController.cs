@@ -177,6 +177,7 @@ namespace Ajit_Bakery.Controllers
                     ProductionCapture.Add(ProductionCapturenew);
                 }
             }
+            ProductionCapture= ProductionCapture.OrderByDescending(a=>a.Production_Id).ToList();
             return View(ProductionCapture);
         }
 

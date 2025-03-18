@@ -51,6 +51,34 @@ public class HomeController : Controller
         return View();
     }
 
+    public IActionResult StatusFound()
+    {
+        //public int Id { get; set; }
+        //public string productionid { get; set; }
+        //public string datetime { get; set; }
+        //public string outletname { get; set; }
+        //public string productname { get; set; }
+        //public string qty { get; set; }
+        //public string status { get; set; }
+        //public string process { get; set; }
+        List<StatusFound> statusFounds = new List<StatusFound>();
+        var list = _context.ProductionCapture.ToList();
+        foreach(var item in list)
+        {
+            StatusFound StatusFound = new StatusFound()
+            {
+                productionid = item.Production_Id,
+                datetime = item.Production_Date + " " + item.Production_Time,
+                outletname = item.OutletName,
+                productname = item.ProductName,
+                qty = (item.TotalQty).ToString(),
+                process = "Production Capture",
+                status = "Pending",
+            };
+            statusFounds.Add(StatusFound);   
+        }
+        return View(statusFounds);
+    }
     public IActionResult test()
     {
         return View();

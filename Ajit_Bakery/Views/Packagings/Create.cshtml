@@ -9,19 +9,19 @@
         <div class="d-flex align-items-baseline">
             <a asp-action="Index" asp-controller="Packagings" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
             <h4 class="mx-auto text-white text-2xl font-semibold"> Packaging - Add </h4>
-            <a asp-action="Create" class="btn btn-success btn-sm text-white">
+           @*  <a asp-action="Create" class="btn btn-success btn-sm text-white">
                 <i class="fas fa-plus-square"></i> Packaging
-            </a>
+            </a> *@
         </div>
     </div>
     <div class="card-body mt-4">
         <div class="row">
-            <form asp-action="Create" id="Packaging" onsubmit="return validateForm()">
+            <form asp-action="Create" id="Packaging" >
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="row">
                     <div class="form-group col-sm-4">
                         <label asp-for="Production_Id" class="control-label fw-bold small"></label>
-                        <select asp-for="Production_Id" id="Production_Id"  class="form-control text-uppercase" asp-items="@ViewBag.GetProduction_Id" onchange="OnProduction_IdChange()">
+                        <select asp-for="Production_Id" id="Production_Id" class="form-control text-uppercase" asp-items="@ViewBag.GetProduction_Id" onchange="OnProduction_IdChange()">
                         </select>
                     </div>
                     <div class="form-group col-sm-4">
@@ -74,6 +74,28 @@
     </div>
 </div>
 
+<div id="spinner" style="display: none;">
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+    <p class="mt-2" style="font-weight:600">Please wait...</p>
+</div>
+<style>
+    #spinner {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000; /* Ensure it's above other content */
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+</style>
+
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
@@ -82,6 +104,57 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
+        // $(document).ready(function () {
+        //     $("#Packaging").submit(function (event) {
+        //         event.preventDefault(); // Prevent default form submission
+
+        //         Swal.fire({
+        //             title: "Submit Form?",
+        //             text: "Do you want to submit this production entry?",
+        //             icon: "question",
+        //             showCancelButton: true,
+        //             confirmButtonText: "Yes",
+        //             cancelButtonText: "No"
+        //         }).then((result) => {
+        //             if (result.isConfirmed) {
+        //                 let formData = $(this).serialize(); // Serialize form data
+        //                 console.log("formData : " + formData);
+
+        //                 $.ajax({
+        //                     type: "POST",
+        //                     url: "@Url.Action("Create", "Packagings")", // Replace with your controller and action
+        //                     data: formData,
+        //                     success: function (response) {
+        //                         if (response.success) {
+        //                             Swal.fire({
+        //                                 icon: 'success',
+        //                                 title: 'Success!',
+        //                                 text: response.message,
+        //                                 confirmButtonText: "OK"
+        //                             }).then(() => {
+        //                                 window.location.href = "@Url.Action("Index", "Packagings")"; // Redirect after success
+        //                             });
+        //                             $("#Packaging")[0].reset(); // Reset form
+        //                         } else {
+        //                             Swal.fire({
+        //                                 icon: 'error',
+        //                                 title: 'Error!',
+        //                                 text: response.message
+        //                             });
+        //                         }
+        //                     },
+        //                     error: function () {
+        //                         Swal.fire({
+        //                             icon: 'error',
+        //                             title: 'Error!',
+        //                             text: 'Something went wrong! Please try again.'
+        //                         });
+        //                     }
+        //                 });
+        //             }
+        //         });
+        //     });
+        // });
         $(document).ready(function () {
             $("#Packaging").submit(function (event) {
                 event.preventDefault(); // Prevent default form submission
@@ -97,35 +170,46 @@
                     if (result.isConfirmed) {
                         let formData = $(this).serialize(); // Serialize form data
                         console.log("formData : " + formData);
-
+                        $('#spinner').show();
                         $.ajax({
                             type: "POST",
-                            url: "@Url.Action("Create", "Packagings")", // Replace with your controller and action
+                            url: "@Url.Action("Create", "Packagings")",
                             data: formData,
                             success: function (response) {
-                                if (response.success) {
+                                if (response.status == "success") {
+                                    window.open(response.pdfUrl, '_blank');
+                                    //window.location.href = response.redirectToUrl;
+                                    setTimeout(function () {
+                                        window.location.href = response.redirectToUrl;
+                                    }, 3000);
+
+                                    $('#spinner').hide();
                                     Swal.fire({
                                         icon: 'success',
                                         title: 'Success!',
-                                        text: response.message,
+                                        text: "Successfully Done !",
                                         confirmButtonText: "OK"
                                     }).then(() => {
-                                        window.location.href = "@Url.Action("Index", "Packagings")"; // Redirect after success
+                                        window.location.href = "@Url.Action("Index", "Packagings")"; // Redirect to Index
                                     });
-                                    $("#Packaging")[0].reset(); // Reset form
-                                } else {
+                                }
+                                else if (response.status == "error") {
+                                    $('#spinner').hide();
                                     Swal.fire({
                                         icon: 'error',
                                         title: 'Error!',
-                                        text: response.message
+                                        text: response.msg,
+                                        timer: 5000
                                     });
                                 }
+                                $("#Packaging")[0].reset(); // Reset form
                             },
                             error: function () {
+                                $('#spinner').hide();
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Error!',
-                                    text: 'Something went wrong! Please try again.'
+                                    text: response.message,
                                 });
                             }
                         });

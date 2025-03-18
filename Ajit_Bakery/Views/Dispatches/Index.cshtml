@@ -1,0 +1,157 @@
+﻿@model IEnumerable<Ajit_Bakery.Models.Dispatch>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="card">
+    <div class="card-header bg-dark text-white py-2">
+        <div class="d-flex align-items-baseline">
+            <a asp-action="Index" asp-controller="Home" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+            <h4 class="mx-auto text-white text-2xl font-semibold">  Dispatch Process </h4>
+            <a asp-action="Create" asp-controller="Dispatches" class="btn btn-success btn-sm text-white">
+                <i class="fas fa-plus-square"></i>   Ready to Dispatch
+            </a>
+        </div>
+    </div>
+    <div class="card-body mt-4">
+        <div class="table table-responsive">
+            <table id="SavePackaging" class="table table-striped table-bordered" style="width:100%">
+                <thead class="thead-light">
+                    <tr class="text-center small">
+                        <th class="text-center">Sr.No.</th>
+                        <th class="text-center">Production Id </th>
+                        <th class="text-center">DC No. </th>
+                        <th class="text-center">Outlet Name </th>
+                        <th class="text-center">Box No.</th>
+                        <th class="text-center">Receipt No.</th>
+                        <th class="text-center">Product Name.</th>
+                        @* <th class="text-center">Category</th> *@
+                        <th class="text-center">Total Qty</th>
+                        @* <th>DC Download</th> *@
+                    </tr>
+                </thead>
+                <tbody class="small text-center">
+                    @{
+                        int counter = 1;
+                    }
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-center">@counter</td>
+                            <td style="font-weight:600;color:rebeccapurple">@Html.DisplayFor(modelItem => item.ProductionId)</td>
+                            <td style="font-weight:600;color:cadetblue">@Html.DisplayFor(modelItem => item.DCNo)</td>
+                            <td style="font-weight:600;color:cadetblue">@Html.DisplayFor(modelItem => item.OutletName)</td>
+                            <td style="font-weight:600;color:green">@Html.DisplayFor(modelItem => item.BoxNo)</td>
+                            <td><span class="badge bg-primary">@Html.DisplayFor(modelItem => item.ReceiptNo)</span></td>
+                            <td>@Html.DisplayFor(modelItem => item.ProductName)</td>
+                            @* <td>@Html.DisplayFor(modelItem => item.Category)</td> *@
+                            <td style="text-align:center">@Html.DisplayFor(modelItem => item.Qty)</td>
+                            @* <td>
+                                <button class="btn btn-warning btn-sm"
+                                        onclick="GenerateDCPdf('@item.Production_Id', '@item.DCNo', '@item.Box_No', '@item.Reciept_Id')">
+                                    <i class="fas fa-file-invoice"></i> DC
+                                </button>
+                            </td> *@
+                        </tr>
+                        counter++;
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function GenerateDCPdf(Production_Id, DCNo, Box_No, Reciept_Id) {
+            // $('#loadingIndicator').show();
+            console.log("GenerateDCPdf called with Sono:", Production_Id, "Id:", Reciept_Id);
+            Swal.fire({ icon: 'warning', title: 'Warning', text: 'Functionality is not define !' });
+            // $.ajax({
+            //     url: '/Dispatch/GenerateDCPdf',
+            //     method: 'POST',
+            //     contentType: 'application/json',
+            //     data: JSON.stringify({ Production_Id: Production_Id, DCNo: DCNo, Box_No: Box_No, Reciept_Id: Reciept_Id }),
+            //     xhrFields: { responseType: 'blob' }, // Handle binary files
+            //     success: function (blob) {
+            //         // $('#loadingIndicator').hide();
+            //         console.log("blob: " + blob);
+            //         var link = document.createElement('a');
+            //         var url = window.URL.createObjectURL(blob);
+            //         link.href = url;
+            //         link.download = "DeliveryChallan.pdf";
+            //         document.body.appendChild(link);
+            //         link.click();
+            //         document.body.removeChild(link);
+            //         window.URL.revokeObjectURL(url);
+            //     },
+            //     error: function (xhr, status, error) {
+            //         console.error("GenerateDCPdf Error:", error);
+            //         // $('#loadingIndicator').hide();
+            //         Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to generate PDF.' });
+            //     }
+            // });
+        }
+
+        $(document).ready(function () {
+            $('#SavePackaging').DataTable({
+                dom: 'Bfrtip', // Add button controls
+                buttons: [
+                    {
+                        extend: 'excel',
+                        title: 'DAK Report',
+                        filename: function () {
+                            return generateFilename('DAK_Report');
+                        },
+                        text: '<i class="fas fa-file-excel"></i> Export Excel',
+                        className: 'dt-button btn btn-success'
+                    },
+                    {
+                        extend: 'pdf',
+                        title: 'DAK Report',
+                        filename: function () {
+                            return generateFilename('DAK_Report');
+                        },
+                        text: '<i class="fas fa-file-pdf"></i> Export PDF',
+                        className: 'dt-button btn btn-danger',
+                        // orientation: 'landscape',
+                        pageSize: 'A4',
+                        customize: function (doc) {
+                            doc.styles.title = {
+                                fontSize: 16,
+                                bold: true,
+                                alignment: 'center'
+                            };
+                        }
+                    },
+                    {
+                        extend: 'csv',
+                        filename: function () {
+                            return generateFilename('DAK_Report');
+                        },
+                        text: '<i class="fas fa-file-csv"></i> Export CSV',
+                        className: 'dt-button btn btn-info'
+                    },
+                    {
+                        extend: 'print',
+                        title: 'DAK Report',
+                        text: '<i class="fas fa-print"></i> Print',
+                        className: 'dt-button btn btn-primary'
+                    }
+                ],
+                info: false, ordering: false,
+            });
+        });
+
+        function generateFilename(baseName) {
+            const now = new Date();
+            const date = now.toISOString().slice(0, 10).replace(/-/g, '_'); // Format: YYYY_MM_DD
+            return `${baseName}_${date}`;
+        }
+    </script>
+}
