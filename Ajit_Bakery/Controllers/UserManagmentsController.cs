@@ -9,6 +9,7 @@ using Ajit_Bakery.Data;
 using Ajit_Bakery.Models;
 using Microsoft.AspNetCore.Identity;
 using AspNetCoreHero.ToastNotification.Abstractions;
+using System.Security.Claims;
 
 namespace Ajit_Bakery.Controllers
 {
@@ -17,21 +18,17 @@ namespace Ajit_Bakery.Controllers
         public INotyfService _notyfyService { get; }
 
         private readonly DataDBContext _context;
-
         public UserManagmentsController(DataDBContext context, INotyfService notyfyService)
         {
             _context = context;
             _notyfyService = notyfyService;
 
         }
-
-        // GET: UserManagments
         public class UserCheckResult
         {
             public string UserName { get; set; }
             public bool IsFound { get; set; }
         }
-       
         public async Task<IActionResult> Index()
         {
             var users = await _context.UserMaster
@@ -54,7 +51,6 @@ namespace Ajit_Bakery.Controllers
             return View();
         }
 
-        // GET: UserManagements/Create  -  get main menu
         private List<SelectListItem> GetMainMenu()
         {
             var lstProducts = new List<SelectListItem>();
@@ -67,7 +63,6 @@ namespace Ajit_Bakery.Controllers
 
             return lstProducts;
         }
-        // GET: UserManagements/Create  -  get sub menu
         private List<SelectListItem> GetSubMenu()
         {
             var lstProducts = new List<SelectListItem>();
@@ -80,11 +75,10 @@ namespace Ajit_Bakery.Controllers
 
             return lstProducts;
         }
-        // GET: UserManagements/Create  -  get opration menu
         private List<SelectListItem> GetOprationMenu()
         {
             var lstProducts = new List<SelectListItem>();
-            lstProducts = _context.MenuModel.Where(a => a.ParentMenuId == 11).AsNoTracking().Select(n =>
+            lstProducts = _context.MenuModel.Where(a => a.ParentMenuId == 9).AsNoTracking().Select(n =>
             new SelectListItem
             {
                 Value = n.Title,
@@ -117,7 +111,6 @@ namespace Ajit_Bakery.Controllers
 
             return lstProducts;
         }
-        //create view show
         private List<SelectListItem> GetRole()
         {
             var lstProducts = new List<SelectListItem>();
@@ -136,7 +129,12 @@ namespace Ajit_Bakery.Controllers
             };
 
             lstProducts.Insert(0, defItem);
-
+            //// ✅ Correct way to remove "Admin" from the list
+            //var adminItem = lstProducts.FirstOrDefault(x => x.Text == "Admin");
+            //if (adminItem != null)
+            //{
+            //    lstProducts.Remove(adminItem);
+            //}
             return lstProducts;
         }
         public IActionResult Create(string? username)
@@ -149,7 +147,7 @@ namespace Ajit_Bakery.Controllers
             ViewBag.SubMenu = GetSubMenu();
             ViewBag.OprationMenu = GetOprationMenu();
             ViewBag.reportmenu = GetReportMenu();
-            ViewBag.WmarketingMenu = GetMarketingMenu();
+            //ViewBag.WmarketingMenu = GetMarketingMenu();
 
             if (username == null || _context.UserManagment == null)
             {
@@ -164,8 +162,6 @@ namespace Ajit_Bakery.Controllers
             return View(userManagement);
 
         }
-
-        // POST: UserManagements/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(string[] mainmenu, string[] submenu, string[] oprationmenu,
@@ -278,7 +274,6 @@ namespace Ajit_Bakery.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: UserManagements/Edit/5 : for view bag
         public async Task<IActionResult> Edit(string? username)
         {
             ViewBag.role = GetRole();
@@ -310,7 +305,6 @@ namespace Ajit_Bakery.Controllers
             return View(usermanage);
         }
 
-        // POST: UserManagements/Edit/5 : display edit page on login
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, string[] mainmenu, string[] submenu, string[] oprationmenu,
@@ -407,9 +401,8 @@ namespace Ajit_Bakery.Controllers
 
             //maintain logs
             var currentuser = HttpContext.User;
-
             //ViewData["UserID"] = currentuser.Claims.FirstOrDefault(a=>a.Type == "MenuId").Value;
-            string username = currentuser.Claims.FirstOrDefault(a => a.Type == "UserName").Value;
+            string username = currentuser.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
             //var logs = new Logs();
             //logs.pagename = "User Managment";
             //logs.action = "Create";
@@ -468,11 +461,33 @@ namespace Ajit_Bakery.Controllers
                 return View(user_master);
             }
         }
-
-
         private bool UserManagmentExists(int id)
         {
             return _context.UserManagment.Any(e => e.Id == id);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(string username) // Changed parameter type from string? to string
+        {
+            if (string.IsNullOrEmpty(username)) // Check if username is null or empty
+            {
+                return NotFound();
+            }
+            var currentuser = HttpContext.User;
+            string username1 = currentuser.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
+
+            var aspUser = await _context.UserMaster.Where(a => a.UserName.Trim() == username.Trim()).FirstOrDefaultAsync(); // Find the ASP.NET Core Identity user
+
+            if (aspUser != null)
+            {
+                var userManagement = _context.UserManagment.Where(m => m.UserName == username).ToList();
+                _context.UserManagment.RemoveRange(userManagement);
+                _context.SaveChangesAsync(); // Save changes to the UserManagement table
+                _context.UserMaster.Remove(aspUser); // Delete the ASP.NET Core Identity user
+            }
+
+            return Json(new { success = true, message = "User Removed Successfully !" });
+        }
+
     }
 }

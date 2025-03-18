@@ -8,9 +8,9 @@
     <div class="card-header bg-dark text-white py-2">
         <div class="d-flex align-items-baseline">
             <a asp-action="Index" asp-controller="Home" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
-            <h4 class="mx-auto text-white text-2xl font-semibold">  Ready To Dispatch </h4>
+            <h4 class="mx-auto text-white text-2xl font-semibold">  Transfer To Dispatch </h4>
             <a asp-action="Create" asp-controller="TransferToDispatches" class="btn btn-success btn-sm text-white">
-                <i class="fas fa-plus-square"></i>  Ready To Dispatch
+                <i class="fas fa-plus-square"></i>  Transfer To Dispatch
             </a>
         </div>
     </div>
@@ -41,7 +41,7 @@
                             <td class="text-center">@counter</td>
                             <td style="font-weight:600;color:rebeccapurple">@Html.DisplayFor(modelItem => item.Production_Id)</td>
                             <td style="font-weight:600;color:cadetblue">@Html.DisplayFor(modelItem => item.DCNo)</td>
-                            <td style="font-weight:600;color:cadetblue">@Html.DisplayFor(modelItem => item.Outlet_Name)</td>
+                            <td style="font-weight:600;color:chocolate">@Html.DisplayFor(modelItem => item.Outlet_Name)</td>
                             <td style="font-weight:600;color:green">@Html.DisplayFor(modelItem => item.Box_No)</td>
                             <td><span class="badge bg-primary">@Html.DisplayFor(modelItem => item.Reciept_Id)</span></td>
                             <td>@Html.DisplayFor(modelItem => item.Product_Name)</td>

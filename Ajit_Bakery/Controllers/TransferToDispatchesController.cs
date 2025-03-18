@@ -22,6 +22,7 @@ using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using iText.Kernel.Font;
 //using iText.IO.Font;
 using PdfFont = iText.Kernel.Font.PdfFont;
+using System.Runtime.InteropServices;
 
 namespace Ajit_Bakery.Controllers
 {
@@ -244,10 +245,12 @@ namespace Ajit_Bakery.Controllers
         {
             if (Packagings_List.Count > 0)
             {
-                var recipt_outlet = _context.Packaging.Where(a=>a.Reciept_Id == receiptno.Trim()).Select(a=>a.Outlet_Name.Trim()).FirstOrDefault();
+
+                var recipt_outlet = _context.Packaging.Where(a=>a.Reciept_Id == receiptno.Trim() && a.DispatchReady_Flag == 0).Select(a=>a.Outlet_Name.Trim()).FirstOrDefault();
                 if(recipt_outlet != null)
                 {
-                    var exist_outlet = Packagings_List.Where(a => a.Reciept_Id == receiptno.Trim()).Select(a => a.Outlet_Name.Trim()).FirstOrDefault() ?? "NA";
+                    var getprodictionid = Packagings_List.Select(a=>a.Production_Id).FirstOrDefault();
+                    var exist_outlet = Packagings_List.Where(a => a.Production_Id.Trim() == getprodictionid.Trim()/*a.Reciept_Id == receiptno.Trim()*/).Select(a => a.Outlet_Name.Trim()).FirstOrDefault() ?? "NA";
 
                     if(exist_outlet != recipt_outlet)
                     {
@@ -268,7 +271,7 @@ namespace Ajit_Bakery.Controllers
 
             // ✅ Avoid duplicate queries and only store necessary data
             var newItems = _context.Packaging
-                .Where(a => a.Reciept_Id.Trim() == receiptno.Trim() && a.Box_No.Trim() == boxno.Trim())
+                .Where(a => a.Reciept_Id.Trim() == receiptno.Trim() && a.Box_No.Trim() == boxno.Trim() && a.DispatchReady_Flag == 0)
                 .ToList();
 
             if(newItems.Count > 0)
@@ -348,8 +351,6 @@ namespace Ajit_Bakery.Controllers
             return View(list);
         }
 
-
-
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.TransferToDispatch == null)
@@ -374,41 +375,48 @@ namespace Ajit_Bakery.Controllers
 
         public string GetDCNO()
         {
-            var currentYearMonth = DateTime.Now.ToString("yyMM"); // Example: "2412" for Dec 2024
-            string newBoxId;
-            int newCounter;
-            var lastBox = _context.ReceiptIds.Where(a => a.ProductionId.Trim().StartsWith("DC"))
-                .OrderByDescending(b => b.id)
-                .FirstOrDefault();
-            if (lastBox != null)
+            try
             {
-                string lastYearMonth = lastBox.ProductionId.Substring(3, 4); // Extract characters 4-7 ("YYMM")
-                int lastCounter = int.Parse(lastBox.ProductionId.Substring(7)); // Extract counter part
-                if (lastYearMonth == currentYearMonth)
+                var currentYearMonth = DateTime.Now.ToString("yyMM"); // Example: "2412" for Dec 2024
+                string newBoxId;
+                int newCounter;
+                var lastBox = _context.DCIds.Where(a => a.ProductionId.Trim().StartsWith("DC"))
+                    .OrderByDescending(b => b.id)
+                    .FirstOrDefault();
+                if (lastBox != null)
                 {
-                    newCounter = lastCounter + 1;
+                    string lastYearMonth = lastBox.ProductionId.Substring(3, 4); // Extract characters 4-7 ("YYMM")
+                    int lastCounter = int.Parse(lastBox.ProductionId.Substring(7)); // Extract counter part
+                    if (lastYearMonth == currentYearMonth)
+                    {
+                        newCounter = lastCounter + 1;
+                    }
+                    else
+                    {
+                        newCounter = 1;
+                    }
                 }
                 else
                 {
                     newCounter = 1;
                 }
-            }
-            else
-            {
-                newCounter = 1;
-            }
-            newBoxId = $"DC{currentYearMonth}{newCounter:D2}"; // Format: STBYYMMCC
-            var maxId = _context.ReceiptIds.Any() ? _context.ReceiptIds.Max(e => e.id) + 1 : 1;
-            var newBoxEntry = new ReceiptIds
-            {
-                id = maxId,
-                ProductionId = newBoxId,
-                date = DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"),
-            };
-            _context.ReceiptIds.Add(newBoxEntry);
-            _context.SaveChanges();
+                newBoxId = $"DC{currentYearMonth}{newCounter:D2}"; // Format: STBYYMMCC
+                var maxId = _context.DCIds.Any() ? _context.DCIds.Max(e => e.id) + 1 : 1;
+                var newBoxEntry = new DCIds
+                {
+                    id = maxId,
+                    ProductionId = newBoxId,
+                    date = DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"),
+                };
+                _context.DCIds.Add(newBoxEntry);
+                _context.SaveChanges();
 
-            return newBoxId;
+                return newBoxId;
+            }
+            catch(Exception ex)
+            {
+                return ex.Message;
+            }
         }
 
 
@@ -418,6 +426,17 @@ namespace Ajit_Bakery.Controllers
         {
             if (Packagings_List.Count > 0)
             {
+                var productionid = Packagings_List.Select(a=>a.Production_Id.Trim()).FirstOrDefault();
+                var outletname = Packagings_List.Select(a=>a.Outlet_Name.Trim()).FirstOrDefault();
+
+                var Packagings_List_data = Packagings_List.Sum(a=>a.Qty);
+                var Packagings_List_data1 = _context.ProductionCapture.Where(a=>a.Production_Id.Trim() == productionid.Trim() && a.OutletName.Trim() == outletname.Trim()).ToList().Sum(a=>a.TotalQty);
+                if(Packagings_List_data != Packagings_List_data1)
+                {
+                    return Json(new { success = false, message = "You can't submit te partially qty against that " + outletname + " outlet !, Qty is "+ Packagings_List_data1 + ", and you have scan only "+ Packagings_List_data + " qty , Please scan all !"});
+                }
+
+
                 var DATE = DateTime.Now.ToString("dd-MM-yyyy");
                 var TIME = DateTime.Now.ToString("HH:mm");
                 var DNO = GetDCNO();

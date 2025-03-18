@@ -20,14 +20,15 @@
                 <thead class="thead-light">
                     <tr class="text-center small">
                         <th class="text-center">Sr.No.</th>
+                        <th class="text-center">Receipt No.</th>
                         <th class="text-center">Production Id </th>
+                        @* <th class="text-center">DC No. </th> *@
+                        <th class="text-center">Outlet Name </th>
                         <th class="text-center">Box No.</th>
+                        
                         <th class="text-center">Product Name.</th>
-                        <th class="text-center">Qty</th>
-                        <th class="text-center">Total NetWg.</th>
-                        <th class="text-center">Packaging Dt.</th>
-                        <th class="text-center">Production Dt.</th>
-                        <th class="text-center">Exp Dt.</th>
+                        <th class="text-center">Category</th>
+                        <th class="text-center">Total Qty</th>
                     </tr>
                 </thead>
                 <tbody class="small text-center">
@@ -39,13 +40,14 @@
                         <tr>
                             <td class="text-center">@counter</td>
                             <td style="font-weight:600;color:rebeccapurple">@Html.DisplayFor(modelItem => item.Production_Id)</td>
+                            <td><span class="badge bg-primary">@Html.DisplayFor(modelItem => item.Reciept_Id)</span></td>
+
+@*                             <td style="font-weight:600;color:cadetblue">@Html.DisplayFor(modelItem => item.DCNo)</td>
+ *@                            <td style="font-weight:600;color:brown">@Html.DisplayFor(modelItem => item.Outlet_Name)</td>
                             <td style="font-weight:600;color:green">@Html.DisplayFor(modelItem => item.Box_No)</td>
                             <td>@Html.DisplayFor(modelItem => item.Product_Name)</td>
-                            <td>@Html.DisplayFor(modelItem => item.Qty)</td>
-                            <td>@Html.DisplayFor(modelItem => item.TotalNetWg_Uom)</td>
-                            <td>@Html.DisplayFor(modelItem => item.Packaging_Date)</td>
-                            <td>@Html.DisplayFor(modelItem => item.Production_Dt)</td>
-                            <td>@Html.DisplayFor(modelItem => item.Exp_Dt)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Category)</td>
+                            <td style="text-align:center">@Html.DisplayFor(modelItem => item.Qty)</td>
                         </tr>
                         counter++;
                     }

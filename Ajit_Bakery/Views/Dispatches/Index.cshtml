@@ -28,6 +28,7 @@
                         <th class="text-center">Product Name.</th>
                         @* <th class="text-center">Category</th> *@
                         <th class="text-center">Total Qty</th>
+                        <th class="text-center">Status</th>
                         @* <th>DC Download</th> *@
                     </tr>
                 </thead>
@@ -41,13 +42,22 @@
                             <td class="text-center">@counter</td>
                             <td style="font-weight:600;color:rebeccapurple">@Html.DisplayFor(modelItem => item.ProductionId)</td>
                             <td style="font-weight:600;color:cadetblue">@Html.DisplayFor(modelItem => item.DCNo)</td>
-                            <td style="font-weight:600;color:cadetblue">@Html.DisplayFor(modelItem => item.OutletName)</td>
+                            <td style="font-weight:600;color:brown">@Html.DisplayFor(modelItem => item.OutletName)</td>
                             <td style="font-weight:600;color:green">@Html.DisplayFor(modelItem => item.BoxNo)</td>
                             <td><span class="badge bg-primary">@Html.DisplayFor(modelItem => item.ReceiptNo)</span></td>
                             <td>@Html.DisplayFor(modelItem => item.ProductName)</td>
                             @* <td>@Html.DisplayFor(modelItem => item.Category)</td> *@
                             <td style="text-align:center">@Html.DisplayFor(modelItem => item.Qty)</td>
-                            @* <td>
+                            <td style="text-align:center">
+                                @if (item.Status == "Completed")
+                                {
+                                    <span class="badge bg-success">Completed</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">@item.Status</span>
+                                }
+                            </td>                            @* <td>
                                 <button class="btn btn-warning btn-sm"
                                         onclick="GenerateDCPdf('@item.Production_Id', '@item.DCNo', '@item.Box_No', '@item.Reciept_Id')">
                                     <i class="fas fa-file-invoice"></i> DC

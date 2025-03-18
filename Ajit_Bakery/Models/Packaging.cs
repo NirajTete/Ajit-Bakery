@@ -21,6 +21,7 @@ namespace Ajit_Bakery.Models
         public string TotalNetWg_Uom { get; set; }
         [Display(Name = "Production.Dt")]
         public string Production_Dt { get; set; }
+        public string? Production_Tm { get; set; }
         [Display(Name = "Exp.Dt")]
         public string Exp_Dt { get; set; }
         [Display(Name = "Production Id")]
@@ -42,6 +43,9 @@ namespace Ajit_Bakery.Models
 
         [NotMapped]
         public string Category { get; set; }
+
+        [NotMapped]
+        public string Status { get; set; }
 
 
     }

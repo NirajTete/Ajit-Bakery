@@ -1,4 +1,6 @@
-﻿namespace Ajit_Bakery.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Ajit_Bakery.Models
 {
     public class Dispatch
     {
@@ -28,5 +30,8 @@
         public string VehicleNumber { get; set; }
         public string VehicleDriverName { get; set; }
         public string VehicleOwn { get; set; }
+        public string? Status { get; set; }
+        [NotMapped]
+        public string category { get; set; }
     }
 }

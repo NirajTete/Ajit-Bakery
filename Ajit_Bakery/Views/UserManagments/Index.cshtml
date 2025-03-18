@@ -150,7 +150,7 @@
                 if (result.isConfirmed) {
                     console.log("username : " + username);
                     $.ajax({
-                        url: '/UserManagment/Delete', // The URL to the delete action
+                        url: '/UserManagments/Delete', // The URL to the delete action
                         type: 'POST', // HTTP method
                         data: { username: username }, // Data to be sent to the server
                         success: function (response) {
@@ -163,7 +163,7 @@
                                 }).then(() => {
                                     // Remove the row from the table
                                     row.remove();
-                                    window.location.href = '/UserManagment/Index';
+                                    window.location.href = '/UserManagments/Index';
                                 });
                             } else {
                                 Swal.fire({

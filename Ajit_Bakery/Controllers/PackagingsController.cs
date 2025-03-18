@@ -36,10 +36,47 @@ namespace Ajit_Bakery.Controllers
             Packagings_List.Clear();
             SaveProduction_List.Clear();
             ProductionCapture_List.Clear();
-            var list = await _context.Packaging.OrderByDescending(a => a.Id).ToListAsync();
+            //var list = await _context.Packaging.OrderByDescending(a => a.Id).ToListAsync();
+            //foreach (var item in list)
+            //{
+            //    item.TotalNetWg_Uom = item.TotalNetWg + " " + item.TotalNetWg_Uom;
+            //}
+            //return View(list);
+            Packagings_List.Clear();
+
+            var list = _context.Packaging
+                //.Where(a => a.DispatchReady_Flag == 0)
+                .OrderByDescending(a => a.Id)
+                .AsEnumerable()  // Fetch data first, then perform grouping in memory
+                .GroupBy(a => new
+                {
+                    a.Production_Id,
+                    a.DCNo,
+                    a.Outlet_Name,
+                    a.Box_No,
+                    a.Reciept_Id,
+                    a.Product_Name,
+                    a.Category
+                })
+                .Select(g => new Packaging
+                {
+                    Production_Id = g.Key.Production_Id,
+                    DCNo = g.Key.DCNo,
+                    Outlet_Name = g.Key.Outlet_Name,
+                    Box_No = g.Key.Box_No,
+                    Reciept_Id = g.Key.Reciept_Id,
+                    Product_Name = g.Key.Product_Name,
+                    Category = g.Key.Category, // Ensure it's available in memory
+                    Qty = g.Sum(a => a.Qty) // Summing the Quantity
+                })
+                .ToList();
             foreach (var item in list)
             {
-                item.TotalNetWg_Uom = item.TotalNetWg + " " + item.TotalNetWg_Uom;
+                var check = _context.ProductMaster.Where(a => a.ProductName.Trim() == item.Product_Name.Trim()).FirstOrDefault();
+                if (check != null)
+                {
+                    item.Category = check.Type;
+                }
             }
             return View(list);
         }
@@ -99,6 +136,7 @@ namespace Ajit_Bakery.Controllers
                             //Id = _context.Packaging.Any() ? _context.Packaging.Max(e => e.Id) + 1 : 1,
                             Product_Name = productname,
                             Production_Dt = checkagain.SaveProduction_Date,
+                            Production_Tm = checkagain.SaveProduction_Time,
                             Production_Id = Production_Id,
                             Box_No = Box_No,
                             Outlet_Name = outletName,
@@ -179,25 +217,24 @@ namespace Ajit_Bakery.Controllers
         public IActionResult GetOutlets(string Production_Id)
         {
             var lstProducts = new List<SelectListItem>();
-
-            lstProducts = _context.ProductionCapture.Where(a => a.Status == "Pending" && a.Production_Id.Trim() == Production_Id.Trim()).AsNoTracking().Select(n =>
+            if (Production_Id != null)
+            {
+                lstProducts = _context.ProductionCapture.Where(a => a.Status == "Pending" && a.Production_Id.Trim() == Production_Id.Trim()).AsNoTracking().Select(n =>
             new SelectListItem
             {
                 Value = n.OutletName,
                 Text = n.OutletName
             }).Distinct().ToList();
 
-            var defItem = new SelectListItem()
-            {
-                Value = "",
-                Text = "----Select OutletName ----"
-            };
+                var defItem = new SelectListItem()
+                {
+                    Value = "",
+                    Text = "----Select OutletName ----"
+                };
 
-            lstProducts.Insert(0, defItem);
-            //var check = _context.Packaging.Where(a=>a.Production_Id.Trim() == Production_Id.Trim()).FirstOrDefault();
-            //var qtyremainig = ;
-            //var qtypick = ;
-            //, qtypick = qtypick , qtyremainig = qtyremainig
+                lstProducts.Insert(0, defItem);
+            }
+            
             return Json(new { success = true, data = lstProducts });
         }
         private List<SelectListItem> GetBoxNos()

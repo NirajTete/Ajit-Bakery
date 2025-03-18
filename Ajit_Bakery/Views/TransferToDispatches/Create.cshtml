@@ -8,7 +8,7 @@
     <div class="card-header bg-dark text-white py-2">
         <div class="d-flex align-items-baseline">
             <a asp-action="Index" asp-controller="TransferToDispatches" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
-            <h4 class="mx-auto text-white text-2xl font-semibold"> Scan Receipts To Dispatch </h4>
+            <h4 class="mx-auto text-white text-2xl font-semibold"> Scan Boxes To Transfer </h4>
            
         </div>
     </div>
@@ -18,7 +18,7 @@
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="row">
                     <div class="form-group col-sm-10">
-                        <label class="control-label fw-bold small">Scan Receipt Barcode</label>
+                        <label class="control-label fw-bold small">Scan Box or Receipt Barcode</label>
                         <input type="text" id="ScanItem" class="form-control" onkeypress="InsertScanData(event)" placeholder="Please scan receipt barcode here for single outlet.." />
                     </div>
                     <div class="form-group  col-sm-2 mt-2">
@@ -123,8 +123,11 @@
                                         icon: 'warning',
                                         title: 'Warning!',
                                         text: response.message,
-                                        timer: 5000
-                                    });
+                                         // timer: 10000
+                                        confirmButtonText: "OK"
+                                    }).then(() => {
+                                        window.location.href = "@Url.Action("Index", "TransferToDispatches")"; // Redirect to Index
+                                    });;
                                 }
                                 $("#TransferToDispatch")[0].reset(); // Reset form
                             },

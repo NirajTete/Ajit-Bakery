@@ -32,5 +32,6 @@ namespace Ajit_Bakery.Data
         //ID TO GENERATE PRODUCTION 
         public DbSet<Ajit_Bakery.Models.ProductionIds> ProductionIds { get; set; }
         public DbSet<Ajit_Bakery.Models.ReceiptIds> ReceiptIds { get; set; }
+        public DbSet<Ajit_Bakery.Models.DCIds> DCIds { get; set; }
     }
 }

@@ -50,5 +50,7 @@ namespace Ajit_Bakery.Models
         public string? Packaging_Time { get; set; }
         public int? Packaging_Flag { get; set; } = 0;
         public string Production_Id {  get; set; }
+        [NotMapped]
+        public string Status { get; set; }
     }
 }

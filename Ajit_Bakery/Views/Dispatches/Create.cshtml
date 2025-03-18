@@ -8,7 +8,7 @@
     <div class="card-header bg-dark text-white py-2">
         <div class="d-flex align-items-baseline">
             <a asp-action="Index" asp-controller="Dispatches" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
-            <h4 class="mx-auto text-white text-2xl font-semibold"> Scan Receipts To Dispatch </h4>
+            <h4 class="mx-auto text-white text-2xl font-semibold"> Scan Boxes To Dispatch </h4>
 
         </div>
     </div>
@@ -18,20 +18,21 @@
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="row">
                     <div class="form-group col-sm-4">
-                        <label asp-for="ProductionId" class="control-label fw-bold small"></label>
-                        <select asp-for="ProductionId" id="Production_Id" class="form-control text-uppercase" asp-items="@ViewBag.GetProduction_Id" onchange="OnProduction_IdChange()">
+                        <label asp-for="DCNo" class="control-label fw-bold small">DC No.</label>
+                        <select asp-for="DCNo" id="DCNo" class="form-control text-uppercase" asp-items="@ViewBag.DCNO" onchange="OnDCNO_Change()">
                         </select>
+                    </div>
+                    <div class="form-group  col-sm-2 ">
+                        <label class="control-label fw-bold small">Total Qty's</label>
+                        <input style="height:5vh; font-size: 20px; color: green; font-weight: 650;" id="qtypick" class="form-control" type="text" value="0" readonly />
                     </div>
                 </div>
                 <div class="row">
-                    <div class="form-group col-sm-10">
+                    <div class="form-group col-sm-12">
                         <label class="control-label fw-bold small">Scan Receipt Barcode</label>
                         <input type="text" id="ScanItem" class="form-control" onkeypress="InsertScanData(event)" placeholder="Please scan receipt barcode here for single outlet.." />
                     </div>
-                    <div class="form-group  col-sm-2 mt-2">
-                        <label class="control-label fw-bold small">Scan Count</label>
-                        <input style="height:5vh; font-size: 20px; color: green; font-weight: 650;" id="qtypick" class="form-control" type="text" value="0" readonly />
-                    </div>
+                    
                 </div>
                 <div class="row" style="display:none" id="TransportDetails">
                     <div class="form-group col-sm-2">
@@ -44,7 +45,7 @@
                     </div>
                     <div class="form-group col-sm-4" >
                         <label asp-for="VehicleDriverName" class="control-label fw-bold small">Driver Name</label>
-                        <select asp-for="VehicleDriverName" class="form-control text-uppercase" id="VehicleDriverName" required>
+                        <select asp-for="VehicleDriverName" onchange="OnDriverNameSelect()" class="form-control text-uppercase" id="VehicleDriverName" required>
                         </select>
                     </div>
                     <div class="form-group col-sm-3">
@@ -75,7 +76,7 @@
                 </div>
                 <div class="row mb-3 p-2">
                     <div class="form-group col-sm-12 ">
-                        <input type="submit" value="Generate DC" class="btn btn-primary btn-sm col-md-12" />
+                        <input type="submit" value="Submit" class="btn btn-primary btn-sm col-md-12" />
                     </div>
                 </div>
             </form>
@@ -114,6 +115,43 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
+        function OnDCNO_Change() {
+            var dcno = $("#DCNo").val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("GetDCData", "Dispatches")", // Ensure correct Controller Name
+                data: { dcno: dcno },
+                success: function (response) {
+                    console.log("Response Data: ", response);
+                    if (response.success) { // Fix typo
+                        $("#qtypick").val(response.data); // Fix data assignment
+                    }
+                }
+            })
+        };
+        function OnDriverNameSelect() {
+            var VehicleDriverName = $("#VehicleDriverName").val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("GetDriverData", "Dispatches")", // Ensure correct Controller Name
+                data: { VehicleDriverName: VehicleDriverName },
+                success: function (response) {
+                    console.log("Response Data: ", response);
+                    if (response.success) { // Check if request was successful
+                        $("#VehicleNumber").val(response.drivervehicaleno); // Set vehicle number
+                        $("#VehicleDriverContactNo").val(response.drivercontactno); // Set driver contact no.
+                    } else {
+                        $("#VehicleNumber").val(""); // Clear input if no data found
+                        $("#VehicleDriverContactNo").val("");
+                        Swal.fire({
+                            icon: "warning",
+                            title: "Warning",
+                            text: "Driver details not found!"
+                        });
+                    }
+                }
+            })
+        };
         function VehicleOwnChange() {
             var VehicleOwn = $("#VehicleOwn").val();
             $.ajax({
@@ -147,7 +185,6 @@
                 }
             });
         }
-
         // function CourierChange() {
         //     console.log("Courier dropdown changed");
         //     var valueget = $("#extcourier").val();
@@ -215,28 +252,31 @@
         function InsertScanData(event) {
             if (event.key === "Enter") {
                 event.preventDefault(); // Prevent the default form submission
-
+                var dcno = $("#DCNo").val();
                 let scanvalue = $('#ScanItem').val().trim();
-
+                if(dcno == "" || dcno == null){
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Warning!",
+                        text: "DC No is found empty , Please select dcno first !",
+                    });
+                    $('#ScanItem').val("")
+                    return;
+                }
                 console.log("Before Splitting: " + scanvalue);
-
                 if (scanvalue.includes("$")) {
                     let parts = scanvalue.split("$").filter(x => x.trim()); // Remove empty values
-
                     if (parts.length === 2) { // Ensure correct data structure
                         let boxno = parts[0];
                         let receiptno = parts[1];
-
                         console.log("boxno:", boxno);
                         console.log("receiptno:", receiptno);
-
                         $.ajax({
                             url: '/Dispatches/PickedData',
                             type: 'POST',
-                            data: { boxno: boxno, receiptno: receiptno },
+                            data: { boxno: boxno, receiptno: receiptno, dcno: dcno },
                             success: function (response) {
                                 console.log("Response:", response);
-                                
                                 if (response.success) {
                                     response.data.forEach(item => {
                                         let newRow = `<tr>
@@ -244,9 +284,9 @@
                                                             <td>${item.outlet_Name}</td>
                                                             <td>${item.box_No}</td>
                                                             <td>${item.product_Name}</td>
-                                                    <td>${item.qty}</td>
-                                                    <td>${item.totalNetWg + " " + item.totalNetWg_Uom}</td>
-                                                </tr>`;
+                                                            <td>${item.qty}</td>
+                                                            <td>${item.totalNetWg + " " + item.totalNetWg_Uom}</td>
+                                                      </tr>`;
 
                                         $("#productTableBody").append(newRow);
                                     });
@@ -257,6 +297,9 @@
                                     if (response.qtypick == 0) {
                                         $("#qtypick").val(0);
                                         $("#ScanItem").val("");
+                                        $("#TransportDetails").show();  // Show Transport Details
+                                    } else {
+                                        $("#TransportDetails").hide(); // Hide Transport Details
                                     }
 
                                 } else {

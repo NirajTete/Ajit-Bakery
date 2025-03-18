@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Ajit_Bakery.Models
 {
@@ -36,6 +37,9 @@ namespace Ajit_Bakery.Models
         public string? DispatchReady_Date { get; set; }
         public string? DispatchReady_Time { get; set; }
         public string? DCNo { get; set; }
+
+        [NotMapped]
+        public string Status { get; set; }
 
     }
 }
