@@ -10,9 +10,11 @@ using Ajit_Bakery.Models;
 using Microsoft.AspNetCore.Identity;
 using AspNetCoreHero.ToastNotification.Abstractions;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ajit_Bakery.Controllers
 {
+    [Authorize]
     public class UserManagmentsController : Controller
     {
         public INotyfService _notyfyService { get; }
@@ -29,6 +31,7 @@ namespace Ajit_Bakery.Controllers
             public string UserName { get; set; }
             public bool IsFound { get; set; }
         }
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var users = await _context.UserMaster
@@ -50,7 +53,28 @@ namespace Ajit_Bakery.Controllers
 
             return View();
         }
+        [HttpGet]
+        public async Task<IActionResult> PageAllot()
+        {
+            var users = await _context.UserMaster
+                .Where(u => u.Email != "admin@gmail.com")
+                .Select(u => u.UserName.Trim()) // Trim directly in query
+                .Distinct()
+                .ToListAsync();
 
+            // Convert list to a HashSet for quick lookup
+            var userSet = users.ToHashSet();
+
+            var results = users.Select(userName => new UserCheckResult
+            {
+                UserName = userName,
+                IsFound = userSet.Contains(userName)
+            }).ToList();
+
+            ViewBag.MyList = results; // Pass the processed data to View
+
+            return View();
+        }
         private List<SelectListItem> GetMainMenu()
         {
             var lstProducts = new List<SelectListItem>();
@@ -310,7 +334,10 @@ namespace Ajit_Bakery.Controllers
         public async Task<IActionResult> Edit(int id, string[] mainmenu, string[] submenu, string[] oprationmenu,
             string[] reportmenu, string[] marketingmenu, UserManagment userManagement)
         {
-
+            if(userManagement.Role == null)
+            {
+                userManagement.Role = "User";
+            }
             var previewdata = _context.UserManagment.Where(a => a.UserName == userManagement.UserName).ToList();
 
             _context.RemoveRange(previewdata);

@@ -21,11 +21,12 @@
                     <tr class="text-center small">
                         <th class="text-center">Sr.No.</th>
                         <th class="text-center">Product Name</th>
-                        <th class="text-center">Qty</th>
-                        <th class="text-center">UOM</th>
-                        <th class="text-center">Unit Qty</th>
+                        <th class="text-center">Range</th>
+                        <th class="text-center">Uom</th>
                         <th class="text-center">Category</th>
                         <th class="text-center">Type</th>
+                        <th class="text-center">MRP</th>
+                        <th class="text-center">Selling</th>
                         <th class="text-center">Action</th>
                     </tr>
                 </thead>
@@ -38,11 +39,12 @@
                         <tr>
                             <td class="text-center">@counter</td>
                             <td>@Html.DisplayFor(modelItem => item.ProductName)</td>
-                            <td>@Html.DisplayFor(modelItem => item.Qty)</td>
+                            <td class="text-center">@Html.DisplayFor(modelItem => item.Unitqty)</td>
                             <td>@Html.DisplayFor(modelItem => item.Uom)</td>
-                            <td>@Html.DisplayFor(modelItem => item.Unitqtyuom)</td>
                             <td>@Html.DisplayFor(modelItem => item.Category)</td>
                             <td>@Html.DisplayFor(modelItem => item.Type)</td>
+                            <td class="text-center">@Html.DisplayFor(modelItem => item.MRP)</td>
+                            <td class="text-center">@Html.DisplayFor(modelItem => item.Selling)</td>
 
                             <td class="text-center">
                                 <div class="btn-group btn-group-sm" role="group">
@@ -52,9 +54,6 @@
                                     <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-warning" title="Details">
                                         <i class="fa fa-eye"></i>
                                     </a>
-                                    @*  <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger" title="Delete">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </a> *@
                                     <a href="javascript:void(0);" class="btn btn-danger delete-btn" data-id="@item.Id" title="Delete">
                                         <i class="fas fa-trash-alt"></i>
                                     </a>

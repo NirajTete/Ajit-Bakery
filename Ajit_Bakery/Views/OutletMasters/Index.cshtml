@@ -22,10 +22,10 @@
                     <tr class="text-center small">
                         <th class="text-center">Sr.No.</th>
                         <th>Outlet Code</th>
-                        <th>Outlet Name</th>
-                        <th>Outlet Address </th>
-                        <th>Outlet Contact.No.</th>
-                        <th>Outlet Contact Person</th>
+                        <th style="text-align:center">Outlet Name</th>
+                        <th style="text-align:center">Outlet Address </th>
+                        <th style="text-align:center"> Contact.No.</th>
+                        <th style="text-align:center"> Contact Person</th>
                         <th class="text-center">Action</th>
                     </tr>
                 </thead>
@@ -40,7 +40,7 @@
                             <td>@Html.DisplayFor(modelItem => item.OutletCode)</td>
                             <td>@Html.DisplayFor(modelItem => item.OutletName)</td>
                             <td>@Html.DisplayFor(modelItem => item.OutletAddress)</td>
-                            <td>@Html.DisplayFor(modelItem => item.OutletContactNo)</td>
+                            <td style="text-align:center">@Html.DisplayFor(modelItem => item.OutletContactNo)</td>
                             <td>@Html.DisplayFor(modelItem => item.OutletContactPerson)</td>
                             <td class="text-center">
                                 <div class="btn-group btn-group-sm" role="group">

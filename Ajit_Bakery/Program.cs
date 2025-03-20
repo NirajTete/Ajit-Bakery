@@ -12,19 +12,14 @@ builder.Services.AddNotyf(config => { config.DurationInSeconds = 5; config.IsDis
 var connectionString = builder.Configuration.GetConnectionString("ContextDBConnection") ?? throw new InvalidOperationException("Connection string 'ContextDBConnection' not found.");
 builder.Services.AddDbContext<DataDBContext>(options =>
 options.UseNpgsql(connectionString));
-//ADD SESSION
-builder.Services.AddSession(options =>
-{
-});
 
-//added logi
 //Login page 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(option =>
     {
-        option.Cookie.Name = "demo";
+        option.Cookie.Name = "AjiBakery";
         option.LoginPath = "/UserMasters/Login";
-        option.ExpireTimeSpan = TimeSpan.FromMinutes(50);
+        option.ExpireTimeSpan = TimeSpan.FromMinutes(120);
         option.AccessDeniedPath = "/Access/AccessDenied";
     });
 
@@ -37,7 +32,7 @@ builder.Services.AddAuthorization(options =>
     });
 });
 //end
-
+builder.Services.AddSession();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -52,12 +47,13 @@ if (!app.Environment.IsDevelopment())
 }
 //USE SETTION
 app.UseSession();
-
+app.UseStaticFiles();
+app.UseCookiePolicy();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseNotyf();
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

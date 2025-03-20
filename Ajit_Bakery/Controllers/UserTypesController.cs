@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using Ajit_Bakery.Data;
 using Ajit_Bakery.Models;
 using AspNetCoreHero.ToastNotification.Abstractions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ajit_Bakery.Controllers
 {
+    [Authorize]
     public class UserTypesController : Controller
     {
         private readonly DataDBContext _context;

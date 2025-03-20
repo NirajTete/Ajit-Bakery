@@ -67,6 +67,20 @@
                         <input type="number" value="0" readonly asp-for="DialArea" class="form-control" />
                         <span asp-validation-for="DialArea" class="text-danger"></span>
                     </div>
+                    <div class="form-group col-sm-3" >
+                        <label asp-for="DialUsedForCakes" class="control-label fw-bold small"></label>
+                        <input type="number" value="0" id="DialUsedForCakes" asp-for="DialUsedForCakes"  class="form-control"
+                        required min="1" max="5000" />
+                    </div>
+                   
+                    <div class="form-group col-sm-3">
+                        <label asp-for="DialUsedForCakes_Uom" class="control-label fw-bold small"></label>
+                        <select asp-for="DialUsedForCakes_Uom" class="form-control text-uppercase" autocomplete="off"
+                                id="DialUsedForCakes_Uom" required>
+                            <option>KGS</option>
+                            <option>GMS</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="row mb-3 p-2">
                     <div class="form-group col-sm-12 ">
@@ -87,6 +101,28 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
+        // function ceckqty(){
+        //     OnUomChange();
+        // }
+        // function OnUomChange() {
+        //     //alert("call");
+        //     var DialUsedForCakes_Uom = $("#DialUsedForCakes_Uom").val(); // Get selected UOM (KGS/GMS)
+        //     var DialUsedForCakes_value = parseFloat($("#DialUsedForCakes_value").val()) || 0; // Get entered weight, default to 0
+
+        //     var convertedWeight = 0;
+
+        //     if (DialUsedForCakes_Uom === "KGS") {
+        //         convertedWeight = DialUsedForCakes_value * 1000; // Convert KGS to GMS
+        //     } else {
+        //         convertedWeight = DialUsedForCakes_value; // Already in GMS
+        //     }
+
+        //     $("#DialUsedForCakes").val(convertedWeight); // Set converted value
+        // }
+        // function Refresh(){
+        //     console.log("Refresh Fuction call...");
+        //     OnUomChange();
+        // }
         $(document).ready(function () {
             function calculateArea() {
                 var shape = $("#DialShape").val();

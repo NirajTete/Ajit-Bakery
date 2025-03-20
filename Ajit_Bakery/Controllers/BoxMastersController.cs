@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Ajit_Bakery.Data;
 using Ajit_Bakery.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ajit_Bakery.Controllers
 {
+    [Authorize]
     public class BoxMastersController : Controller
     {
         private readonly DataDBContext _context;
@@ -64,6 +66,16 @@ namespace Ajit_Bakery.Controllers
         {
             try
             {
+                if(boxMaster.BoxNumber != null)
+                {
+                    var exist = _context.BoxMaster.Where(a => a.BoxNumber.Trim() == boxMaster.BoxNumber.Trim()).FirstOrDefault();
+                    if (exist != null)
+                    {
+                        return Json(new { success = false, message = "Already Exist ! "  });
+                    }
+                }
+                int maxId = _context.BoxMaster.Any() ? _context.BoxMaster.Max(e => e.Id) + 1 : 1;
+                boxMaster.Id = maxId;
                 boxMaster.CreateDate = DateTime.Now.ToString("dd-MM-yyyy");
                 boxMaster.ModifiedDate = DateTime.Now.ToString("dd-MM-yyyy");
                 boxMaster.Createtime = DateTime.Now.ToString("HH:mm");
@@ -112,7 +124,6 @@ namespace Ajit_Bakery.Controllers
                 return Json(new { success = false, message = "Warning : " + ex.Message });
             }
         }
-
         public async Task<IActionResult> Delete(int? id)
         {
             try
@@ -140,6 +151,7 @@ namespace Ajit_Bakery.Controllers
                 return Json(new { success = false, message = "WWarning : " + ex.Message });
             }
         }
+
 
         private bool BoxMasterExists(int id)
         {

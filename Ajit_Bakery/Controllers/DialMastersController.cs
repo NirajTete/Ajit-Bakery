@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Ajit_Bakery.Data;
 using Ajit_Bakery.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ajit_Bakery.Controllers
 {
+    [Authorize]
     public class DialMastersController : Controller
     {
         private readonly DataDBContext _context;
@@ -90,22 +92,56 @@ namespace Ajit_Bakery.Controllers
         {
             try
             {
+                
+                int maxId = _context.DialMaster.Any() ? _context.DialMaster.Max(e => e.Id) + 1 : 1;
+                dialMaster.Id = maxId;
                 var data = "D";
                 if(dialMaster.DialShape == "Circle")
                 {
                     data = data + "C"+dialMaster.DialDiameter+"*"+dialMaster.DialDiameter;
                     dialMaster.DialCode = data;
+                    dialMaster.DialLength = dialMaster.DialDiameter;
+                    dialMaster.DialBreadth = dialMaster.DialDiameter;
+                    dialMaster.DialArea = (dialMaster.DialBreadth * dialMaster.DialLength).ToString();
+                    if (dialMaster.DialCode != null)
+                    {
+                        var exist = _context.DialMaster.Where(a => a.DialCode.Trim() == dialMaster.DialCode.Trim() && a.DialShape.Trim() == dialMaster.DialShape.Trim()).FirstOrDefault();
+                        if (exist != null)
+                        {
+                            return Json(new { success = false, message = "Already Exist ! " });
+                        }
+                    }
                 }
                 else
                 {
                     data = data + "S" + dialMaster.DialLength + "*" + dialMaster.DialBreadth;
                     dialMaster.DialCode = data;
+                    if (dialMaster.DialCode != null)
+                    {
+                        var exist = _context.DialMaster.Where(a => a.DialCode.Trim() == dialMaster.DialCode.Trim() && a.DialShape.Trim() == dialMaster.DialShape.Trim()).FirstOrDefault();
+                        if (exist != null)
+                        {
+                            return Json(new { success = false, message = "Already Exist ! " });
+                        }
+                    }
                 }
+
                 dialMaster.CreateDate = DateTime.Now.ToString("dd-MM-yyyy");
                 dialMaster.ModifiedDate = DateTime.Now.ToString("dd-MM-yyyy");
                 dialMaster.Createtime = DateTime.Now.ToString("HH:mm");
                 dialMaster.Modifiedtime = DateTime.Now.ToString("HH:mm");
                 dialMaster.User = "admin";
+                if(dialMaster.DialUsedForCakes_Uom == "KGS")
+                {
+                    dialMaster.DialUsedForCakes = dialMaster.DialUsedForCakes * 1000; //converted gm value
+                    dialMaster.DialUsedForCakes_Uom = "GMS";//gm 
+                }
+                else
+                {
+                    dialMaster.DialUsedForCakes = dialMaster.DialUsedForCakes;//gm value
+                    dialMaster.DialUsedForCakes_Uom = dialMaster.DialUsedForCakes_Uom;//gm
+                }
+                
 
                 _context.Add(dialMaster);
                 await _context.SaveChangesAsync();

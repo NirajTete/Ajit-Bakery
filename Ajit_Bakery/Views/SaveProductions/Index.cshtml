@@ -24,6 +24,9 @@
                         <th class="text-center">Product Name.</th>
                         <th class="text-center">Qty</th>
                         <th class="text-center">Total NetWg.</th>
+                        <th class="text-center">Selling (Rs.)</th>
+                        <th class="text-center">MRP (Rs.)</th>
+                        
                         <th class="text-center">Production Dt.</th>
                         <th class="text-center">Exp Dt.</th>
                     </tr>
@@ -38,8 +41,11 @@
                             <td class="text-center">@counter</td>
                             <td style="font-weight:600;color:rebeccapurple">@Html.DisplayFor(modelItem => item.Production_Id)</td>
                             <td>@Html.DisplayFor(modelItem => item.ProductName)</td>
-                            <td>@Html.DisplayFor(modelItem => item.Qty)</td>
+                            <td class="text-center">@Html.DisplayFor(modelItem => item.Qty)</td>
                             <td>@Html.DisplayFor(modelItem => item.TotalNetWg_Uom)</td>
+                            <td class="text-center">@Html.DisplayFor(modelItem => item.sellingRs)</td>
+                            <td class="text-center">@Html.DisplayFor(modelItem => item.mrpRs)</td>
+                            
                             <td>@Html.DisplayFor(modelItem => item.SaveProduction_Date)</td>
                             <td>@Html.DisplayFor(modelItem => item.Exp_Date)</td>
                             @* <td class="text-center" style="display:none">

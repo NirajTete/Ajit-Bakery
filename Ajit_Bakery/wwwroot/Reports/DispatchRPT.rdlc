@@ -423,7 +423,7 @@
             <Top>4.47213cm</Top>
             <Left>0.76728cm</Left>
             <Height>1.2cm</Height>
-            <Width>5.99188cm</Width>
+            <Width>5.99187cm</Width>
             <ZIndex>4</ZIndex>
             <Style>
               <Border>
@@ -591,7 +591,7 @@
                       <Style>
                         <FontSize>12pt</FontSize>
                         <FontWeight>Bold</FontWeight>
-                        <TextDecoration>Underline</TextDecoration>
+                        <TextDecoration>None</TextDecoration>
                       </Style>
                     </TextRun>
                   </TextRuns>
@@ -622,9 +622,9 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value> Packaging Receipt</Value>
+                      <Value> Receipt Id .:</Value>
                       <Style>
-                        <FontWeight>Bold</FontWeight>
+                        <FontSize>9pt</FontSize>
                       </Style>
                     </TextRun>
                   </TextRuns>
@@ -633,10 +633,42 @@
               </Paragraphs>
               <rd:DefaultName>Textbox2</rd:DefaultName>
               <Top>0.3125in</Top>
-              <Left>0.53646in</Left>
+              <Left>0.42708in</Left>
               <Height>0.17708in</Height>
-              <Width>1.42708in</Width>
+              <Width>0.90104in</Width>
               <ZIndex>1</ZIndex>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+            <Textbox Name="Textbox3">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>=Parameters!rd1.Value</Value>
+                      <Style>
+                        <FontSize>9pt</FontSize>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style />
+                </Paragraph>
+              </Paragraphs>
+              <rd:DefaultName>Textbox2</rd:DefaultName>
+              <Top>0.32639in</Top>
+              <Left>1.3559in</Left>
+              <Height>0.17708in</Height>
+              <Width>1.17534in</Width>
+              <ZIndex>2</ZIndex>
               <Style>
                 <Border>
                   <Style>None</Style>
@@ -696,6 +728,12 @@
       <AllowBlank>true</AllowBlank>
       <Prompt>ReportParameter1</Prompt>
     </ReportParameter>
+    <ReportParameter Name="rd1">
+      <DataType>String</DataType>
+      <Nullable>true</Nullable>
+      <AllowBlank>true</AllowBlank>
+      <Prompt>ReportParameter1</Prompt>
+    </ReportParameter>
   </ReportParameters>
   <ReportParametersLayout>
     <GridLayoutDefinition>
@@ -726,6 +764,11 @@
           <ColumnIndex>1</ColumnIndex>
           <RowIndex>1</RowIndex>
           <ParameterName>bx</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>2</ColumnIndex>
+          <RowIndex>1</RowIndex>
+          <ParameterName>rd1</ParameterName>
         </CellDefinition>
       </CellDefinitions>
     </GridLayoutDefinition>

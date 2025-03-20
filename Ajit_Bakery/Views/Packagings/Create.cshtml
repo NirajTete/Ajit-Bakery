@@ -51,12 +51,12 @@
                     <table class="table table-bordered table-striped table-sm" id="productTableBody">
                         <thead class="small text-center">
                             <tr>
-                                <th>Production Id</th>
-                                <th>Outlet Name</th>
-                                <th>Box No</th>
-                                <th>Product Name</th>
-                                <th>Qty</th>
-                                <th>Total Net Wg</th>
+                                <th style="text-align:center">Production Id</th>
+                                <th style="text-align:center">Outlet Name</th>
+                                <th style="text-align:center">Box No</th>
+                                <th style="text-align:center">Product Name</th>
+                                <th style="text-align:center">Qty</th>
+                                <th style="text-align:center">Total Net Wg</th>
                             </tr>
                         </thead>
                         <tbody class ="small text-center">
@@ -226,6 +226,7 @@
                 url: "@Url.Action("GetOutlet_NameData", "Packagings")", // Replace with your controller
                 data: { Production_Id: Production_Id, Outlet_Name: Outlet_Name },
                 success: function (response) {
+                    console.log("Response Data: ", response);
                     if (response.success) {
                         console.log("Response Data: ", response);
                         $("#qtypick").val(response.qtypick);

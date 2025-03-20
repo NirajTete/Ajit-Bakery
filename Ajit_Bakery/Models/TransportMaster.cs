@@ -5,8 +5,8 @@ namespace Ajit_Bakery.Models
 {
     public class TransportMaster
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        //[Key]
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         [Display(Name = "Driver Name")]
         public string DriverName { get; set; }

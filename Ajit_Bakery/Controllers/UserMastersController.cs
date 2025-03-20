@@ -12,9 +12,11 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Newtonsoft.Json;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ajit_Bakery.Controllers
 {
+    [AllowAnonymous]
     public class UserMastersController : Controller
     {
         private readonly DataDBContext _context;
@@ -146,6 +148,14 @@ namespace Ajit_Bakery.Controllers
         {
             try
             {
+                if (userMaster.UserName != null)
+                {
+                    var exist = _context.UserMaster.Where(a => a.UserName.Trim() == userMaster.UserName.Trim()).FirstOrDefault();
+                    if (exist != null)
+                    {
+                        return Json(new { success = false, message = "Already Exist ! " });
+                    }
+                }
                 int maxId = _context.UserMaster.Any() ? _context.UserMaster.Max(e => e.Id) + 1 : 1;
                 userMaster.CreateDate = DateTime.Now.ToString("dd-MM-yyyy");
                 userMaster.ModifiedDate = DateTime.Now.ToString("dd-MM-yyyy");

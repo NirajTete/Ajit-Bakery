@@ -15,10 +15,12 @@ using ZXing.QrCode.Internal;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Data;
 using Microsoft.ReportingServices.ReportProcessing.ReportObjectModel;
+using Microsoft.AspNetCore.Authorization;
 //using AspNetCore.Reporting.ReportExecutionService;
 
 namespace Ajit_Bakery.Controllers
 {
+    [Authorize]
     public class PackagingsController : Controller
     {
         private readonly DataDBContext _context;
@@ -144,6 +146,8 @@ namespace Ajit_Bakery.Controllers
                             TotalNetWg = wg,
                             TotalNetWg_Uom = checkagain.TotalNetWg_Uom,
                             Exp_Dt = checkagain.Exp_Date,
+                            sellingRs = checkagain.sellingRs,
+                            mrpRs = checkagain.mrpRs,
                         };
                         Packagings_List.Add(packaging);
                         //_context.Packaging.Add(packaging);
@@ -214,17 +218,44 @@ namespace Ajit_Bakery.Controllers
             }
             return Json(new { success = false, message = "You have already picked all qty against " + Outlet_Name + "  outlet !" });
         }
+        //public IActionResult GetOutlets(string Production_Id)
+        //{
+        //    var lstProducts = new List<SelectListItem>();
+        //    if (Production_Id != null)
+        //    {
+        //        lstProducts = _context.ProductionCapture.Where(a => a.Status == "Pending" && a.Production_Id.Trim() == Production_Id.Trim()).AsNoTracking().Select(n =>
+        //    new SelectListItem
+        //    {
+        //        Value = n.OutletName,
+        //        Text = n.OutletName
+        //    }).Distinct().ToList();
+
+        //        var defItem = new SelectListItem()
+        //        {
+        //            Value = "",
+        //            Text = "----Select OutletName ----"
+        //        };
+        //        lstProducts.Insert(0, defItem);
+        //    }
+
+        //    return Json(new { success = true, data = lstProducts });
+        //}
         public IActionResult GetOutlets(string Production_Id)
         {
             var lstProducts = new List<SelectListItem>();
-            if (Production_Id != null)
+
+            if (!string.IsNullOrEmpty(Production_Id))
             {
-                lstProducts = _context.ProductionCapture.Where(a => a.Status == "Pending" && a.Production_Id.Trim() == Production_Id.Trim()).AsNoTracking().Select(n =>
-            new SelectListItem
-            {
-                Value = n.OutletName,
-                Text = n.OutletName
-            }).Distinct().ToList();
+                lstProducts = _context.ProductionCapture
+                    .Where(a => a.Status == "Pending" && a.Production_Id.Trim() == Production_Id.Trim())
+                    .AsNoTracking()
+                    .Select(n => new SelectListItem
+                    {
+                        Value = n.OutletName.Trim(),
+                        Text = n.OutletName.Trim()
+                    })
+                    .Distinct()
+                    .ToList();
 
                 var defItem = new SelectListItem()
                 {
@@ -232,11 +263,59 @@ namespace Ajit_Bakery.Controllers
                     Text = "----Select OutletName ----"
                 };
 
+                // Filter products where valuefound == 0
+                lstProducts = lstProducts.Where(item =>
+                {
+                    string outletName = item.Value.Trim();
+
+                    var Packagingdata = _context.Packaging
+                        .Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Outlet_Name.Trim() == outletName)
+                        .Sum(a => a.Qty);
+
+                    var Packagingdata1 = Packagings_List
+                        .Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Outlet_Name.Trim() == outletName)
+                        .Sum(a => a.Qty);
+
+                    var ProductionCapturedata = _context.ProductionCapture
+                        .Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Status.Trim() == "Pending" && a.OutletName.Trim() == outletName)
+                        .Sum(a => a.TotalQty);
+
+                    var ProductionCapturedata1 = ProductionCapture_List
+                        .Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Status.Trim() == "Pending" && a.OutletName.Trim() == outletName)
+                        .Sum(a => a.TotalQty);
+
+                    var qtyremaining = ProductionCapturedata + ProductionCapturedata1;
+                    var qtypick = Packagingdata + Packagingdata1;
+                    var valuefound = Math.Abs(qtypick - qtyremaining);
+
+                    if (valuefound > 0)
+                    {
+                        var exist = Packagings_List.ToList();
+                        if (exist.Count > 0)
+                        {
+                            var found = exist.Select(a => a.Outlet_Name.Trim()).FirstOrDefault();
+                            if (outletName != found)
+                            {
+                                return false; // Exclude this outlet, showing the error message separately
+                            }
+                        }
+                    }
+
+                    return valuefound != 0; // Keep only outlets where valuefound is NOT zero
+                }).ToList();
+
                 lstProducts.Insert(0, defItem);
+
+                //// If an outlet scan conflict is detected, return an error message
+                //if (lstProducts.Count == 1) // Only default item remains
+                //{
+                //    return Json(new { success = false, message = "You have already scanned items of another outlet. Please submit those first, then proceed with another!" });
+                //}
             }
-            
+
             return Json(new { success = true, data = lstProducts });
         }
+
         private List<SelectListItem> GetBoxNos()
         {
             var lstProducts = new List<SelectListItem>();
@@ -348,6 +427,8 @@ namespace Ajit_Bakery.Controllers
                 foreach (var item in Packagings_List)
                 {
                     item.Id = _context.Packaging.Any() ? _context.Packaging.Max(e => e.Id) + 1 : 1;
+                    item.sellingRs = item.sellingRs;
+                    item.mrpRs = item.mrpRs;
                     item.Packaging_Date = DATE;
                     item.Packaging_Time = TIME;
                     item.Reciept_Id = GetReciptId;
@@ -361,7 +442,7 @@ namespace Ajit_Bakery.Controllers
                 {
                     new DataColumn("product_name", typeof(string)),
                     new DataColumn("qnty", typeof(string)),
-                    new DataColumn("wt", typeof(string))
+                    new DataColumn("wt", typeof(string)),
                 });
 
 
@@ -411,6 +492,7 @@ namespace Ajit_Bakery.Controllers
                         new ReportParameter("qr", image),
                         new ReportParameter("ot", OUTLET),
                         new ReportParameter("bx", BOXNO),
+                        new ReportParameter("rd1", GetReciptId),
                     };
 
                 report.ReportPath = $"{this._webHostEnvironment.WebRootPath}\\Reports\\DispatchRPT.rdlc";

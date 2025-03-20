@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Ajit_Bakery.Data;
 using Ajit_Bakery.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ajit_Bakery.Controllers
 {
+    [Authorize]
     public class OutletMastersController : Controller
     {
         private readonly DataDBContext _context;
@@ -21,7 +23,7 @@ namespace Ajit_Bakery.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var list = await _context.OutletMaster.ToListAsync();
+            var list = await _context.OutletMaster.OrderByDescending(a=>a.Id).ToListAsync();
             return View(list);
         }
 
@@ -76,6 +78,16 @@ namespace Ajit_Bakery.Controllers
         {
             try
             {
+                if (outletMaster.OutletName != null)
+                {
+                    var exist = _context.OutletMaster.Where(a => a.OutletName.Trim() == outletMaster.OutletName.Trim()).FirstOrDefault();
+                    if (exist != null)
+                    {
+                        return Json(new { success = false, message = "Already Exist ! " });
+                    }
+                }
+                int maxId = _context.OutletMaster.Any() ? _context.OutletMaster.Max(e => e.Id) + 1 : 1;
+                outletMaster.Id = maxId;
                 outletMaster.CreateDate = DateTime.Now.ToString("dd-MM-yyyy");
                 outletMaster.ModifiedDate = DateTime.Now.ToString("dd-MM-yyyy");
                 outletMaster.Createtime = DateTime.Now.ToString("HH:mm");

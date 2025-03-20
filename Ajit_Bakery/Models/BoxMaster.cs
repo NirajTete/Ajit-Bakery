@@ -5,8 +5,8 @@ namespace Ajit_Bakery.Models
 {
     public class BoxMaster
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        //[Key]
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Display(Name = "Sr.No")]
         public int Id { get; set; }
         [Display(Name = "Box.No.")]

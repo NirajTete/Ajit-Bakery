@@ -1,9 +1,16 @@
-﻿<!DOCTYPE html>
+﻿@* @if (!User.Identity.IsAuthenticated)
+{
+    <script>
+        window.location.href = "/UserMasters/Login";
+    </script>
+} *@
+
+<!DOCTYPE html>
 <html lang="en">
 
 <!-- [Head] start -->
 <head>
-    <title>Home | Gradient Able Dashboard Template</title>
+    <title>Home | Ajit Bakery</title>
     <!-- [Meta] -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />

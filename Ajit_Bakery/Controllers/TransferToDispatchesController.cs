@@ -23,9 +23,11 @@ using iText.Kernel.Font;
 //using iText.IO.Font;
 using PdfFont = iText.Kernel.Font.PdfFont;
 using System.Runtime.InteropServices;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ajit_Bakery.Controllers
 {
+    [Authorize]
     public class TransferToDispatchesController : Controller
     {
         private readonly DataDBContext _context;
@@ -250,16 +252,16 @@ namespace Ajit_Bakery.Controllers
                 if(recipt_outlet != null)
                 {
                     var getprodictionid = Packagings_List.Select(a=>a.Production_Id).FirstOrDefault();
-                    var exist_outlet = Packagings_List.Where(a => a.Production_Id.Trim() == getprodictionid.Trim()/*a.Reciept_Id == receiptno.Trim()*/).Select(a => a.Outlet_Name.Trim()).FirstOrDefault() ?? "NA";
+                    //var exist_outlet = Packagings_List.Where(a => a.Production_Id.Trim() == getprodictionid.Trim()/*a.Reciept_Id == receiptno.Trim()*/).Select(a => a.Outlet_Name.Trim()).FirstOrDefault() ?? "NA";
 
-                    if(exist_outlet != recipt_outlet)
-                    {
-                        if(exist_outlet == "NA")
-                        {
-                            exist_outlet = "Outlet";
-                        }
-                        return Json(new { success = false, message = $"Please scan correct item box barcode againts {exist_outlet} ,of receipt id no.: {receiptno} !" });
-                    }
+                    //if(exist_outlet != recipt_outlet)
+                    //{
+                    //    if(exist_outlet == "NA")
+                    //    {
+                    //        exist_outlet = "Outlet";
+                    //    }
+                    //    return Json(new { success = false, message = $"Please scan correct item box barcode againts {exist_outlet} ,of receipt id no.: {receiptno} !" });
+                    //}
                 }
 
                 if (Packagings_List.Any(a => a.Reciept_Id.Trim() == receiptno.Trim()))
@@ -367,9 +369,77 @@ namespace Ajit_Bakery.Controllers
 
             return View(transferToDispatch);
         }
+        //public IActionResult GetOutlets(string Production_Id)
+        //{
+        //    List<DialDetailViewModel> DialDetailViewModellist = new List<DialDetailViewModel>();
+        //    var list = _context.ProductionCapture.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Status == "Pending").ToList();
+        //    if (list.Count > 0)
+        //    {
+        //        foreach (var item in list)
+        //        {
+        //            var data = _context.ProductionCapture
+        //                .Where(a => a.ProductName.Trim() == item.ProductName.Trim() && a.Production_Id.Trim() == Production_Id.Trim())
+        //                .Sum(a => a.TotalQty);
+
+        //            var savedata = _context.Packaging
+        //                .Where(a => a.Product_Name.Trim() == item.ProductName.Trim() && a.Production_Id.Trim() == Production_Id.Trim())
+        //                .Sum(a => a.Qty);
+
+        //            var found = _context.ProductMaster.Where(a => a.ProductName.Trim() == item.ProductName.Trim()).FirstOrDefault();
+        //            if (found != null)
+        //            {
+        //                int PendingQty = Math.Abs(data - savedata);
+        //                double mrp = found.MRP;
+        //                double Selling = found.Selling;
+        //                double MRP_Rs = found.MRP_Rs;
+        //                double Selling_Rs = found.Selling_Rs;
+        //                DialDetailViewModel DialDetailViewModel = new DialDetailViewModel()
+        //                {
+        //                    ProductName = item.ProductName,
+        //                    TotalQty = item.TotalQty,
+        //                    OutletName = item.OutletName,
+        //                    MRP = mrp,
+        //                    Selling = Selling,
+        //                    MRP_Rs = MRP_Rs,
+        //                    Selling_Rs = Selling_Rs,
+        //                    PendingQty = PendingQty,
+        //                    BasicUnit = (found.Unitqty).ToString() + " " + found.Uom,
+        //                };
+        //                DialDetailViewModellist.Add(DialDetailViewModel);
+        //            }
+        //        }
+        //    }
+
+            
+
+        //    return Json(new { success = true, TableData = DialDetailViewModellist });
+        //}
+
+
+        private List<SelectListItem> GetProduction_Id()
+        {
+            var lstProducts = new List<SelectListItem>();
+
+            lstProducts = _context.ProductionCapture.Where(a => a.Status == "Pending").AsNoTracking().Select(n =>
+            new SelectListItem
+            {
+                Value = n.Production_Id,
+                Text = n.Production_Id
+            }).Distinct().ToList();
+
+            var defItem = new SelectListItem()
+            {
+                Value = "",
+                Text = "----Select Production_Id ----"
+            };
+
+            lstProducts.Insert(0, defItem);
+            return lstProducts;
+        }
 
         public IActionResult Create()
         {
+            ViewBag.GetProduction_Id = GetProduction_Id();
             return View();
         }
 
@@ -380,7 +450,7 @@ namespace Ajit_Bakery.Controllers
                 var currentYearMonth = DateTime.Now.ToString("yyMM"); // Example: "2412" for Dec 2024
                 string newBoxId;
                 int newCounter;
-                var lastBox = _context.DCIds.Where(a => a.ProductionId.Trim().StartsWith("DC"))
+                var lastBox = _context.DCIds.Where(a => a.ProductionId.Trim().StartsWith("DC-"))
                     .OrderByDescending(b => b.id)
                     .FirstOrDefault();
                 if (lastBox != null)
@@ -400,7 +470,7 @@ namespace Ajit_Bakery.Controllers
                 {
                     newCounter = 1;
                 }
-                newBoxId = $"DC{currentYearMonth}{newCounter:D2}"; // Format: STBYYMMCC
+                newBoxId = $"DC-{currentYearMonth}{newCounter:D2}"; // Format: STBYYMMCC
                 var maxId = _context.DCIds.Any() ? _context.DCIds.Max(e => e.id) + 1 : 1;
                 var newBoxEntry = new DCIds
                 {
@@ -427,28 +497,35 @@ namespace Ajit_Bakery.Controllers
             if (Packagings_List.Count > 0)
             {
                 var productionid = Packagings_List.Select(a=>a.Production_Id.Trim()).FirstOrDefault();
-                var outletname = Packagings_List.Select(a=>a.Outlet_Name.Trim()).FirstOrDefault();
+                //var outletname = Packagings_List.Select(a=>a.Outlet_Name.Trim()).FirstOrDefault();
 
-                var Packagings_List_data = Packagings_List.Sum(a=>a.Qty);
-                var Packagings_List_data1 = _context.ProductionCapture.Where(a=>a.Production_Id.Trim() == productionid.Trim() && a.OutletName.Trim() == outletname.Trim()).ToList().Sum(a=>a.TotalQty);
-                if(Packagings_List_data != Packagings_List_data1)
-                {
-                    return Json(new { success = false, message = "You can't submit te partially qty against that " + outletname + " outlet !, Qty is "+ Packagings_List_data1 + ", and you have scan only "+ Packagings_List_data + " qty , Please scan all !"});
-                }
-
-
+                //var Packagings_List_data = Packagings_List.Sum(a=>a.Qty);
+                //var Packagings_List_data1 = _context.ProductionCapture.Where(a=>a.Production_Id.Trim() == productionid.Trim() && a.OutletName.Trim() == outletname.Trim()).ToList().Sum(a=>a.TotalQty);
+                //if(Packagings_List_data != Packagings_List_data1)
+                //{
+                //    return Json(new { success = false, message = "You can't submit te partially qty against that " + outletname + " outlet !, Qty is "+ Packagings_List_data1 + ", and you have scan only "+ Packagings_List_data + " qty , Please scan all !"});
+                //}
+                var distinct_outlet = Packagings_List.OrderBy(a=>a.Outlet_Name.Trim()).Select(a => a.Outlet_Name.Trim()).Distinct().ToList();
                 var DATE = DateTime.Now.ToString("dd-MM-yyyy");
                 var TIME = DateTime.Now.ToString("HH:mm");
-                var DNO = GetDCNO();
-                Packagings_List.ForEach(a =>
+                foreach (var item in distinct_outlet)
                 {
-                    a.DispatchReady_Flag = 1;
-                    a.DCNo = DNO;
-                    a.DispatchReady_Date =DATE;
-                    a.DispatchReady_Time =TIME;
-                });
-                _context.Packaging.UpdateRange(Packagings_List);
-                _context.SaveChanges();
+                    //var DNO = GetDCNO();
+                    var listnew = Packagings_List.OrderBy(a => a.Outlet_Name.Trim());
+                    foreach (var item1 in listnew.Where(a=>a.Outlet_Name.Trim() == item.Trim()))
+                    {
+                        if(item1.Outlet_Name.Trim() == item.Trim())
+                        {
+                            //item1.DCNo = DNO;
+                            item1.DispatchReady_Flag = 1;
+                            item1.DispatchReady_Date = DATE;
+                            item1.DispatchReady_Time = TIME;
+
+                            _context.Packaging.Update(item1);
+                            _context.SaveChanges();
+                        }
+                    }
+                }
                 return Json(new { success = true, message = "Successfully Done !" });
             }
             return Json(new { success = false, message = "Please do scan the receipt barcode first against the production id !" });

@@ -36,8 +36,8 @@
                         <tr>
                             <td class="text-center">@counter</td>
                             <td>@Html.DisplayFor(modelItem => item.DriverName)</td>
-                            <td>@Html.DisplayFor(modelItem => item.DriverContactNo)</td>
-                            <td>@Html.DisplayFor(modelItem => item.VehicleNo)</td>
+                            <td style="text-align:center">@Html.DisplayFor(modelItem => item.DriverContactNo)</td>
+                            <td style="text-align:center">@Html.DisplayFor(modelItem => item.VehicleNo)</td>
                             <td class="text-center">
                                 <div class="btn-group btn-group-sm" role="group">
                                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-success" title="Edit">

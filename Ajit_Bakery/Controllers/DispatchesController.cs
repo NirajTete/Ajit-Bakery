@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using Ajit_Bakery.Data;
 using Ajit_Bakery.Models;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ajit_Bakery.Controllers
 {
+    [Authorize]
     public class DispatchesController : Controller
     {
         private readonly DataDBContext _context;
@@ -21,6 +23,43 @@ namespace Ajit_Bakery.Controllers
         }
 
         private static List<Packaging> Packagings_List = new List<Packaging>();
+        public IActionResult GetOutlets(string Production_Id)
+        {
+            List<DialDetailViewModel> DialDetailViewModellist = new List<DialDetailViewModel>();
+            var list = _context.ProductionCapture.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Status == "Pending").ToList();
+            if (list.Count > 0)
+            {
+                foreach (var item in list)
+                {
+                    var data = _context.ProductionCapture
+                        .Where(a => a.ProductName.Trim() == item.ProductName.Trim() && a.Production_Id.Trim() == Production_Id.Trim())
+                        .Sum(a => a.TotalQty);
+
+                    var savedata = _context.Packaging
+                        .Where(a => a.Product_Name.Trim() == item.ProductName.Trim() && a.Production_Id.Trim() == Production_Id.Trim() && a.DispatchReady_Flag == 1)
+                        .Sum(a => a.Qty);
+                    int DispatchReady = savedata;
+                    //var found = _context.ProductMaster.Where(a => a.ProductName.Trim() == item.ProductName.Trim()).FirstOrDefault();
+                    //if (found != null)
+                    //{
+                        int PendingQty = Math.Abs(data - savedata);
+                        DialDetailViewModel DialDetailViewModel = new DialDetailViewModel()
+                        {
+                            ProductName = item.ProductName,
+                            TotalQty = item.TotalQty,
+                            OutletName = item.OutletName,
+                            PendingQty = PendingQty,
+                            DispatchReady = DispatchReady,
+                        };
+                        DialDetailViewModellist.Add(DialDetailViewModel);
+                    //}
+                }
+            }
+
+            var outlet_list = _context.Packaging.Where(a => a.DispatchReady_Flag == 1 &&  a.Production_Id.Trim() == Production_Id.Trim()).Select(a=>a.Outlet_Name.Trim()).Distinct().ToList();
+
+            return Json(new { success = true, TableData = DialDetailViewModellist, outlet_list });
+        }
 
         public IActionResult PickedData(string boxno, string receiptno, string dcno)
         {
@@ -98,7 +137,7 @@ namespace Ajit_Bakery.Controllers
             if (dcno != null)
             {
                 getcount = _context.Packaging
-                .Where(a => a.DispatchReady_Flag == 1 && a.DCNo.Trim() == dcno.Trim())
+                .Where(a => a.DispatchReady_Flag == 1 && a.Outlet_Name.Trim() == dcno.Trim())
                 .Sum(a => (int?)a.Qty) ?? 0;
             }
             return Json(new { success = true, data = getcount });
@@ -123,7 +162,7 @@ namespace Ajit_Bakery.Controllers
         {
             var lstProducts = new List<SelectListItem>();
 
-            lstProducts = _context.Packaging.Where(a => a.DispatchReady_Flag == 1).AsNoTracking().Select(n =>
+            lstProducts = _context.Packaging.Where(a => a.DispatchReady_Flag == 1 && a.Dispatch_Flag == 0).AsNoTracking().Select(n =>
             new SelectListItem
             {
                 Value = n.DCNo,
@@ -143,7 +182,7 @@ namespace Ajit_Bakery.Controllers
         {
             var lstProducts = new List<SelectListItem>();
 
-            lstProducts = _context.Packaging.Where(a => a.DispatchReady_Flag == 0).AsNoTracking().Select(n =>
+            lstProducts = _context.Packaging.Where(a => a.DispatchReady_Flag == 1).AsNoTracking().Select(n =>
             new SelectListItem
             {
                 Value = n.Production_Id,

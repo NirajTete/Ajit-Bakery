@@ -47,6 +47,9 @@ namespace Ajit_Bakery.Models
         [NotMapped]
         public string Status { get; set; }
 
+        public double sellingRs { get; set; }
+        //[NotMapped]
+        public double mrpRs { get; set; }
 
     }
 }

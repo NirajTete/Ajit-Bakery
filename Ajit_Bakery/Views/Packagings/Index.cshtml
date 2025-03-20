@@ -22,16 +22,45 @@
                         <th class="text-center">Sr.No.</th>
                         <th class="text-center">Receipt No.</th>
                         <th class="text-center">Production Id </th>
-                        @* <th class="text-center">DC No. </th> *@
                         <th class="text-center">Outlet Name </th>
                         <th class="text-center">Box No.</th>
-                        
                         <th class="text-center">Product Name.</th>
                         <th class="text-center">Category</th>
                         <th class="text-center">Total Qty</th>
                     </tr>
                 </thead>
                 <tbody class="small text-center">
+                    @* @{
+                        int counter = 1;
+                        string prevReceiptId = "";
+                        int rowspan = 0;
+                    }
+                    @foreach (var item in Model)
+                    {
+                        var currentReceiptId = item.Reciept_Id;
+                        bool showReceiptId = (prevReceiptId != currentReceiptId); // Show only for the first occurrence
+                        if (showReceiptId)
+                        {
+                            rowspan = Model.Count(x => x.Reciept_Id == currentReceiptId); // Count occurrences
+                        }
+                        <tr>
+                            <td class="text-center">@counter</td>
+                            @if (showReceiptId)
+                            {
+                                <td style="text-align:center;font-weight:600;color:rebeccapurple" rowspan="@rowspan">
+                                    @Html.DisplayFor(modelItem => item.Reciept_Id)
+                                </td>
+                            }
+                            <td><span class="badge bg-primary">@Html.DisplayFor(modelItem => item.Production_Id)</span></td>
+                            <td style="font-weight:600;color:brown">@Html.DisplayFor(modelItem => item.Outlet_Name)</td>
+                            <td style="font-weight:600;color:green">@Html.DisplayFor(modelItem => item.Box_No)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Product_Name)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Category)</td>
+                            <td style="text-align:center">@Html.DisplayFor(modelItem => item.Qty)</td>
+                        </tr>
+                        prevReceiptId = currentReceiptId;
+                        counter++;
+                    } *@
                     @{
                         int counter = 1;
                     }
@@ -41,9 +70,7 @@
                             <td class="text-center">@counter</td>
                             <td style="font-weight:600;color:rebeccapurple">@Html.DisplayFor(modelItem => item.Production_Id)</td>
                             <td><span class="badge bg-primary">@Html.DisplayFor(modelItem => item.Reciept_Id)</span></td>
-
-@*                             <td style="font-weight:600;color:cadetblue">@Html.DisplayFor(modelItem => item.DCNo)</td>
- *@                            <td style="font-weight:600;color:brown">@Html.DisplayFor(modelItem => item.Outlet_Name)</td>
+                            <td style="font-weight:600;color:brown">@Html.DisplayFor(modelItem => item.Outlet_Name)</td>
                             <td style="font-weight:600;color:green">@Html.DisplayFor(modelItem => item.Box_No)</td>
                             <td>@Html.DisplayFor(modelItem => item.Product_Name)</td>
                             <td>@Html.DisplayFor(modelItem => item.Category)</td>
@@ -63,6 +90,7 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
+
         $(document).ready(function () {
             $('#SavePackaging').DataTable({
                 dom: 'Bfrtip', // Add button controls

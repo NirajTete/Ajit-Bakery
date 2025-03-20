@@ -5,8 +5,8 @@ namespace Ajit_Bakery.Models
 {
     public class DialMaster
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        //[Key]
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Display(Name = "Sr.No")]
         public int Id { get; set; }
         [Display(Name = "Dial Code.")]
@@ -40,5 +40,12 @@ namespace Ajit_Bakery.Models
         public string calvalue { get; set; }
         [NotMapped]
         public string areacalvalue { get; set; }
+        [Display(Name = "Dial Used For Cakes")]
+        public double DialUsedForCakes { get; set; }
+        [NotMapped]
+        [Display(Name = "Dial Used For Cakes")]
+        public double DialUsedForCakes_value { get; set; }
+        [Display(Name = "Dial Used For Cakes (Unit)")]
+        public string DialUsedForCakes_Uom { get; set; }
     }
 }

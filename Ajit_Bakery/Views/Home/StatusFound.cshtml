@@ -21,12 +21,12 @@
                 <thead class="thead-light text-center">
                     <tr class=" small">
                         <th class="text-center">Sr.No.</th>
-                        <th>Production Id</th>
-                        <th>Outlet Name</th>
-                        <th>Process</th>
-                        <th>Date Time </th>
-                        <th>Qty</th>
-                        <th>Status Found</th>
+                        <th style="text-align:center">Production Id</th>
+                        <th style="text-align:center">Outlet Name</th>
+                        <th style="text-align:center">Process</th>
+                        <th style="text-align:center">Date Time </th>
+                        <th style="text-align:center">Qty</th>
+                        <th style="text-align:center">Status Found</th>
                     </tr>
                 </thead>
                 <tbody class="small text-center">
@@ -38,12 +38,27 @@
                     {
                         <tr>
                             <td class="text-center">@counter</td>
-                            <td>@Html.DisplayFor(modelItem => item.productionid)</td>
-                            <td>@Html.DisplayFor(modelItem => item.outletname)</td>
-                            <td>@Html.DisplayFor(modelItem => item.process)</td>
-                            <td>@Html.DisplayFor(modelItem => item.datetime)</td>
-                            <td>@Html.DisplayFor(modelItem => item.qty)</td>
-                            <td>@Html.DisplayFor(modelItem => item.status)</td>
+                            <td style="text-align:center">@Html.DisplayFor(modelItem => item.productionid)</td>
+                            <td style="text-align:center">@Html.DisplayFor(modelItem => item.outletname)</td>
+                            <td style="text-align:center">@Html.DisplayFor(modelItem => item.process)</td>
+                            <td style="text-align:center">@Html.DisplayFor(modelItem => item.datetime)</td>
+                            <td style="text-align:center">@Html.DisplayFor(modelItem => item.qty)</td>
+                            @* <td>@Html.DisplayFor(modelItem => item.status)</td> *@
+                            <td>
+                                @if (item.status == "Completed")
+                                {
+                                    <span class="badge bg-success">Completed</span>
+                                }
+                                else if (item.status == "Pending")
+                                {
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@item.status</span>
+                                }
+                            </td>
+
                         </tr>
                         counter++;
                     }

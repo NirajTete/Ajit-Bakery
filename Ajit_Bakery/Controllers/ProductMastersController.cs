@@ -9,9 +9,11 @@ using Ajit_Bakery.Data;
 using Ajit_Bakery.Models;
 using System.Text.RegularExpressions;
 using NuGet.Common;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ajit_Bakery.Controllers
 {
+    [Authorize]
     public class ProductMastersController : Controller
     {
         private readonly DataDBContext _context;
@@ -21,17 +23,27 @@ namespace Ajit_Bakery.Controllers
             _context = context;
         }
 
+        public IActionResult GETDialCodes(double Unitqty)
+        {
+            var data = _context.DialMaster
+                .Where(a => a.DialUsedForCakes >= Unitqty)
+                .Select(a => a.DialCode.Trim())
+                .ToList();
+
+            return Json(new { success = true, data = data });
+        }
+
         public async Task<IActionResult> Index()
         {
             var list = _context.ProductMaster.ToList();
-            if(list.Count > 0)
-            {    
-                foreach(var item in list)
-                {
-                    var Unitqtyuom = item.Unitqty + " Gms";
-                    item.Unitqtyuom = Unitqtyuom;
-                }
-            }
+            //if(list.Count > 0)
+            //{    
+            //    foreach(var item in list)
+            //    {
+            //        var Unitqtyuom = item.Unitqty + " Gms";
+            //        item.Unitqtyuom = Unitqtyuom;
+            //    }
+            //}
             list = list.OrderByDescending(a => a.Id).ToList();
 
             return View(list);
@@ -90,6 +102,16 @@ namespace Ajit_Bakery.Controllers
 
             try
             {
+                if (productMaster.ProductName != null)
+                {
+                    var exist = _context.ProductMaster.Where(a => a.ProductName.Trim() == productMaster.ProductName.Trim()).FirstOrDefault();
+                    if (exist != null)
+                    {
+                        return Json(new { success = false, message = "Already Exist ! " });
+                    }
+                }
+                int maxId = _context.ProductMaster.Any() ? _context.ProductMaster.Max(e => e.Id) + 1 : 1;
+                productMaster.Id = maxId;
                 productMaster.ProductName = productMaster.ProductName ;
                 //productMaster.ProductName = productMaster.ProductName + " (" + productMaster.Qty + productMaster.Uom + ") ";
                 productMaster.CreateDate = DateTime.Now.ToString("dd-MM-yyyy");
@@ -198,7 +220,7 @@ namespace Ajit_Bakery.Controllers
             }
 
             selectedvalue = selectedvalue.Trim();
-            var prefix = "AJIT";
+            var prefix = "AB";
 
             var getLast = _context.ProductMaster
                                   .Where(a => a.ProductCode != "-")

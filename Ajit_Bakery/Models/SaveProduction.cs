@@ -8,28 +8,28 @@ namespace Ajit_Bakery.Models
         public int Id { get; set; }
         [Display(Name = "Production Product")]
         public string ProductName { get; set; }
-        [Display(Name = "Product Gross.Wg.")]
+        [Display(Name = "Product Gross.Wt.")]
         public double ProductGrossWg { get; set; }
-        [Display(Name = "Product Gross.Wg.")]
+        [Display(Name = "Product Gross.Wt.")]
         public string ProductGrossWg_Uom { get; set; }
         [NotMapped]
-        [Display(Name = "Gross Wg.")]
+        [Display(Name = "Gross Wt.")]
         public string ProductGrossWgValue {get; set; }
         [Display(Name = "Dial Shape")]
         [NotMapped]
         public string DialShape { get; set; }
-        [Display(Name = "Dial Tier Wg.")]
+        [Display(Name = "Dial Tier Wt.")]
         public double DialTierWg { get; set; }
         [Display(Name = "Dial Tier Uom")]
         public string DialTierWg_Uom { get; set; }
         [NotMapped]
-        [Display(Name = "Tier Wg.")]
+        [Display(Name = "Tier Wt.")]
         public string DialTierWgValue { get; set; }
         [Display(Name = "Dial Code")]
         public string DialCode { get; set; }
-        [Display(Name = "Total Net.Wg.")]
+        [Display(Name = "Total Net.Wt.")]
         public double TotalNetWg { get; set; }
-        [Display(Name = "Total NetWg.Uom")]
+        [Display(Name = "Total NetWt.Uom")]
         public string TotalNetWg_Uom { get; set; }
         [Display(Name = "Production Qty")]
         public int Qty { get; set; }
@@ -52,5 +52,16 @@ namespace Ajit_Bakery.Models
         public string Production_Id {  get; set; }
         [NotMapped]
         public string Status { get; set; }
+        [NotMapped]
+        public List<DialDetailViewModel> DialDetails { get; set; }
+        //[NotMapped]
+        public string NetWg { get; set; }
+        //[NotMapped]
+        public string NetWg_uom { get; set; }
+        //[NotMapped]
+        public double sellingRs { get; set; }
+        //[NotMapped]
+        public double mrpRs { get; set; }
+
     }
 }

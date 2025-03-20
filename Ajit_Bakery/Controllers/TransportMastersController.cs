@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Ajit_Bakery.Data;
 using Ajit_Bakery.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ajit_Bakery.Controllers
 {
+    [Authorize]
     public class TransportMastersController : Controller
     {
         private readonly DataDBContext _context;
@@ -21,7 +23,7 @@ namespace Ajit_Bakery.Controllers
 
         public async Task<IActionResult> Index()
         {
-            return View(await _context.TransportMaster.ToListAsync());
+            return View(await _context.TransportMaster.OrderByDescending(a=>a.Id).ToListAsync());
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -53,6 +55,16 @@ namespace Ajit_Bakery.Controllers
         {
             try
             {
+                if (transportMaster.DriverName != null)
+                {
+                    var exist = _context.TransportMaster.Where(a => a.DriverName.Trim() == transportMaster.DriverName.Trim()).FirstOrDefault();
+                    if (exist != null)
+                    {
+                        return Json(new { success = false, message = "Already Exist ! " });
+                    }
+                }
+                int maxId = _context.TransportMaster.Any() ? _context.TransportMaster.Max(e => e.Id) + 1 : 1;
+                transportMaster.Id = maxId;
                 transportMaster.CreateDate = DateTime.Now.ToString("dd-MM-yyyy");
                 transportMaster.ModifiedDate = DateTime.Now.ToString("dd-MM-yyyy");
                 transportMaster.Createtime = DateTime.Now.ToString("HH:mm");

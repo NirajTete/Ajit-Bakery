@@ -13,9 +13,11 @@ using System.Data;
 using OfficeOpenXml;
 using LicenseContext = OfficeOpenXml.LicenseContext;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ajit_Bakery.Controllers
 {
+    [Authorize]
     public class ProductionCapturesController : Controller
     {
         private readonly DataDBContext _context;

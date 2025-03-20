@@ -21,7 +21,7 @@
                     <tr class="text-center small">
                         <th class="text-center">Sr.No.</th>
                         <th class="text-center">Production Id </th>
-                        <th class="text-center">DC No. </th>
+                        @* <th class="text-center">DC No. </th> *@
                         <th class="text-center">Outlet Name </th>
                         <th class="text-center">Box No.</th>
                         <th class="text-center" >Receipt No.</th>
@@ -40,7 +40,7 @@
                         <tr>
                             <td class="text-center">@counter</td>
                             <td style="font-weight:600;color:rebeccapurple">@Html.DisplayFor(modelItem => item.Production_Id)</td>
-                            <td style="font-weight:600;color:cadetblue">@Html.DisplayFor(modelItem => item.DCNo)</td>
+                            @* <td style="font-weight:600;color:cadetblue">@Html.DisplayFor(modelItem => item.DCNo)</td> *@
                             <td style="font-weight:600;color:chocolate">@Html.DisplayFor(modelItem => item.Outlet_Name)</td>
                             <td style="font-weight:600;color:green">@Html.DisplayFor(modelItem => item.Box_No)</td>
                             <td><span class="badge bg-primary">@Html.DisplayFor(modelItem => item.Reciept_Id)</span></td>

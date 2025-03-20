@@ -1,45 +1,82 @@
 ﻿@using System.Security.Claims;
 @using Newtonsoft.Json
-
 @{
-    var menubar = User.Claims.FirstOrDefault(a => a.Type == "Menu").Value;
-    var userName = User.Identity.Name.ToUpper();
-    var userRole = User.FindFirstValue(ClaimTypes.Role);
-
-    // var unitNameClaim = ViewBag.UnitName;
-    // var plantNameClaim = ViewBag.PlantName;
+    var menubar="na";
 }
-<!-- [ Sidebar Menu ] start -->
+@if (User.Identity.IsAuthenticated)
+{
+    var userName = User.Identity.Name.ToUpper();
+     menubar = User.Claims.FirstOrDefault(a => a.Type == "Menu").Value;
+    var userRole = User.FindFirstValue(ClaimTypes.Role);
+}
+
 <nav class="pc-sidebar">
     <div class="navbar-wrapper">
         <div class="m-header">
             <a href="../dashboard/index.html" class="b-brand text-primary">
-                <!-- ========   Change your logo from here   ============ -->
                 <img src="../assets/images/logo-white.svg" alt="logo image" class="logo-lg" />
             </a>
         </div>
         <div class="navbar-content">
             <ul class="pc-navbar">
-                @*   <li class="pc-item pc-caption">
-                <label>Navigation</label>
-                </li> *@
+                @if (!string.IsNullOrEmpty(menubar))
+                {
+                    var menuData = JsonConvert.DeserializeObject<List<MenuModel>>(menubar);
+                    if (menuData != null && menuData.Any())
+                    {
+                        var customOrder = new List<string> { "Dashboard", "Masters", "Operations", "User Managment", "Report" };
+                        var submenus = new List<string> { "Production Planning", "Production", "Packaging", "Transfer To Dispatch", "Dispatch" };
+
+                        var parentlist = menuData.Where(s => s.ParentMenuId == 0).OrderBy(s => customOrder.IndexOf(s.Title)).ToList();
+                        
+                        @foreach (var item in parentlist)
+                        {
+                            if(item.Title == "Dashboard")
+                            {
+                                <li class="pc-item">
+                                    <a class="pc-link" asp-controller="Home" asp-action="Index">
+                                        <span class="pc-micon">
+                                            <i class="@item.icon"></i>
+                                            @* <i class="ph ph-chart-line-up"></i> *@
+                                        </span>
+                                        <span class="pc-mtext">@item.Title</span>
+                                    </a>
+                                </li>
+                            }
+                            else
+                            {
+                                var menulist = menuData.Where(s => s.ParentMenuId == item.MenuId).OrderBy(s => submenus.IndexOf(s.Title)).ToList();
+                                <li class="pc-item pc-hasmenu">
+                                    <a href="#!" class="pc-link">
+                                        <span class="pc-micon"> <i class="@item.icon"></i></span>
+                                        <span class="pc-mtext">@item.Title</span>
+                                        <span class="pc-arrow">
+                                            <i data-feather="chevron-right"></i>
+                                        </span>
+                                    </a>
+                                    <ul class="pc-submenu">
+                                        @foreach (var firstItem in menulist)
+                                        {
+                                            <li class="pc-item"><a class="pc-link" asp-controller="@firstItem.Controller" asp-action="@firstItem.Action">@firstItem.Title</a></li>
+                                        }
+                                    </ul>
+                                    
+
+                                </li>
+                            }
+                            
+                        }
+                    }
+                }
+                
                 @* <li class="pc-item">
-                <a class="pc-link" asp-controller="Home" asp-action="Index">
-                <span class="pc-micon">
-                <i class="ph ph-gauge"></i>
-                </span><span class="pc-mtext" >Dashboard</span>
-                </a>
-                </li>
-                *@
-                <li class="pc-item">
                     <a class="pc-link" asp-controller="Home" asp-action="Index">
                         <span class="pc-micon">
-                            <i class="ph ph-chart-line-up"></i> <!-- Modern Dashboard Icon -->
+                            <i class="ph ph-chart-line-up"></i> 
                         </span>
                         <span class="pc-mtext">Dashboard</span>
                     </a>
                 </li>
-
                 <li class="pc-item pc-caption">
                     <label>Menus</label>
                     <i class="ph ph-suitcase"></i>
@@ -74,8 +111,7 @@
                         <li class="pc-item"><a class="pc-link" asp-controller="TransferToDispatches" asp-action="Index">Transfer To Dispatch</a></li>
                         <li class="pc-item"><a class="pc-link" asp-controller="Dispatches" asp-action="Index">Dispatch Process</a></li>
                     </ul>
-                </li>
-
+                </li> *@
             </ul>
 
         </div>

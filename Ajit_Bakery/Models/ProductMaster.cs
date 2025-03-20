@@ -5,8 +5,8 @@ namespace Ajit_Bakery.Models
 {
     public class ProductMaster
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        //[Key]
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Display(Name = "Sr.No.")]
         public int Id { get; set; }
         [Display(Name = "Product Code")]
@@ -25,9 +25,9 @@ namespace Ajit_Bakery.Models
         public string Category { get; set; } = "NA";//cake
         [Display(Name = "Type")]
         public string Type { get; set; } = "NA";
-        [Display(Name = "Per Gm Rate")]
-        public string PerGmRate { get; set; } = "NA";
-        [Display(Name = "MRP. Rt")]
+        //[Display(Name = "Per Gm Rate")]
+        //public string PerGmRate { get; set; } = "NA";
+        [Display(Name = "MRP")]
         public double MRP { get; set; } = 0;
         //public string? DialCode1 { get; set; } = "NA";
         //public string? DialCode2 { get; set; } = "NA";
@@ -37,7 +37,15 @@ namespace Ajit_Bakery.Models
         public string? ModifiedDate { get; set; }
         public string? Modifiedtime { get; set; }
         public string? User { get; set; }
-        [Display(Name = "Dial Sahpe")]
+
+        [Display(Name = "Dial Codes")]
         public string? Dial { get; set; }
+        [Display(Name = "Selling Rt.")]
+        public double Selling { get; set; }
+        [Display(Name = "Selling Rs.")]
+        public double Selling_Rs { get; set; }
+        [Display(Name = "MRP Rs.")]
+        public double MRP_Rs { get; set; }
+        
     }
 }

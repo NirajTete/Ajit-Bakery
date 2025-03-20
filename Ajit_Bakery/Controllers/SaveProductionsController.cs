@@ -11,9 +11,13 @@ using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using NuGet.Configuration;
+using DocumentFormat.OpenXml.Bibliography;
+using Humanizer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ajit_Bakery.Controllers
 {
+    [Authorize]
     public class SaveProductionsController : Controller
     {
         private readonly DataDBContext _context;
@@ -65,7 +69,7 @@ namespace Ajit_Bakery.Controllers
         {
             var data = _context.DialMaster
                 .Where(a => a.DialCode.Trim() == DialCode.Trim())
-                .Select(a => new { a.DialCode, a.DialWg,a.DialWgUom }) // Select only required fields
+                .Select(a => new { a.DialCode, a.DialWg,a.DialWgUom ,a.DialShape}) // Select only required fields
                 .FirstOrDefault();
 
             return Json(new { success = data != null, data });
@@ -81,18 +85,73 @@ namespace Ajit_Bakery.Controllers
 
             data = Math.Abs(data - savedata);
 
-            return Json(new { success = true, data = data });
+            List<string> DialCodes = new List<string>();
+            var product = _context.ProductMaster.Where(a=>a.ProductName.Trim() == productName.Trim()).FirstOrDefault();
+            var list = _context.DialMaster.Where(a=>a.DialUsedForCakes == product.Unitqty).Select(a=>a.DialCode.Trim()).ToList();
+            DialCodes.AddRange(list);
+
+            return Json(new { success = true, data = data, DialCodes = DialCodes });
         }
+
+        public IActionResult GetProductData(string productName, string Production_Id, string uom, float weight)
+        {
+            var data = "";
+            var found = _context.ProductMaster.Where(a => a.ProductName.Trim() == productName.Trim()).FirstOrDefault();
+            if (found != null)
+            {
+                if (uom == "KGS")
+                {
+                    var value = weight * 1000;
+                    if(value <= found.Unitqty)
+                    {
+                        return Json(new { success = false, message = "Weight should be greater than the basic range of the product!" });
+                    }
+                }
+                else
+                {
+                    var value = weight;
+                    if (value <= found.Unitqty)
+                    {
+                        return Json(new { success = false, message = "Weight should be greater than the basic range of the product!" });
+                    }
+                }
+            }
+            return Json(new { success = true, data = "" });
+        }
+        //public IActionResult GetOutlets(string Production_Id)
+        //{
+        //    var lstProducts = new List<SelectListItem>();
+
+        //    lstProducts = _context.ProductionCapture.Where(a => a.Status == "Pending" && a.Production_Id.Trim() == Production_Id.Trim()).AsNoTracking().Select(n =>
+        //    new SelectListItem
+        //    {
+        //        Value = n.ProductName,
+        //        Text = n.ProductName
+        //    }).Distinct().ToList();
+
+        //    var defItem = new SelectListItem()
+        //    {
+        //        Value = "",
+        //        Text = "----Select ProductName ----"
+        //    };
+
+        //    lstProducts.Insert(0, defItem);
+
+        //    return Json(new { success = true, data = lstProducts });
+        //}
+
         public IActionResult GetOutlets(string Production_Id)
         {
-            var lstProducts = new List<SelectListItem>();
-
-            lstProducts = _context.ProductionCapture.Where(a => a.Status == "Pending" && a.Production_Id.Trim() == Production_Id.Trim()).AsNoTracking().Select(n =>
-            new SelectListItem
-            {
-                Value = n.ProductName,
-                Text = n.ProductName
-            }).Distinct().ToList();
+            var lstProducts = _context.ProductionCapture
+                .Where(a => a.Status == "Pending" && a.Production_Id.Trim() == Production_Id.Trim())
+                .AsNoTracking()
+                .Select(n => new SelectListItem
+                {
+                    Value = n.ProductName,
+                    Text = n.ProductName
+                })
+                .Distinct()
+                .ToList();
 
             var defItem = new SelectListItem()
             {
@@ -100,11 +159,88 @@ namespace Ajit_Bakery.Controllers
                 Text = "----Select ProductName ----"
             };
 
+            List<DialDetailViewModel> DialDetailViewModellist = new List<DialDetailViewModel>();
+            var list = _context.ProductionCapture.Where(a=>a.Production_Id.Trim() == Production_Id.Trim() && a.Status == "Pending").ToList();
+            if(list.Count > 0)
+            {
+                foreach(var item in list)
+                {
+                    var data = _context.ProductionCapture
+                        .Where(a => a.ProductName.Trim() == item.ProductName.Trim() && a.Production_Id.Trim() == Production_Id.Trim())
+                        .Sum(a => a.TotalQty);
+
+                    var savedata = _context.SaveProduction
+                        .Where(a => a.ProductName.Trim() == item.ProductName.Trim() && a.Production_Id.Trim() == Production_Id.Trim())
+                        .Sum(a => a.Qty);
+
+                    var found = _context.ProductMaster.Where(a => a.ProductName.Trim() == item.ProductName.Trim()).FirstOrDefault();
+                    if (found != null)
+                    {
+                        int PendingQty = Math.Abs(data- savedata);
+                        double mrp = found.MRP;
+                        double Selling = found.Selling;
+                        double MRP_Rs = found.MRP_Rs;
+                        double Selling_Rs =found.Selling_Rs;
+                        DialDetailViewModel DialDetailViewModel = new DialDetailViewModel()
+                        {
+                            ProductName = item.ProductName,
+                            TotalQty = item.TotalQty,
+                            OutletName = item.OutletName,
+                            MRP = mrp,
+                            Selling = Selling,
+                            MRP_Rs = MRP_Rs,
+                            Selling_Rs = Selling_Rs,
+                            PendingQty = PendingQty,
+                            BasicUnit = (found.Unitqty).ToString()+" "+found.Uom,
+                        };
+                        DialDetailViewModellist.Add(DialDetailViewModel);
+                    }
+                }
+            }
+           
+
+            // Filter products where the difference is NOT zero
+            lstProducts = lstProducts
+                .Where(item =>
+                {
+                    var value = item.Value.Trim();
+                    var data = _context.ProductionCapture
+                        .Where(a => a.ProductName == value && a.Production_Id.Trim() == Production_Id.Trim())
+                        .Sum(a => a.TotalQty);
+
+                    var savedata = _context.SaveProduction
+                        .Where(a => a.ProductName == value && a.Production_Id.Trim() == Production_Id.Trim())
+                        .Sum(a => a.Qty);
+
+                    return Math.Abs(data - savedata) != 0; // Keep items where difference is NOT zero
+                })
+                .ToList();
+
             lstProducts.Insert(0, defItem);
 
-            return Json(new { success = true, data = lstProducts });
+            return Json(new { success = true, data = lstProducts, TableData = DialDetailViewModellist });
         }
 
+
+        public IActionResult CalculateTotalNetWeight(string  Production_Id, string productName, double TotalNetWg)
+        {
+            double sellingRs=0;
+            double mrpRs = 0;
+
+            var found = _context.ProductMaster.Where(a => a.ProductName.Trim() == productName.Trim()).FirstOrDefault();
+            if (found != null)
+            {
+                double mrp = found.MRP;
+                double Selling = found.Selling;
+                double MRP_Rs = found.MRP_Rs;
+                double Selling_Rs = found.Selling_Rs;
+
+                sellingRs = TotalNetWg* Selling_Rs;
+                mrpRs = TotalNetWg* MRP_Rs;
+            }
+
+            return Json(new { success = true, sellingRs = sellingRs, mrpRs = mrpRs });
+        }
         private List<SelectListItem> GetProduction_Id()
         {
             var lstProducts = new List<SelectListItem>();
@@ -159,9 +295,6 @@ namespace Ajit_Bakery.Controllers
         {
             try
             {
-                
-
-
                 int maxId = _context.SaveProduction.Any() ? _context.SaveProduction.Max(e => e.Id) + 1 : 1;
                 saveProduction.SaveProduction_Date = DateTime.Now.ToString("dd-MM-yyyy");
                 saveProduction.SaveProduction_Time = DateTime.Now.ToString("HH:mm");
@@ -185,22 +318,33 @@ namespace Ajit_Bakery.Controllers
                     string trimmedProductName = saveProduction.ProductName.Trim();
                     string productname1 = trimmedProductName.Length > 11 ? trimmedProductName.Substring(0, 11) : trimmedProductName;
                     string productname2 = trimmedProductName.Length > 11 ? trimmedProductName.Substring(11, Math.Min(11, trimmedProductName.Length - 11)) : "";
-                    for(int i = 1; i <= 4; i++)
+                    //for(int i = 1; i <= 4; i++)
+                    //{
+                    //    Sticker Sticker = new Sticker()
+                    //    {
+                    //        productname = saveProduction.ProductName,
+                    //        productname1 = productname1,
+                    //        productname2 = productname2,
+                    //        wg = saveProduction.TotalNetWg.ToString(),  // Fixed parentheses
+                    //        wgvalue = saveProduction.TotalNetWg + " " + saveProduction.TotalNetWg_Uom,
+                    //        wguom = saveProduction.TotalNetWg_Uom,
+                    //        mrp = mrp.MRP.ToString() ?? "NA" , // Check for null before accessing MRP
+                    //        productcode = mrp.ProductCode ?? "NA",
+                    //    };
+                    //    SaveProduction_list.Add(Sticker);
+                    //}
+                    SaveProduction_list.AddRange(Enumerable.Range(1, 4).Select(i => new Sticker
                     {
-                        Sticker Sticker = new Sticker()
-                        {
-                            productname = saveProduction.ProductName,
-                            productname1 = productname1,
-                            productname2 = productname2,
-                            wg = saveProduction.TotalNetWg.ToString(),  // Fixed parentheses
-                            wgvalue = saveProduction.TotalNetWg + " " + saveProduction.TotalNetWg_Uom,
-                            wguom = saveProduction.TotalNetWg_Uom,
-                            mrp = mrp.MRP.ToString() ?? "NA" , // Check for null before accessing MRP
-                            productcode = mrp.ProductCode ?? "NA",
-                        };
-                        SaveProduction_list.Add(Sticker);
-                    }
-                    
+                        productname = saveProduction.ProductName,
+                        productname1 = productname1,
+                        productname2 = productname2,
+                        wg = saveProduction.TotalNetWg.ToString(),
+                        wgvalue = saveProduction.TotalNetWg + " " + saveProduction.TotalNetWg_Uom,
+                        wguom = saveProduction.TotalNetWg_Uom,
+                        mrp = mrp.MRP.ToString() ?? "NA",
+                        productcode = mrp.ProductCode ?? "NA"
+                    }));
+
 
                     string printstk1 = null;
                     string printprn1 = "";
@@ -233,7 +377,7 @@ namespace Ajit_Bakery.Controllers
                                 .Replace("<PRODUCT_CODE>", SaveProduction_list[count1].productcode.Trim())//1
                                 .Replace("<WG>", SaveProduction_list[count1].wg.ToString())
                                 .Replace("<WGVALUE>", SaveProduction_list[count1].wgvalue.ToString())
-                                .Replace("<MRP>", SaveProduction_list[count1].mrp)
+                                .Replace("<MRP>", (saveProduction.mrpRs).ToString())
                                 .Replace("<PRODUCT_NAME1>", SaveProduction_list[count1].productname1)
                                 .Replace("<PRODUCT_NAME2>", SaveProduction_list[count1].productname2)
 
@@ -241,7 +385,7 @@ namespace Ajit_Bakery.Controllers
                                 .Replace("<PRODUCT_CODE_1>", SaveProduction_list[count1 + 1].productcode)//2
                                 .Replace("<WG_1>", SaveProduction_list[count1 + 1].wg.ToString())
                                 .Replace("<WGVALUE_1>", SaveProduction_list[count1 + 1].wgvalue.ToString())
-                                .Replace("<MRP_1>", SaveProduction_list[count1 + 1].mrp)
+                                .Replace("<MRP_1>", (saveProduction.mrpRs).ToString())
                                 .Replace("<PRODUCT_NAME1_1>", SaveProduction_list[count1 + 1].productname1)
                                 .Replace("<PRODUCT_NAME2_1>", SaveProduction_list[count1 + 1].productname2)
 
@@ -249,7 +393,7 @@ namespace Ajit_Bakery.Controllers
                                 .Replace("<PRODUCT_CODE_2>", SaveProduction_list[count1 + 2].productcode)//3
                                 .Replace("<WG_2>", SaveProduction_list[count1 + 2].wg.ToString())
                                 .Replace("<WGVALUE_2>", SaveProduction_list[count1 + 2].wgvalue.ToString())
-                                .Replace("<MRP_2>", SaveProduction_list[count1 + 2].mrp)
+                                .Replace("<MRP_2>", (saveProduction.mrpRs).ToString())
                                 .Replace("<PRODUCT_NAME1_2>", SaveProduction_list[count1 + 2].productname1)
                                 .Replace("<PRODUCT_NAME2_2>", SaveProduction_list[count1 + 2].productname2)
 
@@ -257,7 +401,7 @@ namespace Ajit_Bakery.Controllers
                                 .Replace("<PRODUCT_CODE_3>", SaveProduction_list[count1 + 3].productcode)//4
                                 .Replace("<WG_3>", SaveProduction_list[count1 + 3].wg.ToString())
                                 .Replace("<WGVALUE_3>", SaveProduction_list[count1 + 3].wgvalue.ToString())
-                                .Replace("<MRP_3>", SaveProduction_list[count1 + 3].mrp)
+                                .Replace("<MRP_3>", (saveProduction.mrpRs).ToString())
                                 .Replace("<PRODUCT_NAME1_3>", SaveProduction_list[count1 + 3].productname1)
                                 .Replace("<PRODUCT_NAME2_3>", SaveProduction_list[count1 + 3].productname2);
 
@@ -285,10 +429,11 @@ namespace Ajit_Bakery.Controllers
                             }
                         }
                     }
+                    
 
                 }
                 //ENDED
-                
+
                 return Json(new { success = true, message = "Created Successfully !" });
             }
             catch (Exception ex)

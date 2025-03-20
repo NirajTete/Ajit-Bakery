@@ -6,9 +6,9 @@ using Ajit_Bakery.Data;
 using Newtonsoft.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Globalization;
-
+using Microsoft.AspNetCore.Authorization;
 namespace Ajit_Bakery.Controllers;
-
+[Authorize]
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
@@ -73,7 +73,8 @@ public class HomeController : Controller
                 productname = item.ProductName,
                 qty = (item.TotalQty).ToString(),
                 process = "Production Capture",
-                status = "Pending",
+                status = item.Status,
+                //status = "Pending",
             };
             statusFounds.Add(StatusFound);   
         }

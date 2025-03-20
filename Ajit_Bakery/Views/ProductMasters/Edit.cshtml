@@ -27,7 +27,52 @@
                         <input type="text" asp-for="ProductName" id="ProductName" onchange="GetProCode()" class="form-control" required />
                         <span asp-validation-for="ProductName" class="text-danger"></span>
                     </div>
-                    <div class="form-group col-sm-3">
+                    <div class="form-group col-sm-2">
+                        <label asp-for="Qty" class="control-label fw-bold small"></label>
+                        <input type="number" value="1" asp-for="Qty" class="form-control" required min="1" max="10" />
+                        <span asp-validation-for="Qty" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <label asp-for="Unitqty" class="control-label fw-bold small">Unit Qty (Gms)</label>
+                        <input type="number"  min="1" id="Unitqty" max="5000" asp-for="Unitqty" class="form-control" onchange="OnRangeInput()" required />
+                        <span asp-validation-for="Unitqty" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <label asp-for="Uom" class="control-label fw-bold small"></label>
+                        <select asp-for="Uom" class="form-control text-uppercase" autocomplete="off" id="Uom" required>
+                            <option value="GMS">GMS</option>
+                            @* <option value="KGS">KGS</option> *@
+                        </select>
+                        <span asp-validation-for="Uom" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-sm-2">
+                        <label asp-for="MRP" class="control-label fw-bold small"></label>
+                        <input type="number" oninput="onmrpinput()" asp-for="MRP" id="MRP" class="form-control" required />
+                        <span asp-validation-for="MRP" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <label asp-for="MRP_Rs" class="control-label fw-bold small"></label>
+                        <input type="number" readonly asp-for="MRP_Rs" class="form-control" required />
+                        <span asp-validation-for="MRP_Rs" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <label asp-for="Selling" class="control-label fw-bold small"></label>
+                        <input type="number" id="Selling" oninput="onsellinginout()" asp-for="Selling" class="form-control" required />
+                        <span asp-validation-for="Selling" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <label asp-for="Selling_Rs" class="control-label fw-bold small"></label>
+                        <input type="number" id="Selling_Rs" readonly asp-for="Selling_Rs" class="form-control" required />
+                        <span asp-validation-for="Selling_Rs" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <label asp-for="Dial" class="control-label fw-bold small small w-600  "></label>
+                        <input id="Dial" class="form-control" asp-for="Dial" required />
+                        @* <select id="Dial" class="form-control" asp-for="Dial" required></select> *@
+                    </div>
+                    <div class="form-group col-sm-2">
                         <label asp-for="Category" class="control-label fw-bold small"></label>
                         <select asp-for="Category" class="form-control text-uppercase" autocomplete="off" id="Category" required>
                             <option>Regular</option>
@@ -35,45 +80,8 @@
                             <option>Preminum</option>
                         </select>
                     </div>
-                    <div class="form-group col-sm-3">
-                        <label asp-for="Uom" class="control-label fw-bold small"></label>
-                        <select asp-for="Uom" class="form-control text-uppercase" autocomplete="off" id="Uom" required>
-                            <option value="Kgs">Kgs</option>
-                            <option value="PCs">PCs</option>
-                        </select>
-                        <span asp-validation-for="Uom" class="text-danger"></span>
-                    </div>
                 </div>
                 <div class="row">
-                    <div class="form-group col-sm-2">
-                        <label asp-for="Qty" class="control-label fw-bold small"></label>
-                        <input type="number" value="1" asp-for="Qty" class="form-control" required min="1" max="10" />
-                        <span asp-validation-for="Qty" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-sm-2">
-                        <label asp-for="Unitqty" class="control-label fw-bold small">Unit Qty</label>
-                        <input type="number" value="1000" asp-for="Unitqty" class="form-control" required />
-                        <span asp-validation-for="Unitqty" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-sm-2">
-                        <label asp-for="PerGmRate" class="control-label fw-bold small">Per Gm Rate</label>
-                        <input type="number" asp-for="PerGmRate" min="1" max="50" class="form-control" required />
-                        <span asp-validation-for="PerGmRate" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-sm-2">
-                        <label asp-for="MRP" class="control-label fw-bold small"></label>
-                        <input type="number" asp-for="MRP" class="form-control" required />
-                        <span asp-validation-for="MRP" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-group col-sm-2">
-                        <label asp-for="Dial" class="control-label fw-bold small small w-600  "></label>
-                        <select id="Dial" class="form-control" asp-for="Dial" required>
-                            <option>Circle</option>
-                            <option>Square</option>
-                            <option>Both</option>
-                        </select>
-                    </div>
                     <div class="form-group col-sm-2">
                         <label asp-for="Type" class="control-label fw-bold small"></label>
                         <select id="Type" class="form-control" asp-for="Type" required>
@@ -110,6 +118,48 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
+        function onmrpinput() {
+            OnRangeInput1();
+        }
+        function onsellinginout() {
+            OnRangeInput1();
+        }
+        function OnRangeInput1() {
+            var Unitqty = parseFloat($("#Unitqty").val()) || 1; // Default to 1 to avoid division by zero
+            var MRP = parseFloat($("#MRP").val()) || 0;
+            var Selling = parseFloat($("#Selling").val()) || 0;
+
+            var Selling_Rs = Selling / Unitqty;
+            var MRP_Rs = MRP / Unitqty;
+
+            $("#Selling_Rs").val(Selling_Rs.toFixed(2)); // Round to 2 decimal places
+            $("#MRP_Rs").val(MRP_Rs.toFixed(2));
+
+        }
+        function OnRangeInput() {
+            console.log("Check...");
+            var Unitqty = parseFloat($("#Unitqty").val()) || 1;
+            // $.ajax({
+            //     url: '@Url.Action("GETDialCodes", "ProductMasters")',
+            //     type: 'GET',
+            //     dataType: 'json',
+            //     data: { Unitqty: Unitqty },
+            //     success: function (response) {
+            //         console.log("Response:", response);
+            //         if (response.success) {
+            //             var dialDropdown = $("#Dial");
+            //             dialDropdown.empty(); // Clear previous options
+            //             dialDropdown.append('<option value="">Select Dial</option>'); // Default option
+
+            //             // Append new options
+            //             $.each(response.data, function (index, value) {
+            //                 dialDropdown.append('<option value="' + value + '">' + value + '</option>');
+            //             });
+                        OnRangeInput1();
+            //         }
+            //     }
+            // });
+        }
         $(document).ready(function () {
             $("#productForm").submit(function (event) {
                 event.preventDefault(); // Prevent default form submission
