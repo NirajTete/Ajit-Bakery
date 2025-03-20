@@ -456,7 +456,7 @@
             let dialTierWg = parseFloat(document.getElementById("DialTierWgValue").value) || 0;
 
             // Convert to kilograms
-            let totalNetWeight = (productGrossWg + dialTierWg) / 1000;
+            let totalNetWeight = (productGrossWg - dialTierWg) / 1000;
 
             // Set the result in TotalNetWg
             document.getElementById("TotalNetWg").value = totalNetWeight.toFixed(3) ; // 3 decimal places
