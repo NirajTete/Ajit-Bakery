@@ -13573,7 +13573,7 @@ textarea.form-control-lg {
 }
 
 .bg-grd-primary {
-  background: linear-gradient(45deg, #4099ff, #73b4ff);
+    background: linear-gradient(45deg, #5540ff, #73b4ff);
 }
 
 .bg-light-primary {
@@ -13617,7 +13617,7 @@ textarea.form-control-lg {
 }
 
 .bg-grd-success {
-  background: linear-gradient(45deg, #2ed8b6, #59e0c5);
+    background: linear-gradient(45deg, #1b8f9b, #84ffe6);
 }
 
 .bg-light-success {
@@ -13661,7 +13661,7 @@ textarea.form-control-lg {
 }
 
 .bg-grd-warning {
-  background: linear-gradient(45deg, #ffb64d, #ffcb80);
+    background: linear-gradient(45deg, #f14747, #ffcb80);
 }
 
 .bg-light-warning {
@@ -13683,7 +13683,7 @@ textarea.form-control-lg {
 }
 
 .bg-grd-danger {
-  background: linear-gradient(45deg, #ff5370, #ff869a);
+    background: linear-gradient(45deg, #cf0e0e, #f1a9a9);
 }
 
 .bg-light-danger {

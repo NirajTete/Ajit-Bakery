@@ -49,3 +49,16 @@ body {
     /*    background: linear-gradient(to right, #5b9dff, #38e366) !important;*/
     background: linear-gradient(to right, #5b9dff, #f78914) !important;
 }
+
+.bg-brand-color-14 {
+    /*    background: linear-gradient(to right, #5b9dff, #38e366) !important;*/
+    background: linear-gradient(to right, #e7cf25, #f78914, #ff3d71) !important;
+}
+
+.bg-brand-color-15 {
+    /*    background: linear-gradient(to right, #5b9dff, #38e366) !important;*/
+    background: linear-gradient(to right,#e7cf25, #5b9dff, #f78914) !important;
+}
+
+
+
