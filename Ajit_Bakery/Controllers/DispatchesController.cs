@@ -9,6 +9,7 @@ using Ajit_Bakery.Data;
 using Ajit_Bakery.Models;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Microsoft.AspNetCore.Authorization;
+using System.Net;
 
 namespace Ajit_Bakery.Controllers
 {
@@ -32,12 +33,13 @@ namespace Ajit_Bakery.Controllers
                 foreach (var item in list)
                 {
                     var data = _context.ProductionCapture
-                        .Where(a => a.ProductName.Trim() == item.ProductName.Trim() && a.Production_Id.Trim() == Production_Id.Trim())
+                        .Where(a => a.ProductName.Trim() == item.ProductName.Trim() && a.Production_Id.Trim() == Production_Id.Trim() && a.OutletName.Trim() == item.OutletName.Trim())
                         .Sum(a => a.TotalQty);
 
                     var savedata = _context.Packaging
-                        .Where(a => a.Product_Name.Trim() == item.ProductName.Trim() && a.Production_Id.Trim() == Production_Id.Trim() && a.DispatchReady_Flag == 1)
+                        .Where(a => a.Product_Name.Trim() == item.ProductName.Trim() && a.Production_Id.Trim() == Production_Id.Trim() && a.DispatchReady_Flag == 1 && a.Dispatch_Flag == 0 && a.Outlet_Name.Trim() == item.OutletName.Trim())
                         .Sum(a => a.Qty);
+
                     int DispatchReady = savedata;
                     //var found = _context.ProductMaster.Where(a => a.ProductName.Trim() == item.ProductName.Trim()).FirstOrDefault();
                     //if (found != null)
@@ -56,7 +58,7 @@ namespace Ajit_Bakery.Controllers
                 }
             }
 
-            var outlet_list = _context.Packaging.Where(a => a.DispatchReady_Flag == 1 &&  a.Production_Id.Trim() == Production_Id.Trim()).Select(a=>a.Outlet_Name.Trim()).Distinct().ToList();
+            var outlet_list = _context.Packaging.Where(a => a.DispatchReady_Flag == 1 && a.Dispatch_Flag == 0 &&  a.Production_Id.Trim() == Production_Id.Trim()).Select(a=>a.Outlet_Name.Trim()).Distinct().ToList();
 
             return Json(new { success = true, TableData = DialDetailViewModellist, outlet_list });
         }
@@ -65,7 +67,7 @@ namespace Ajit_Bakery.Controllers
         {
             if (Packagings_List.Count > 0)
             {
-                var recipt_outlet = _context.Packaging.Where(a => a.Reciept_Id == receiptno.Trim() && a.DispatchReady_Flag == 1 && a.DCNo.Trim() == dcno.Trim()).Select(a => a.Outlet_Name.Trim()).FirstOrDefault();
+                var recipt_outlet = _context.Packaging.Where(a => a.Reciept_Id == receiptno.Trim() && a.DispatchReady_Flag == 1 && a.Outlet_Name.Trim() == dcno.Trim()).Select(a => a.Outlet_Name.Trim()).FirstOrDefault();
                 if (recipt_outlet != null)
                 {
                     var getprodictionid = Packagings_List.Select(a => a.Production_Id).FirstOrDefault();
@@ -85,7 +87,7 @@ namespace Ajit_Bakery.Controllers
                 }
             }
             var newItems = _context.Packaging
-                .Where(a => a.Reciept_Id.Trim() == receiptno.Trim() && a.Box_No.Trim() == boxno.Trim() && a.DispatchReady_Flag == 1 && a.DCNo.Trim() == dcno.Trim())
+                .Where(a => a.Reciept_Id.Trim() == receiptno.Trim() && a.Box_No.Trim() == boxno.Trim() && a.DispatchReady_Flag == 1 && a.Outlet_Name.Trim() == dcno.Trim())
                 .ToList();
             if (newItems.Count > 0)
             {
@@ -93,7 +95,7 @@ namespace Ajit_Bakery.Controllers
                 if (newitem1.Count > 0)
                 {
                     var packingfoun = _context.Packaging
-                            .Where(a => a.Reciept_Id.Trim() == receiptno.Trim() && a.Box_No.Trim() == boxno.Trim() && a.DispatchReady_Flag == 1 && a.DCNo.Trim() == dcno.Trim())
+                            .Where(a => a.Reciept_Id.Trim() == receiptno.Trim() && a.Box_No.Trim() == boxno.Trim() && a.DispatchReady_Flag == 1 && a.Outlet_Name.Trim() == dcno.Trim())
                             .Select(a => new
                             {
                                 a.Production_Id,
@@ -110,7 +112,7 @@ namespace Ajit_Bakery.Controllers
                         Packagings_List.AddRange(newItems);
 
                         var totalInDb = _context.Packaging
-                            .Where(a => a.DispatchReady_Flag == 1 && a.DCNo.Trim() == dcno.Trim())
+                            .Where(a => a.DispatchReady_Flag == 1 && a.Outlet_Name.Trim() == dcno.Trim())
                             .Sum(a => (int?)a.Qty) ?? 0; // Summing directly in DB, handles empty case
                         var totalInList = Packagings_List.Sum(a => a.Qty); // Sum of in-memory list
                         var remainingQty = totalInDb - totalInList; // Calculate remaining quantity
@@ -282,8 +284,53 @@ namespace Ajit_Bakery.Controllers
         public IActionResult Create()
         {
             ViewBag.GetProduction_Id = GetProduction_Id();
-            ViewBag.DCNO = GetDCNO();
+            //ViewBag.DCNO = GetDCNO();
             return View();
+        }
+        public string GetDCNOSTR()
+        {
+            try
+            {
+                var currentYearMonth = DateTime.Now.ToString("yyMM"); // Example: "2412" for Dec 2024
+                string newBoxId;
+                int newCounter;
+                var lastBox = _context.DCIds.Where(a => a.ProductionId.Trim().StartsWith("DC-"))
+                    .OrderByDescending(b => b.id)
+                    .FirstOrDefault();
+                if (lastBox != null)
+                {
+                    string lastYearMonth = lastBox.ProductionId.Substring(3, 4); // Extract characters 4-7 ("YYMM")
+                    int lastCounter = int.Parse(lastBox.ProductionId.Substring(7)); // Extract counter part
+                    if (lastYearMonth == currentYearMonth)
+                    {
+                        newCounter = lastCounter + 1;
+                    }
+                    else
+                    {
+                        newCounter = 1;
+                    }
+                }
+                else
+                {
+                    newCounter = 1;
+                }
+                newBoxId = $"DC-{currentYearMonth}{newCounter:D2}"; // Format: STBYYMMCC
+                var maxId = _context.DCIds.Any() ? _context.DCIds.Max(e => e.id) + 1 : 1;
+                var newBoxEntry = new DCIds
+                {
+                    id = maxId,
+                    ProductionId = newBoxId,
+                    date = DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"),
+                };
+                _context.DCIds.Add(newBoxEntry);
+                _context.SaveChanges();
+
+                return newBoxId;
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
         }
 
         [HttpPost]
@@ -298,8 +345,9 @@ namespace Ajit_Bakery.Controllers
 
             if (Packagings_List.Count > 0)
             {
+                var DCNO = GetDCNOSTR();
                 //ADD TO DISPATCH TABLE 
-                foreach(var item in Packagings_List)
+                foreach (var item in Packagings_List)
                 {
                     DAProduction_id = Packagings_List.Select(a => a.Production_Id.Trim()).FirstOrDefault() ?? "NA";
                     DAOutletName = Packagings_List.Select(a => a.Outlet_Name.Trim()).FirstOrDefault() ?? "NA";
@@ -315,7 +363,7 @@ namespace Ajit_Bakery.Controllers
                         ProductName =item.Product_Name,
                         OutletName =item.Outlet_Name,
                         ReceiptNo =item.Reciept_Id,
-                        DCNo =dispatch.DCNo,
+                        DCNo =DCNO,
                         BoxNo =item.Box_No,
                         Qty =item.Qty,
                         TotalNetWg =item.TotalNetWg,
@@ -340,6 +388,7 @@ namespace Ajit_Bakery.Controllers
 
                     //UPDATE PACKAGING TABLE
                     item.Dispatch_Flag = 1;
+                    item.DCNo = DCNO;
                     _context.Packaging.Update(item);
                     _context.SaveChanges();
                 }

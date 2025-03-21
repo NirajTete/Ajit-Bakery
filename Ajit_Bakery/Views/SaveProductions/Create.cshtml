@@ -54,46 +54,48 @@
                         <select asp-for="DialCode" class="form-control text-uppercase" id="DialCode" onchange="GetDialCodes()" required></select>
                     </div>
                 </div>
-                <div class="row" @* style="display:none" *@ id="PartDial">
-                    
+                <div class="row"  id="PartDial">
                     <div class="form-group col-sm-2" style="display:none">
                         <label asp-for="DialShape" class="control-label fw-bold small">Dial Shape</label>
                         <select asp-for="DialShape" class="form-control text-uppercase" id="DialShape" required>
-                            @* onchange="GetDialShape()" *@
                             <option value="">Dial-Shape</option>
                             <option value="Circle">Circle</option>
                             <option value="Square">Square</option>
                         </select>
                     </div>
                     <div class="form-group col-sm-3">
-                        <label asp-for="DialTierWg" class="control-label fw-bold small">Tier Wt.</label>
-                        <input asp-for="DialTierWg" onchange="OnDialWgChange()" id="DialTierWg" required class="form-control" />
+                        <label asp-for="DialTierWg" class="control-label fw-bold small">Tare Wt.</label>
+                        <input asp-for="DialTierWg" onchange="OnDialWgChange()" id="DialTierWg" style="height:5vh; font-size: 16px; color: green; font-weight: 650;" required class="form-control" />
                     </div>
                     <div class="form-group col-sm-3">
                         <label asp-for="DialTierWg_Uom" class="control-label fw-bold small"></label>
                         <input asp-for="DialTierWg_Uom" id="DialTierWg_Uom" required readonly class="form-control" />
                         <span asp-validation-for="DialTierWg_Uom" class="text-danger"></span>
                     </div>
-                    <div class="form-group col-sm-2" @* style="display:none" *@>
+                    <div class="form-group col-sm-2" >
                         <label asp-for="DialTierWgValue" class="control-label fw-bold small"></label>
                         <input asp-for="DialTierWgValue" id="DialTierWgValue" required readonly class="form-control" style="height:5vh; font-size: 16px; color:blueviolet; font-weight: 650;" />
                     </div>
+                    <div class="form-group col-sm-4">
+                        <label class="control-label fw-bold small">&nbsp;</label> <!-- Empty label for spacing -->
+                        <button type="button" class="btn btn-info form-control " onclick="displayNetwt()" >Get Wt</button>
+                    </div>
                 </div>
-                @* <div class="row">
+                 @* <div class="row">
                     <button class="btn btn-info btn-sm col-sm-2" onclick="displayNetwt()">Get Net</button>
-                </div> style="display:none" id="Netwt"*@
-                <div class="row" @* style="display:none" *@ id="Partproduct">
+                </div> *@ @*style="display:none" id="Netwt"*@
+                <div class="row" style="display:none" id="Partproduct">
                     <div class="form-group col-sm-1" style="display:none">
                         <label  class="control-label fw-bold small">Qty</label>
                         <input class="form-control" id="count" value="1"  style="height:5vh; font-size: 20px; color: green; font-weight: 650;" required readonly />
                     </div>
-                    <div class="form-group col-sm-3">
+                    <div class="form-group col-sm-3" >
                         <label asp-for="ProductGrossWg" class="control-label fw-bold small"></label>
-                        <input asp-for="ProductGrossWg" id="ProductGrossWg" class="form-control" required onchange="Refresh()" />
+                        <input asp-for="ProductGrossWg" id="ProductGrossWg" style="height:5vh; font-size: 16px; color: green; font-weight: 650;" class="form-control" required onchange="Refresh()" />
                     </div>
                     <div class="form-group col-sm-3">
                         <label asp-for="ProductGrossWg_Uom" class="control-label fw-bold small"></label>
-                        <select asp-for="ProductGrossWg_Uom" id="ProductGrossWg_Uom" required class="form-control text-uppercase" onchange="OnUomChange()">
+                        <select asp-for="ProductGrossWg_Uom" id="ProductGrossWg_Uom" required class="form-control text-uppercase"   onchange="OnUomChange()">
                             @* <option>KGS</option> *@
                             <option>GMS</option>
                         </select>
@@ -101,6 +103,16 @@
                     <div class="form-group col-sm-2"@*  style="display:none" *@>
                         <label asp-for="ProductGrossWgValue" class="control-label fw-bold small"></label>
                         <input asp-for="ProductGrossWgValue" required id="ProductGrossWgValue" style="height:5vh; font-size: 16px; color:brown; font-weight: 650;" readonly class="form-control" />
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <label asp-for="mrpRs" class="control-label fw-bold small">MRP Rt.(Rs)</label>
+                        <input asp-for="mrpRs" style="height:5vh; font-size: 16px; color: green; font-weight: 650;" readonly id="mrpRs"
+                               required class="form-control" />
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <label asp-for="sellingRs" class="control-label fw-bold small">Sale Rt.(Rs)</label>
+                        <input asp-for="sellingRs" style="height:5vh; font-size: 16px; color: green; font-weight: 650;"
+                               required readonly id="sellingRs" class="form-control" />
                     </div>
                 </div>
                 <div class="row" style="display:none"  id="Partnetwt">
@@ -115,24 +127,15 @@
                                required readonly id="NetWg_uom" class="form-control" />
                     </div>
                 </div>
-                <div class="row" @* style="display:none" *@ id="Partnetwt">
-                    <div class="form-group col-sm-2">
-                        <label asp-for="mrpRs" class="control-label fw-bold small">Mrp Rs</label>
-                        <input asp-for="mrpRs" style="height:5vh; font-size: 16px; color: green; font-weight: 650;" readonly id="mrpRs"
-                               required class="form-control" />
-                    </div>
-                    <div class="form-group col-sm-2">
-                        <label asp-for="sellingRs" class="control-label fw-bold small">Selling Rs</label>
-                        <input asp-for="sellingRs" style="height:5vh; font-size: 16px; color: green; font-weight: 650;"
-                               required readonly id="sellingRs" class="form-control" />
-                    </div>
+                <div class="row"  id="Partnetwt">
+                    
                 </div>
-                <div class="row" @* style="display:none" *@ id="Parttotal">
-                    <div class="form-group col-sm-2">
+                <div class="row"  id="Parttotal">
+                    <div class="form-group col-sm-3">
                         <label asp-for="TotalNetWg" class="control-label fw-bold small"></label>
                         <input asp-for="TotalNetWg" style="height:5vh; font-size: 16px; color: green; font-weight: 650;" readonly id="TotalNetWg" required class="form-control" />
                     </div>
-                    <div class="form-group col-sm-2">
+                    <div class="form-group col-sm-3">
                         <label asp-for="TotalNetWg_Uom" class="control-label fw-bold small">Uom</label>
                         <input asp-for="TotalNetWg_Uom" style="height:5vh; font-size: 16px; color: green; font-weight: 650;" 
                         required readonly id="TotalNetWg_Uom" class="form-control" />
@@ -181,6 +184,38 @@
     }
     <script>
         function calculateNetWeight() {
+            var Production_Id1 = $("#Production_Id").val();
+            var productName1 = $("#ProductName").val();
+            var NetWg1 = $("#DialTierWg").val();
+            var TotalNetWg1 = $("#ProductGrossWg").val();
+            $.ajax({
+                url: "/SaveProductions/checkvalue", // Change to your actual controller and method
+                type: "POST",
+                data: {
+                    Production_Id: Production_Id1,
+                    productName: productName1,
+                    TotalNetWg: parseFloat(TotalNetWg1)
+                },
+                success: function (response) {
+                    if(response.success){
+
+                    }
+                    else{
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning!',
+                            text: response.message
+                        });
+                        $("#ProductGrossWg").val(0)
+                        $("#ProductGrossWgValue").val("")
+                        return;
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error:", error);
+                }
+            });
+
             let grossWeight = parseFloat(document.getElementById("ProductGrossWg").value) || 0;
             let tierWeight = parseFloat(document.getElementById("DialTierWg").value) || 0;
             let netWeight = grossWeight - tierWeight;
@@ -203,16 +238,13 @@
 
         }
 
-        // Attach event listeners to update Net Weight dynamically
         document.getElementById("ProductGrossWg").addEventListener("change", calculateNetWeight);
         document.getElementById("DialTierWg").addEventListener("change", calculateNetWeight);
 
-        // Function to send data via AJAX
         function sendNetWeightToServer(netWeight) {
             var Production_Id = $("#Production_Id").val();
             var productName = $("#ProductName").val();
             var TotalNetWg = $("#TotalNetWg").val();
-
             $.ajax({
                 url: "/SaveProductions/CalculateTotalNetWeight", // Change to your actual controller and method
                 type: "POST",
@@ -224,8 +256,10 @@
                 success: function (response) {
                     console.log("Server Response:", response);
                     // $("#TotalNetWg").val(response.totalNetWg); // Assuming the response contains updated TotalNetWg
-                    $("#mrpRs").val(response.mrpRs.toFixed(2)); // Assuming the response contains updated TotalNetWg
-                    $("#sellingRs").val(response.sellingRs.toFixed(2)); // Assuming the response contains updated TotalNetWg
+                    $("#mrpRs").val(Math.ceil(response.mrpRs)); // Rounds up to the next whole number
+                    $("#sellingRs").val(Math.ceil(response.sellingRs)); // Rounds up to the next whole number
+                    // $("#mrpRs").val(response.mrpRs.toFixed(2)); // Assuming the response contains updated TotalNetWg
+                    // $("#sellingRs").val(response.sellingRs.toFixed(2)); // Assuming the response contains updated TotalNetWg
                 },
                 error: function (xhr, status, error) {
                     console.error("AJAX Error:", error);
@@ -234,10 +268,10 @@
         }
 
 
-        // function displayNetwt(){
-        //     event.preventDefault();
-        //     $("#Netwt").show();
-        // }
+        function displayNetwt(){
+            event.preventDefault();
+            $("#Partproduct").show();
+        }
         $("#ProductName").change(function () {
             var productName = $(this).val(); // Get selected product name
             var Production_Id = $("#Production_Id").val(); // Get selected product name
@@ -431,8 +465,8 @@
                                 $("#SaveProduction")[0].reset(); // Reset form after success
                             } else {
                                 Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error!',
+                                    icon: 'warning',
+                                    title: 'Warning!',
                                     text: response.message
                                 });
                                 return;

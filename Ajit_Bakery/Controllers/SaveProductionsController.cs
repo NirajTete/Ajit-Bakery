@@ -14,6 +14,8 @@ using NuGet.Configuration;
 using DocumentFormat.OpenXml.Bibliography;
 using Humanizer;
 using Microsoft.AspNetCore.Authorization;
+using DocumentFormat.OpenXml.ExtendedProperties;
+using DocumentFormat.OpenXml.Office.CustomUI;
 
 namespace Ajit_Bakery.Controllers
 {
@@ -31,6 +33,28 @@ namespace Ajit_Bakery.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
+        public IActionResult checkvalue(string Production_Id, string productName,double TotalNetWg)
+        {
+            var check = _context.ProductionCapture.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.ProductName.Trim() == productName.Trim()).FirstOrDefault();
+            if (check != null)
+            {
+                var product = _context.ProductMaster.Where(a => a.ProductName.Trim() == productName.Trim() ).FirstOrDefault();
+                if (product != null)
+                {
+                    if(TotalNetWg >= product.Unitqty)
+                    {
+
+                    }
+                    else
+                    {
+                        return Json(new { success = false, message = "Wt shouldn't be less then their basic range i,e " + product.Unitqty + " and you have enter " + TotalNetWg });
+                    }
+                    
+                }
+                
+            }
+            return Json(new { success = true });
+        }
         public async Task<IActionResult> Index()
         {
             var LIST = await _context.SaveProduction.Where(a=>a.Qty > 0).OrderByDescending(a=>a.Id).ToListAsync();
@@ -160,23 +184,53 @@ namespace Ajit_Bakery.Controllers
             };
 
             List<DialDetailViewModel> DialDetailViewModellist = new List<DialDetailViewModel>();
+           
             var list = _context.ProductionCapture.Where(a=>a.Production_Id.Trim() == Production_Id.Trim() && a.Status == "Pending").ToList();
             if(list.Count > 0)
             {
-                foreach(var item in list)
+                var productSummary = _context.SaveProduction
+                        .GroupBy(p => new { p.ProductName, p.Production_Id }) // Group by both ProductName & Production_Id
+                        .Select(g => new
+                        {
+                            Product_Name = g.Key.ProductName, // Accessing ProductName
+                            Production_Id = g.Key.Production_Id, // Accessing Production_Id
+                            Total_Quantity = g.Sum(p => p.Qty),  // Sum of Quantity
+                            Total_Count = g.Count()  // Number of records per product
+                        })
+                        .ToList();
+
+                List<SaveProduction> listtt = new List<SaveProduction>();
+                foreach(var item in productSummary)
+                {
+                    SaveProduction sc = new SaveProduction()
+                    {
+                        ProductName = item.Product_Name,
+                        Production_Id = item.Production_Id,
+                        Qty = item.Total_Quantity,
+                    };
+                    listtt.Add(sc);
+                }
+               
+                foreach (var item in list)
                 {
                     var data = _context.ProductionCapture
-                        .Where(a => a.ProductName.Trim() == item.ProductName.Trim() && a.Production_Id.Trim() == Production_Id.Trim())
+                        .Where(a => a.ProductName.Trim() == item.ProductName.Trim() && a.Production_Id.Trim() == Production_Id.Trim() && a.OutletName.Trim() == item.OutletName.Trim())
                         .Sum(a => a.TotalQty);
-
-                    var savedata = _context.SaveProduction
-                        .Where(a => a.ProductName.Trim() == item.ProductName.Trim() && a.Production_Id.Trim() == Production_Id.Trim())
-                        .Sum(a => a.Qty);
-
+                    
                     var found = _context.ProductMaster.Where(a => a.ProductName.Trim() == item.ProductName.Trim()).FirstOrDefault();
                     if (found != null)
                     {
-                        int PendingQty = Math.Abs(data- savedata);
+                        var value = 0;
+                        var savededata1 = listtt
+                            .Where(a => a.ProductName.Trim() == item.ProductName.Trim() && a.Production_Id.Trim() == Production_Id.Trim())
+                            .FirstOrDefault();
+                        if (savededata1 != null)
+                        {
+                            value = savededata1.Qty;
+                            int minValue = Math.Min(savededata1.Qty, data);
+                            savededata1.Qty = Math.Abs(savededata1.Qty - minValue);
+                        }
+                        int PendingQty = Math.Abs(data- value);
                         double mrp = found.MRP;
                         double Selling = found.Selling;
                         double MRP_Rs = found.MRP_Rs;
@@ -194,6 +248,11 @@ namespace Ajit_Bakery.Controllers
                             BasicUnit = (found.Unitqty).ToString()+" "+found.Uom,
                         };
                         DialDetailViewModellist.Add(DialDetailViewModel);
+                        //if (savededata1 != null)
+                        //{
+                        //    savededata1.Qty = Math.Abs(savededata1.Qty - data);
+                        //}
+
                     }
                 }
             }
@@ -295,11 +354,15 @@ namespace Ajit_Bakery.Controllers
         {
             try
             {
+                if(saveProduction.ProductGrossWg == 0)
+                {
+                    return Json(new { success = false, message = "Please do enter the gross wt.!" });
+                }
                 int maxId = _context.SaveProduction.Any() ? _context.SaveProduction.Max(e => e.Id) + 1 : 1;
                 saveProduction.SaveProduction_Date = DateTime.Now.ToString("dd-MM-yyyy");
                 saveProduction.SaveProduction_Time = DateTime.Now.ToString("HH:mm");
                 saveProduction.User = "admin";
-                saveProduction.DialTierWg_Uom.ToUpper();
+                saveProduction.DialTierWg_Uom = saveProduction.DialTierWg_Uom.ToUpper();
                 saveProduction.Qty = 1;
                 saveProduction.Exp_Date = DateTime.Now.AddDays(2).ToString("dd-MM-yyyy");
                 saveProduction.Id = maxId;

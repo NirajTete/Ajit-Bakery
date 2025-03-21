@@ -18,12 +18,12 @@ namespace Ajit_Bakery.Models
         [Display(Name = "Dial Shape")]
         [NotMapped]
         public string DialShape { get; set; }
-        [Display(Name = "Dial Tier Wt.")]
+        [Display(Name = "Dial Tare Wt.")]
         public double DialTierWg { get; set; }
-        [Display(Name = "Dial Tier Uom")]
+        [Display(Name = "Dial Tare Uom")]
         public string DialTierWg_Uom { get; set; }
         [NotMapped]
-        [Display(Name = "Tier Wt.")]
+        [Display(Name = "Tare Wt.")]
         public string DialTierWgValue { get; set; }
         [Display(Name = "Dial Code")]
         public string DialCode { get; set; }

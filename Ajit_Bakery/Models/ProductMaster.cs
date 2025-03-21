@@ -40,11 +40,11 @@ namespace Ajit_Bakery.Models
 
         [Display(Name = "Dial Codes")]
         public string? Dial { get; set; }
-        [Display(Name = "Selling Rt.")]
+        [Display(Name = "Sale Rt.")]
         public double Selling { get; set; }
-        [Display(Name = "Selling Rs.")]
+        [Display(Name = "Sale Rt. (Rs/Gm)")]
         public double Selling_Rs { get; set; }
-        [Display(Name = "MRP Rs.")]
+        [Display(Name = "MRP (Rs/Gm)")]
         public double MRP_Rs { get; set; }
         
     }
