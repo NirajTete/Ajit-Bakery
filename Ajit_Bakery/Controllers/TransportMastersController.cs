@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Ajit_Bakery.Data;
 using Ajit_Bakery.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Ajit_Bakery.Controllers
 {
@@ -63,14 +64,16 @@ namespace Ajit_Bakery.Controllers
                         return Json(new { success = false, message = "Already Exist ! " });
                     }
                 }
+                var currentuser1 = HttpContext.User;
+                string username = currentuser1.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
+
                 int maxId = _context.TransportMaster.Any() ? _context.TransportMaster.Max(e => e.Id) + 1 : 1;
                 transportMaster.Id = maxId;
                 transportMaster.CreateDate = DateTime.Now.ToString("dd-MM-yyyy");
                 transportMaster.ModifiedDate = DateTime.Now.ToString("dd-MM-yyyy");
                 transportMaster.Createtime = DateTime.Now.ToString("HH:mm");
                 transportMaster.Modifiedtime = DateTime.Now.ToString("HH:mm");
-                transportMaster.User = "admin";
-
+                transportMaster.User = username;
                 _context.Add(transportMaster);
                 await _context.SaveChangesAsync();
                 return Json(new { success = true, message = "Created Successfully !" });

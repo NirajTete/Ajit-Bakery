@@ -14,6 +14,8 @@ using OfficeOpenXml;
 using LicenseContext = OfficeOpenXml.LicenseContext;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.AspNetCore.Authorization;
+using DocumentFormat.OpenXml.Bibliography;
+using System.Security.Claims;
 
 namespace Ajit_Bakery.Controllers
 {
@@ -29,6 +31,73 @@ namespace Ajit_Bakery.Controllers
             _context = context;
             _config = config;
             _webHostEnvironment = webHostEnvironment;
+        }
+        private List<SelectListItem> GetOutlets()
+        {
+            var lstProducts = _context.OutletMaster
+                .AsNoTracking()
+                .Select(n => new SelectListItem
+                {
+                    Value = n.OutletName,
+                    Text = n.OutletName
+                })
+                .Distinct()
+                .ToList();
+
+            var defItem = new SelectListItem()
+            {
+                Value = "",
+                Text = "----Select Outlets ----"
+            };
+
+            lstProducts.Insert(0, defItem);
+
+            return lstProducts ;
+        }
+        private List<SelectListItem> ProductName()
+        {
+            var lstProducts = _context.ProductMaster
+                .AsNoTracking()
+                .Select(n => new SelectListItem
+                {
+                    Value = n.ProductName,
+                    Text = n.ProductName
+                })
+                .Distinct()
+                .ToList();
+
+            var defItem = new SelectListItem()
+            {
+                Value = "",
+                Text = "----Select ProductName ----"
+            };
+
+            lstProducts.Insert(0, defItem);
+
+            return lstProducts ;
+        }
+        private List<SelectListItem> GetProductionIds()
+        {
+            var lstProducts = _context.ProductionCapture
+                .Where(a => a.Status == "Pending" )
+                .AsNoTracking()
+                .Select(n => new SelectListItem
+                {
+                    Value = n.Production_Id,
+                    Text = n.Production_Id
+                })
+                .Distinct()
+                .ToList();
+
+            var defItem = new SelectListItem()
+            {
+                Value = "",
+                Text = "----Select Production Id ----"
+            };
+
+            lstProducts.Insert(0, defItem);
+
+            return  lstProducts;
         }
 
 
@@ -91,7 +160,9 @@ namespace Ajit_Bakery.Controllers
                             {
                                 if (int.TryParse(worksheet.Cells[row, col].Text.Trim(), out int quantity) && quantity > 0)
                                 {
-                                     maxid = maxid + 1;
+                                var currentuser = HttpContext.User;
+                                string username = currentuser.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
+                                    maxid = maxid + 1;
                                     ProductionCapture production = new ProductionCapture
                                     {
                                         Id = maxid,
@@ -103,6 +174,7 @@ namespace Ajit_Bakery.Controllers
                                         Production_Date = DateTime.Now.ToString("dd-MM-yyyy"),
                                         Production_Time = DateTime.Now.ToString("HH:mm"),
                                         Status = "Pending",
+                                        User = username,
                                     };
 
                                     productionList.Add(production);
@@ -306,23 +378,59 @@ namespace Ajit_Bakery.Controllers
             return newBoxId;
         }
 
+
+        [HttpGet]
         public IActionResult Create()
         {
             ViewBag.ProductionId = GetProductionId1();
             return View();
         }
+        [HttpGet]
+       public IActionResult CreateManually()
+        {
+            ViewBag.ProductionId = GetProductionIds();
+            ViewBag.GetOutlets = GetOutlets();
+            ViewBag.ProductName = ProductName();
+            return View();
+        }
+        //public IActionResult SaveData([FromBody] ProductionCapture data)
+        //{
+        //    return Json(new { success = true, message = "Done" });
+        //}
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create( ProductionCapture productionCapture)
+        public async Task<IActionResult> CreateManually( ProductionCapture productionCapture)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(productionCapture);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                var currentuser = HttpContext.User;
+                string username = currentuser.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
+
+                var maxid = _context.ProductionCapture.Any() ? _context.ProductionCapture.Max(e => e.Id) + 0 : 0;
+                maxid = maxid + 1;
+                ProductionCapture production = new ProductionCapture
+                {
+                    Id = maxid,
+                    Production_Id = productionCapture.Production_Id,
+                    ProductName = productionCapture.ProductName,
+                    Unit = "GMS",
+                    OutletName = productionCapture.OutletName, // Match column index with outlet name
+                    TotalQty = productionCapture.TotalQty,
+                    Production_Date = DateTime.Now.ToString("dd-MM-yyyy"),
+                    Production_Time = DateTime.Now.ToString("HH:mm"),
+                    Status = "Pending",
+                    User = username ?? "User",
+                };
+
+                _context.ProductionCapture.Add(production);
+                _context.SaveChanges();
+                return Json(new { success = true, message = "Successfully Done !" });
             }
-            return View(productionCapture);
+            catch(Exception EX)
+            {
+                return Json(new { success = false, message = "Error :"+EX.Message });
+            }
         }
 
         public async Task<IActionResult> Edit(int? id)

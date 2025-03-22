@@ -24,6 +24,7 @@ using iText.Kernel.Font;
 using PdfFont = iText.Kernel.Font.PdfFont;
 using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Ajit_Bakery.Controllers
 {
@@ -496,6 +497,9 @@ namespace Ajit_Bakery.Controllers
         {
             if (Packagings_List.Count > 0)
             {
+                var currentuser1 = HttpContext.User;
+                string username = currentuser1.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
+
                 var productionid = Packagings_List.Select(a=>a.Production_Id.Trim()).FirstOrDefault();
                 //var outletname = Packagings_List.Select(a=>a.Outlet_Name.Trim()).FirstOrDefault();
 
@@ -520,7 +524,7 @@ namespace Ajit_Bakery.Controllers
                             item1.DispatchReady_Flag = 1;
                             item1.DispatchReady_Date = DATE;
                             item1.DispatchReady_Time = TIME;
-
+                            item1.user = username;
                             _context.Packaging.Update(item1);
                             _context.SaveChanges();
                         }

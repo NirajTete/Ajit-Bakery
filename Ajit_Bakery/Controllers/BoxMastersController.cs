@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Ajit_Bakery.Data;
 using Ajit_Bakery.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Ajit_Bakery.Controllers
 {
@@ -66,7 +67,10 @@ namespace Ajit_Bakery.Controllers
         {
             try
             {
-                if(boxMaster.BoxNumber != null)
+                var currentuser1 = HttpContext.User;
+                string username = currentuser1.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
+
+                if (boxMaster.BoxNumber != null)
                 {
                     var exist = _context.BoxMaster.Where(a => a.BoxNumber.Trim() == boxMaster.BoxNumber.Trim()).FirstOrDefault();
                     if (exist != null)
@@ -80,7 +84,7 @@ namespace Ajit_Bakery.Controllers
                 boxMaster.ModifiedDate = DateTime.Now.ToString("dd-MM-yyyy");
                 boxMaster.Createtime = DateTime.Now.ToString("HH:mm");
                 boxMaster.Modifiedtime = DateTime.Now.ToString("HH:mm");
-                boxMaster.User = "admin";
+                boxMaster.User = username.ToString();
 
                 _context.Add(boxMaster);
                 await _context.SaveChangesAsync();

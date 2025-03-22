@@ -163,6 +163,7 @@ namespace Ajit_Bakery.Controllers
                 userMaster.Modifiedtime = DateTime.Now.ToString("HH:mm");
                 //userMaster.User = "admin";
                 userMaster.Id = maxId;
+               
                 _context.Add(userMaster);
                 await _context.SaveChangesAsync();
                 return Json(new { success = true, message = "Created Successfully !" });

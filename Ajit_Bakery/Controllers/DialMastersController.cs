@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Ajit_Bakery.Data;
 using Ajit_Bakery.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Ajit_Bakery.Controllers
 {
@@ -92,7 +93,10 @@ namespace Ajit_Bakery.Controllers
         {
             try
             {
-                
+                var currentuser1 = HttpContext.User;
+                string username = currentuser1.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
+
+
                 int maxId = _context.DialMaster.Any() ? _context.DialMaster.Max(e => e.Id) + 1 : 1;
                 dialMaster.Id = maxId;
                 var data = "D";
@@ -130,7 +134,7 @@ namespace Ajit_Bakery.Controllers
                 dialMaster.ModifiedDate = DateTime.Now.ToString("dd-MM-yyyy");
                 dialMaster.Createtime = DateTime.Now.ToString("HH:mm");
                 dialMaster.Modifiedtime = DateTime.Now.ToString("HH:mm");
-                dialMaster.User = "admin";
+                dialMaster.User = username.ToString();
                 if(dialMaster.DialUsedForCakes_Uom == "KGS")
                 {
                     dialMaster.DialUsedForCakes = dialMaster.DialUsedForCakes * 1000; //converted gm value

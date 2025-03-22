@@ -10,6 +10,7 @@ using Ajit_Bakery.Models;
 using System.Text.RegularExpressions;
 using NuGet.Common;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Ajit_Bakery.Controllers
 {
@@ -110,6 +111,10 @@ namespace Ajit_Bakery.Controllers
                         return Json(new { success = false, message = "Already Exist ! " });
                     }
                 }
+                var currentuser1 = HttpContext.User;
+                string username = currentuser1.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
+
+
                 int maxId = _context.ProductMaster.Any() ? _context.ProductMaster.Max(e => e.Id) + 1 : 1;
                 productMaster.Id = maxId;
                 productMaster.ProductName = productMaster.ProductName ;
@@ -118,7 +123,7 @@ namespace Ajit_Bakery.Controllers
                 productMaster.ModifiedDate = DateTime.Now.ToString("dd-MM-yyyy");
                 productMaster.Createtime = DateTime.Now.ToString("HH:mm");
                 productMaster.Modifiedtime = DateTime.Now.ToString("HH:mm");
-                productMaster.User = "admin";
+                productMaster.User = username;
 
                 _context.Add(productMaster);
                 await _context.SaveChangesAsync();

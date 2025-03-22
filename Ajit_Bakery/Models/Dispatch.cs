@@ -33,5 +33,6 @@ namespace Ajit_Bakery.Models
         public string? Status { get; set; }
         [NotMapped]
         public string category { get; set; }
+        public string? user { get; set; }
     }
 }

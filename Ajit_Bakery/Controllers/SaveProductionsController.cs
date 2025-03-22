@@ -16,6 +16,7 @@ using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using DocumentFormat.OpenXml.ExtendedProperties;
 using DocumentFormat.OpenXml.Office.CustomUI;
+using System.Security.Claims;
 
 namespace Ajit_Bakery.Controllers
 {
@@ -33,26 +34,34 @@ namespace Ajit_Bakery.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        public IActionResult checkvalue(string Production_Id, string productName,double TotalNetWg)
+        public IActionResult checkvalue(string Production_Id, string productName,double TotalNetWg,int DialTierWg,double ProductGrossWg)
         {
-            var check = _context.ProductionCapture.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.ProductName.Trim() == productName.Trim()).FirstOrDefault();
-            if (check != null)
+            if (double.IsNaN(TotalNetWg))
             {
-                var product = _context.ProductMaster.Where(a => a.ProductName.Trim() == productName.Trim() ).FirstOrDefault();
-                if (product != null)
+                TotalNetWg = 0;
+            }
+            if (TotalNetWg > 0)
+            {
+                var check = _context.ProductionCapture.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.ProductName.Trim() == productName.Trim()).FirstOrDefault();
+                if (check != null)
                 {
-                    if(TotalNetWg >= product.Unitqty)
+                    var product = _context.ProductMaster.Where(a => a.ProductName.Trim() == productName.Trim()).FirstOrDefault();
+                    if (product != null)
                     {
+                        if (TotalNetWg > product.Unitqty && TotalNetWg <= (product.Unitqty * 2))
+                        {
+
+                        }
+                        else
+                        {
+                            return Json(new { success = false, message = "Enter Correct Wt.,item unit range i,e " + product.Unitqty + " and you have enter " + TotalNetWg });
+                        }
 
                     }
-                    else
-                    {
-                        return Json(new { success = false, message = "Wt shouldn't be less then their basic range i,e " + product.Unitqty + " and you have enter " + TotalNetWg });
-                    }
-                    
+
                 }
-                
             }
+           
             return Json(new { success = true });
         }
         public async Task<IActionResult> Index()
@@ -354,7 +363,10 @@ namespace Ajit_Bakery.Controllers
         {
             try
             {
-                if(saveProduction.ProductGrossWg == 0)
+                var currentuser1 = HttpContext.User;
+                string username = currentuser1.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
+
+                if (saveProduction.ProductGrossWg == 0)
                 {
                     return Json(new { success = false, message = "Please do enter the gross wt.!" });
                 }
@@ -366,6 +378,7 @@ namespace Ajit_Bakery.Controllers
                 saveProduction.Qty = 1;
                 saveProduction.Exp_Date = DateTime.Now.AddDays(2).ToString("dd-MM-yyyy");
                 saveProduction.Id = maxId;
+                saveProduction.User = username;
                 _context.Add(saveProduction);
                 await _context.SaveChangesAsync();
 

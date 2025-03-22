@@ -10,6 +10,7 @@ using Ajit_Bakery.Models;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Microsoft.AspNetCore.Authorization;
 using System.Net;
+using System.Security.Claims;
 
 namespace Ajit_Bakery.Controllers
 {
@@ -345,6 +346,10 @@ namespace Ajit_Bakery.Controllers
 
             if (Packagings_List.Count > 0)
             {
+                var currentuser1 = HttpContext.User;
+                string username = currentuser1.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
+
+
                 var DCNO = GetDCNOSTR();
                 //ADD TO DISPATCH TABLE 
                 foreach (var item in Packagings_List)
@@ -382,6 +387,7 @@ namespace Ajit_Bakery.Controllers
                         VehicleNumber = dispatch.VehicleNumber,
                         VehicleDriverName = dispatch.VehicleDriverName,
                         VehicleOwn = dispatch.VehicleOwn,
+                        user = username.ToString(),
                     };
                     _context.Dispatch.Add(Dispatch);
                     _context.SaveChanges();

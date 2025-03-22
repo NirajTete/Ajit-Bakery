@@ -50,6 +50,7 @@ namespace Ajit_Bakery.Models
         public double sellingRs { get; set; }
         //[NotMapped]
         public double mrpRs { get; set; }
+        public string? user { get; set; }
 
     }
 }

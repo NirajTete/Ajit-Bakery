@@ -16,6 +16,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Data;
 using Microsoft.ReportingServices.ReportProcessing.ReportObjectModel;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 //using AspNetCore.Reporting.ReportExecutionService;
 
 namespace Ajit_Bakery.Controllers
@@ -408,10 +409,16 @@ namespace Ajit_Bakery.Controllers
         {
             try
             {
+                if(SaveProduction_List.Count == 0)
+                {
+                    return Json(new { status = "error", msg = "Please do scan the stickers first then submit !" });
+                }
                 var GetReciptId = GetReciptIdFUN();
                 var DATE = DateTime.Now.ToString("dd-MM-yyyy");
                 var TIME = DateTime.Now.ToString("HH:mm");
-                
+                var currentuser1 = HttpContext.User;
+                string username = currentuser1.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
+
                 ////////save logic
                 var Packagings_List1 = Packagings_List.ToList();
                 var SaveProduction_List1 = SaveProduction_List.ToList();
@@ -432,6 +439,7 @@ namespace Ajit_Bakery.Controllers
                     item.Packaging_Date = DATE;
                     item.Packaging_Time = TIME;
                     item.Reciept_Id = GetReciptId;
+                    item.user = username.ToString();
                     _context.Packaging.Add(item);
                     _context.SaveChanges();
                 }
