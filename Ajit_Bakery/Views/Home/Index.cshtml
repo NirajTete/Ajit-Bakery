@@ -15,32 +15,24 @@
             </div>
         </div>
     </div>
-   @*  <div class="col-md-3 col-xl-3">
-        <div class="card bg-grd-success order-card">
-            <div class="card-body">
-                <h6 class="text-white">Status Found</h6>
-                <h2 class="text-end text-white"><i class="feather icon-tag float-start"></i><span>@ViewBag.PendingOrders</span> </h2>
-                <p class="m-b-0">This Month<span class="float-end">@ViewBag.TotalOrders</span></p>
-            </div>
-        </div>
-    </div> *@
+    
     <div class="col-md-3 col-xl-3">
         <a href="@Url.Action("StatusFound", "Home")" style="text-decoration: none;">
-            <div class="card bg-grd-success order-card">
+            <div class="card bg-grd-success order-card ">
                 <div class="card-body">
                     <h6 class="text-white">Pending Orders</h6>
                     <h2 class="text-end text-white">
                         <i class="feather icon-tag float-start"></i>
                         <span>@ViewBag.PendingOrders</span>
                     </h2>
-                    @* <p class="m-b-0">This Month<span class="float-end">@ViewBag.TotalOrders</span></p> *@
                 </div>
             </div>
         </a>
     </div>
 
+
     <div class="col-md-3 col-xl-3">
-        <div class="card bg-grd-warning order-card">
+        <div class="card bg-grd-warning order-card ">
             <div class="card-body">
                 <h6 class="text-white">Total Dispatches</h6>
                 <h2 class="text-end text-white"><i class="feather icon-repeat float-start"></i><span>100</span></h2>
@@ -59,7 +51,8 @@
         </div>
     </div>
 
-    <div class="col-md-4 col-sm-6">
+    @* Second Row *@
+   <!-- <div class="col-md-4 col-sm-6">
         <div class="card statistics-card-1">
             <div class="card-body">
                 <img src="~/assets/images/widget/img-status-4.svg" alt="img" class="img-fluid img-bg" />
@@ -114,17 +107,22 @@
                 </div>
             </div>
         </div>
-    </div>
-    @* <div class="col-md-6 col-xl-7">
+     </div> -->
+
+    @* Chart *@
+    <div class="col-md-12 col-xl-7">
         <div class="card">
             <div class="card-header">
+                <h6><b>Sales Report</b></h6>
             </div>
             <div class="card-body">
-                <div id="world-map-markers" class="set-map" style="height: 365px"></div>
+                <div id="chart" style="height: 365px;"></div>
             </div>
         </div>
-    </div> *@
-    <div class="col-md-6 col-xl-5">
+    </div>
+
+
+  <!--  <div class="col-md-4 col-xl-5">
         <div class="card">
             <div class="card-header d-flex align-items-center justify-content-between py-3">
                 <h5>New Order </h5>
@@ -166,11 +164,11 @@
                             </div>
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
         </div>
-    </div>
+      </div> -->
 
     <!-- Recent Orders start -->
     <div class="col-sm-12" style="display:none">
@@ -229,3 +227,52 @@
     <!-- Recent Orders end -->
 </div>
 <!-- [ Main Content ] end -->
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        var options = {
+            series: [{
+                name: 'Sales',
+                data: [44, 55, 41, 67, 22, 43]
+            }],
+            chart: {
+                type: 'bar',
+                height: 350
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '50%',
+                    borderRadius: 5
+                }
+            },
+            colors: ['#1E3C72'], // Primary blue color
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shade: 'dark',
+                    type: 'vertical',
+                    shadeIntensity: 0.5,
+                    gradientToColors: ['#2A5298'], // Lighter blue at the bottom
+                    inverseColors: false,
+                    opacityFrom: 1,
+                    opacityTo: 1,
+                    stops: [0, 100]
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            xaxis: {
+                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart"), options);
+        chart.render();
+    </script>
+
+}
