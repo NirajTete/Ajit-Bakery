@@ -5,7 +5,7 @@
 }
 
 <div class="card">
-    <div class="card-header text-white py-2" style="background-color:rgb(0 96 193) !important;">
+    <div class="card-header text-white py-2 bg-dark"@*  style="background-color:rgb(0 96 193) !important; *@">
         <div class="d-flex align-items-baseline">
             <a asp-action="Index" asp-controller="Home" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
             <h4 class="mx-auto text-white text-2xl font-semibold"> Box Master</h4>
@@ -23,7 +23,7 @@
                         <th class="text-center">Box No.</th>
                         <th class="text-center">Area</th>
                         <th class="text-center">Uom</th>
-                        <th class="text-center">Action</th>
+                        <th class="text-center noExport">Action</th>
                     </tr>
                 </thead>
                 <tbody class="small text-center">
@@ -73,45 +73,68 @@
                 buttons: [
                     {
                         extend: 'excel',
-                        title: 'DAK Report',
+                        title: 'Box Master',
                         filename: function () {
-                            return generateFilename('DAK_Report');
+                            return generateFilename('Box Master');
                         },
                         text: '<i class="fas fa-file-excel"></i> Export Excel',
-                        className: 'dt-button btn btn-success'
+                        className: 'dt-button btn btn-success',
+                        exportOptions: {
+                            columns: ':not(.noExport)' // Exclude columns with class 'noExport'
+                        },
                     },
                     {
                         extend: 'pdf',
-                        title: 'DAK Report',
+                        title: 'Box Master',
                         filename: function () {
-                            return generateFilename('DAK_Report');
+                            return generateFilename('Box Master');
                         },
                         text: '<i class="fas fa-file-pdf"></i> Export PDF',
                         className: 'dt-button btn btn-danger',
-                        // orientation: 'landscape',
                         pageSize: 'A4',
+                        exportOptions: {
+                            columns: ':not(.noExport)' // Exclude columns with class 'noExport'
+                        },
                         customize: function (doc) {
+                            // Centering the title
                             doc.styles.title = {
                                 fontSize: 16,
                                 bold: true,
                                 alignment: 'center'
                             };
+
+                            // Adjusting table width
+                            doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+
+                            // Define columns to exclude from centering (0-based index)
+                            let excludeColumns = []; // Example: Excluding 2nd and 4th columns
+
+                            // Center align table content, except for excluded columns
+                            let tableBody = doc.content[1].table.body;
+                            tableBody.forEach(function (row, rowIndex) {
+                                row.forEach(function (cell, colIndex) {
+                                    if (!excludeColumns.includes(colIndex)) {
+                                        cell.alignment = 'center'; // Center align text in all cells except excluded columns
+                                    }
+                                });
+                            });
                         }
+
                     },
-                    {
-                        extend: 'csv',
-                        filename: function () {
-                            return generateFilename('DAK_Report');
-                        },
-                        text: '<i class="fas fa-file-csv"></i> Export CSV',
-                        className: 'dt-button btn btn-info'
-                    },
-                    {
-                        extend: 'print',
-                        title: 'DAK Report',
-                        text: '<i class="fas fa-print"></i> Print',
-                        className: 'dt-button btn btn-primary'
-                    }
+                    // {
+                    //     extend: 'csv',
+                    //     filename: function () {
+                    //         return generateFilename('DAK_Report');
+                    //     },
+                    //     text: '<i class="fas fa-file-csv"></i> Export CSV',
+                    //     className: 'dt-button btn btn-info'
+                    // },
+                    // {
+                    //     extend: 'print',
+                    //     title: 'DAK Report',
+                    //     text: '<i class="fas fa-print"></i> Print',
+                    //     className: 'dt-button btn btn-primary'
+                    // }
                 ],
                 info: false, ordering: false,
             });

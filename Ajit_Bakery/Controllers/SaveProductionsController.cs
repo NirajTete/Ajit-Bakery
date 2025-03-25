@@ -34,7 +34,7 @@ namespace Ajit_Bakery.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        public IActionResult checkvalue(string Production_Id, string productName,double TotalNetWg,int DialTierWg,double ProductGrossWg)
+        public IActionResult checkvalue(string Production_Id, string productName, double TotalNetWg, int DialTierWg, double ProductGrossWg)
         {
             if (double.IsNaN(TotalNetWg))
             {
@@ -61,15 +61,15 @@ namespace Ajit_Bakery.Controllers
 
                 }
             }
-           
+
             return Json(new { success = true });
         }
         public async Task<IActionResult> Index()
         {
-            var LIST = await _context.SaveProduction.Where(a=>a.Qty > 0).OrderByDescending(a=>a.Id).ToListAsync();
-            if(LIST.Count > 0)
+            var LIST = await _context.SaveProduction.Where(a => a.Qty > 0).OrderByDescending(a => a.Id).ToListAsync();
+            if (LIST.Count > 0)
             {
-                foreach(var item in LIST)
+                foreach (var item in LIST)
                 {
                     item.TotalNetWg_Uom = item.TotalNetWg + " " + item.TotalNetWg_Uom;
                 }
@@ -93,25 +93,25 @@ namespace Ajit_Bakery.Controllers
 
             return View(saveProduction);
         }
-        public IActionResult GetDialShape(string shape) 
+        public IActionResult GetDialShape(string shape)
         {
-            var data = _context.DialMaster.Where(a=>a.DialShape.Trim() == shape.Trim()).ToList();
+            var data = _context.DialMaster.Where(a => a.DialShape.Trim() == shape.Trim()).ToList();
             return Json(new { success = true, data = data });
         }
         public IActionResult GetDialCodes(string DialCode)
         {
             var data = _context.DialMaster
                 .Where(a => a.DialCode.Trim() == DialCode.Trim())
-                .Select(a => new { a.DialCode, a.DialWg,a.DialWgUom ,a.DialShape}) // Select only required fields
+                .Select(a => new { a.DialCode, a.DialWg, a.DialWgUom, a.DialShape }) // Select only required fields
                 .FirstOrDefault();
 
             return Json(new { success = data != null, data });
         }
 
-        public IActionResult GetProductDetails(string productName,string Production_Id)
+        public IActionResult GetProductDetails(string productName, string Production_Id)
         {
-            var get  = _context.ProductionCapture.Where(a=>a.ProductName == productName.Trim() && a.Production_Id.Trim() == Production_Id.Trim()).ToList();
-            var data = get.Sum(a=>a.TotalQty);
+            var get = _context.ProductionCapture.Where(a => a.ProductName == productName.Trim() && a.Production_Id.Trim() == Production_Id.Trim()).ToList();
+            var data = get.Sum(a => a.TotalQty);
 
             var saveproduction = _context.SaveProduction.Where(a => a.ProductName == productName.Trim() && a.Production_Id.Trim() == Production_Id.Trim()).ToList();
             var savedata = saveproduction.Sum(a => a.Qty);
@@ -119,8 +119,8 @@ namespace Ajit_Bakery.Controllers
             data = Math.Abs(data - savedata);
 
             List<string> DialCodes = new List<string>();
-            var product = _context.ProductMaster.Where(a=>a.ProductName.Trim() == productName.Trim()).FirstOrDefault();
-            var list = _context.DialMaster.Where(a=>a.DialUsedForCakes == product.Unitqty).Select(a=>a.DialCode.Trim()).ToList();
+            var product = _context.ProductMaster.Where(a => a.ProductName.Trim() == productName.Trim()).FirstOrDefault();
+            var list = _context.DialMaster.Where(a => a.DialUsedForCakes == product.Unitqty).Select(a => a.DialCode.Trim()).ToList();
             DialCodes.AddRange(list);
 
             return Json(new { success = true, data = data, DialCodes = DialCodes });
@@ -135,7 +135,7 @@ namespace Ajit_Bakery.Controllers
                 if (uom == "KGS")
                 {
                     var value = weight * 1000;
-                    if(value <= found.Unitqty)
+                    if (value <= found.Unitqty)
                     {
                         return Json(new { success = false, message = "Weight should be greater than the basic range of the product!" });
                     }
@@ -193,9 +193,9 @@ namespace Ajit_Bakery.Controllers
             };
 
             List<DialDetailViewModel> DialDetailViewModellist = new List<DialDetailViewModel>();
-           
-            var list = _context.ProductionCapture.Where(a=>a.Production_Id.Trim() == Production_Id.Trim() && a.Status == "Pending").ToList();
-            if(list.Count > 0)
+
+            var list = _context.ProductionCapture.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Status == "Pending").ToList();
+            if (list.Count > 0)
             {
                 var productSummary = _context.SaveProduction
                         .GroupBy(p => new { p.ProductName, p.Production_Id }) // Group by both ProductName & Production_Id
@@ -209,7 +209,7 @@ namespace Ajit_Bakery.Controllers
                         .ToList();
 
                 List<SaveProduction> listtt = new List<SaveProduction>();
-                foreach(var item in productSummary)
+                foreach (var item in productSummary)
                 {
                     SaveProduction sc = new SaveProduction()
                     {
@@ -219,13 +219,13 @@ namespace Ajit_Bakery.Controllers
                     };
                     listtt.Add(sc);
                 }
-               
+
                 foreach (var item in list)
                 {
                     var data = _context.ProductionCapture
                         .Where(a => a.ProductName.Trim() == item.ProductName.Trim() && a.Production_Id.Trim() == Production_Id.Trim() && a.OutletName.Trim() == item.OutletName.Trim())
                         .Sum(a => a.TotalQty);
-                    
+
                     var found = _context.ProductMaster.Where(a => a.ProductName.Trim() == item.ProductName.Trim()).FirstOrDefault();
                     if (found != null)
                     {
@@ -239,11 +239,11 @@ namespace Ajit_Bakery.Controllers
                             int minValue = Math.Min(savededata1.Qty, data);
                             savededata1.Qty = Math.Abs(savededata1.Qty - minValue);
                         }
-                        int PendingQty = Math.Abs(data- value);
+                        int PendingQty = Math.Abs(data - value);
                         double mrp = found.MRP;
                         double Selling = found.Selling;
                         double MRP_Rs = found.MRP_Rs;
-                        double Selling_Rs =found.Selling_Rs;
+                        double Selling_Rs = found.Selling_Rs;
                         DialDetailViewModel DialDetailViewModel = new DialDetailViewModel()
                         {
                             ProductName = item.ProductName,
@@ -254,7 +254,7 @@ namespace Ajit_Bakery.Controllers
                             MRP_Rs = MRP_Rs,
                             Selling_Rs = Selling_Rs,
                             PendingQty = PendingQty,
-                            BasicUnit = (found.Unitqty).ToString()+" "+found.Uom,
+                            BasicUnit = (found.Unitqty).ToString() + " " + found.Uom,
                         };
                         DialDetailViewModellist.Add(DialDetailViewModel);
                         //if (savededata1 != null)
@@ -265,7 +265,7 @@ namespace Ajit_Bakery.Controllers
                     }
                 }
             }
-           
+
 
             // Filter products where the difference is NOT zero
             lstProducts = lstProducts
@@ -290,9 +290,9 @@ namespace Ajit_Bakery.Controllers
         }
 
 
-        public IActionResult CalculateTotalNetWeight(string  Production_Id, string productName, double TotalNetWg)
+        public IActionResult CalculateTotalNetWeight(string Production_Id, string productName, double TotalNetWg)
         {
-            double sellingRs=0;
+            double sellingRs = 0;
             double mrpRs = 0;
 
             var found = _context.ProductMaster.Where(a => a.ProductName.Trim() == productName.Trim()).FirstOrDefault();
@@ -303,8 +303,8 @@ namespace Ajit_Bakery.Controllers
                 double MRP_Rs = found.MRP_Rs;
                 double Selling_Rs = found.Selling_Rs;
 
-                sellingRs = TotalNetWg* Selling_Rs;
-                mrpRs = TotalNetWg* MRP_Rs;
+                sellingRs = TotalNetWg * Selling_Rs;
+                mrpRs = TotalNetWg * MRP_Rs;
             }
 
             return Json(new { success = true, sellingRs = sellingRs, mrpRs = mrpRs });
@@ -359,7 +359,7 @@ namespace Ajit_Bakery.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create( SaveProduction saveProduction)
+        public async Task<IActionResult> Create(SaveProduction saveProduction)
         {
             try
             {
@@ -373,7 +373,7 @@ namespace Ajit_Bakery.Controllers
                 int maxId = _context.SaveProduction.Any() ? _context.SaveProduction.Max(e => e.Id) + 1 : 1;
                 saveProduction.SaveProduction_Date = DateTime.Now.ToString("dd-MM-yyyy");
                 saveProduction.SaveProduction_Time = DateTime.Now.ToString("HH:mm");
-                saveProduction.User = "admin";
+                //saveProduction.User = "admin";
                 saveProduction.DialTierWg_Uom = saveProduction.DialTierWg_Uom.ToUpper();
                 saveProduction.Qty = 1;
                 saveProduction.Exp_Date = DateTime.Now.AddDays(2).ToString("dd-MM-yyyy");
@@ -505,7 +505,7 @@ namespace Ajit_Bakery.Controllers
                             }
                         }
                     }
-                    
+
 
                 }
                 //ENDED
@@ -586,5 +586,166 @@ namespace Ajit_Bakery.Controllers
         {
             return _context.SaveProduction.Any(e => e.Id == id);
         }
+
+        //Product Sticker Reprint
+        public async Task<IActionResult> ReprintStk(string selectedDate = null)
+        {
+            DateTime today = DateTime.Now.Date;
+            DateTime filterDate = string.IsNullOrEmpty(selectedDate) ? today : DateTime.ParseExact(selectedDate, "yyyy-MM-dd", null);
+
+            var productions = await _context.SaveProduction
+                .Where(p => p.SaveProduction_Date == filterDate.ToString("dd-MM-yyyy"))
+                .ToListAsync();
+
+            return View(productions);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ReprintStickersBulk([FromBody] List<int> ids)
+        {
+            if (ids == null || !ids.Any())
+            {
+                return Json(new { success = false, message = "No stickers selected for reprinting!" });
+            }
+
+            var productions = await _context.SaveProduction
+                .Where(p => ids.Contains(p.Id))
+                .ToListAsync();
+
+            foreach (var production in productions)
+            {
+                await GenerateStickers(production);
+            }
+
+            return Json(new { success = true, message = "Selected stickers reprinted successfully!" });
+        }
+
+        private async Task GenerateStickers(SaveProduction saveProduction)
+        {
+            var mrp = _context.ProductMaster
+                .Where(a => a.ProductName.Trim() == saveProduction.ProductName.Trim())
+                .FirstOrDefault();
+
+            List<Sticker> stickerList = new List<Sticker>();
+
+            string trimmedProductName = saveProduction.ProductName.Trim();
+            string productname1 = trimmedProductName.Length > 11 ? trimmedProductName.Substring(0, 11) : trimmedProductName;
+            string productname2 = trimmedProductName.Length > 11 ? trimmedProductName.Substring(11, Math.Min(11, trimmedProductName.Length - 11)) : "";
+
+            stickerList.AddRange(Enumerable.Range(1, 4).Select(i => new Sticker
+            {
+                productname = saveProduction.ProductName,
+                productname1 = productname1,
+                productname2 = productname2,
+                wg = saveProduction.TotalNetWg.ToString(),
+                wgvalue = saveProduction.TotalNetWg + " " + saveProduction.TotalNetWg_Uom,
+                wguom = saveProduction.TotalNetWg_Uom,
+                mrp = mrp?.MRP.ToString() ?? "NA",
+                productcode = mrp?.ProductCode ?? "NA"
+            }));
+
+            // ✅ GENERATE STICKER LOGIC
+
+            List<Sticker> SaveProduction_list = new List<Sticker>();
+
+            SaveProduction_list.AddRange(Enumerable.Range(1, 4).Select(i => new Sticker
+            {
+                productname = saveProduction.ProductName,
+                productname1 = productname1,
+                productname2 = productname2,
+                wg = saveProduction.TotalNetWg.ToString(),
+                wgvalue = saveProduction.TotalNetWg + " " + saveProduction.TotalNetWg_Uom,
+                wguom = saveProduction.TotalNetWg_Uom,
+                mrp = mrp?.MRP.ToString() ?? "NA",
+                productcode = mrp?.ProductCode ?? "NA"
+            }));
+
+            string printerName1 = _config["AppSettings:loc1_printer"];
+            string prnFilePath = $"{_webHostEnvironment.WebRootPath}\\Sticker\\Cake20x10-300-DP-4.prn";
+            string valueFilePath = $"{_webHostEnvironment.WebRootPath}\\Sticker\\Cake20x10-300-DP-4VALUE.prn";
+
+            if (System.IO.File.Exists(valueFilePath))
+            {
+                System.IO.File.Delete(valueFilePath);
+            }
+            System.IO.File.Copy(prnFilePath, valueFilePath);
+
+            int qnty = SaveProduction_list.Count;
+            int def = qnty / 4;  // Number of complete sets of 4
+            int count1 = 0;
+
+            for (int i = 0; i < def; i++)
+            {
+                string fileContent = System.IO.File.ReadAllText(prnFilePath);
+
+                // ✅ REPLACING STICKER VARIABLES IN FILE CONTENT
+                fileContent = fileContent
+                    .Replace("<PRODUCT_NAME>", SaveProduction_list[count1].productname.Trim())//1
+                    .Replace("<PRODUCT_CODE>", SaveProduction_list[count1].productcode.Trim())//1
+                    .Replace("<WG>", SaveProduction_list[count1].wg.ToString())
+                    .Replace("<WGVALUE>", SaveProduction_list[count1].wgvalue.ToString())
+                    .Replace("<MRP>", saveProduction.mrpRs.ToString())
+                    .Replace("<PRODUCT_NAME1>", SaveProduction_list[count1].productname1)
+                    .Replace("<PRODUCT_NAME2>", SaveProduction_list[count1].productname2)
+
+                    .Replace("<PRODUCT_NAME_1>", SaveProduction_list[count1 + 1].productname)//2
+                    .Replace("<PRODUCT_CODE_1>", SaveProduction_list[count1 + 1].productcode)//2
+                    .Replace("<WG_1>", SaveProduction_list[count1 + 1].wg.ToString())
+                    .Replace("<WGVALUE_1>", SaveProduction_list[count1 + 1].wgvalue.ToString())
+                    .Replace("<MRP_1>", saveProduction.mrpRs.ToString())
+                    .Replace("<PRODUCT_NAME1_1>", SaveProduction_list[count1 + 1].productname1)
+                    .Replace("<PRODUCT_NAME2_1>", SaveProduction_list[count1 + 1].productname2)
+
+                    .Replace("<PRODUCT_NAME_2>", SaveProduction_list[count1 + 2].productname)//3
+                    .Replace("<PRODUCT_CODE_2>", SaveProduction_list[count1 + 2].productcode)//3
+                    .Replace("<WG_2>", SaveProduction_list[count1 + 2].wg.ToString())
+                    .Replace("<WGVALUE_2>", SaveProduction_list[count1 + 2].wgvalue.ToString())
+                    .Replace("<MRP_2>", saveProduction.mrpRs.ToString())
+                    .Replace("<PRODUCT_NAME1_2>", SaveProduction_list[count1 + 2].productname1)
+                    .Replace("<PRODUCT_NAME2_2>", SaveProduction_list[count1 + 2].productname2)
+
+                    .Replace("<PRODUCT_NAME_3>", SaveProduction_list[count1 + 3].productname)//4
+                    .Replace("<PRODUCT_CODE_3>", SaveProduction_list[count1 + 3].productcode)//4
+                    .Replace("<WG_3>", SaveProduction_list[count1 + 3].wg.ToString())
+                    .Replace("<WGVALUE_3>", SaveProduction_list[count1 + 3].wgvalue.ToString())
+                    .Replace("<MRP_3>", saveProduction.mrpRs.ToString())
+                    .Replace("<PRODUCT_NAME1_3>", SaveProduction_list[count1 + 3].productname1)
+                    .Replace("<PRODUCT_NAME2_3>", SaveProduction_list[count1 + 3].productname2);
+
+                // ✅ Writing modified content back to file
+                System.IO.File.WriteAllText(valueFilePath, fileContent);
+
+                try
+                {
+                    //Uncomment and configure printer logic if needed
+                    var printerIp = IPAddress.Parse(printerName1);
+                    var printerPort = 9100;
+                    var client = new TcpClient();
+                    client.Connect(printerIp, printerPort);
+
+                    byte[] byteArray = Encoding.ASCII.GetBytes(fileContent);
+                    var stream = client.GetStream();
+                    stream.Write(byteArray, 0, byteArray.Length);
+                    stream.Flush();
+                    client.Close();
+                    Thread.Sleep(300);
+                }
+                catch (Exception ex)
+                {
+                    // Log error if needed
+                }
+
+                count1 += 4; // Move to the next set of 4
+            }
+
+
+            await Task.CompletedTask;
+        }
+
+
     }
+
+
 }
+

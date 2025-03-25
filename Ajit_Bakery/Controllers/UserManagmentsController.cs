@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Ajit_Bakery.Data;
 using Ajit_Bakery.Models;
-using Microsoft.AspNetCore.Identity;
 using AspNetCoreHero.ToastNotification.Abstractions;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
@@ -53,6 +48,7 @@ namespace Ajit_Bakery.Controllers
 
             return View();
         }
+
         [HttpGet]
         public async Task<IActionResult> PageAllot()
         {
@@ -75,6 +71,7 @@ namespace Ajit_Bakery.Controllers
 
             return View();
         }
+
         private List<SelectListItem> GetMainMenu()
         {
             var lstProducts = new List<SelectListItem>();
@@ -173,10 +170,10 @@ namespace Ajit_Bakery.Controllers
             ViewBag.reportmenu = GetReportMenu();
             //ViewBag.WmarketingMenu = GetMarketingMenu();
 
-            if (username == null || _context.UserManagment == null)
+          /*  if (username == null || _context.UserManagment == null)
             {
                 return NotFound();
-            }
+            }*/
 
             var userManagement = _context.UserManagment.Where(a => a.UserName == username).FirstOrDefault();
             if (userManagement == null)
@@ -509,8 +506,8 @@ namespace Ajit_Bakery.Controllers
             {
                 var userManagement = _context.UserManagment.Where(m => m.UserName == username).ToList();
                 _context.UserManagment.RemoveRange(userManagement);
-                _context.SaveChangesAsync(); // Save changes to the UserManagement table
                 _context.UserMaster.Remove(aspUser); // Delete the ASP.NET Core Identity user
+                _context.SaveChangesAsync(); // Save changes to the UserManagement table
             }
 
             return Json(new { success = true, message = "User Removed Successfully !" });

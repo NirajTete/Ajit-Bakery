@@ -26,7 +26,7 @@
                         <th class="text-center">User Dept.</th>
                         <th class="text-center">Contact No.</th>
                         <th class="text-center">Role</th>
-                        <th class="text-center">Action</th>
+                                                <th class="text-center noExport">Action</th>
                     </tr>
                 </thead>
                 <tbody class="small text-center">
@@ -76,46 +76,69 @@
                          dom: 'Bfrtip', // Add button controls
                          buttons: [
                              {
-                                 extend: 'excel',
-                                 title: 'DAK Report',
-                                 filename: function () {
-                                     return generateFilename('DAK_Report');
-                                 },
-                                 text: '<i class="fas fa-file-excel"></i> Export Excel',
-                                 className: 'dt-button btn btn-success'
-                             },
-                             {
-                                 extend: 'pdf',
-                                 title: 'DAK Report',
-                                 filename: function () {
-                                     return generateFilename('DAK_Report');
-                                 },
-                                 text: '<i class="fas fa-file-pdf"></i> Export PDF',
-                                 className: 'dt-button btn btn-danger',
-                                 // orientation: 'landscape',
-                                 pageSize: 'A4',
-                                 customize: function (doc) {
-                                     doc.styles.title = {
-                                         fontSize: 16,
-                                         bold: true,
-                                         alignment: 'center'
-                                     };
-                                 }
-                             },
-                             {
-                                 extend: 'csv',
-                                 filename: function () {
-                                     return generateFilename('DAK_Report');
-                                 },
-                                 text: '<i class="fas fa-file-csv"></i> Export CSV',
-                                 className: 'dt-button btn btn-info'
-                             },
-                             {
-                                 extend: 'print',
-                                 title: 'DAK Report',
-                                 text: '<i class="fas fa-print"></i> Print',
-                                 className: 'dt-button btn btn-primary'
-                             }
+                        extend: 'excel',
+                        title: 'User Master',
+                        filename: function () {
+                            return generateFilename('User Master');
+                        },
+                        text: '<i class="fas fa-file-excel"></i> Export Excel',
+                        className: 'dt-button btn btn-success',
+                        exportOptions: {
+                            columns: ':not(.noExport)' // Exclude columns with class 'noExport'
+                        },
+                    },
+                    {
+                        extend: 'pdf',
+                        title: 'User Master',
+                        filename: function () {
+                            return generateFilename('User Master');
+                        },
+                        text: '<i class="fas fa-file-pdf"></i> Export PDF',
+                        className: 'dt-button btn btn-danger',
+                        pageSize: 'A4',
+                        exportOptions: {
+                            columns: ':not(.noExport)' // Exclude columns with class 'noExport'
+                        },
+                        customize: function (doc) {
+                            // Centering the title
+                            doc.styles.title = {
+                                fontSize: 16,
+                                bold: true,
+                                alignment: 'center'
+                            };
+
+                            // Adjusting table width
+                            doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+
+                            // Define columns to exclude from centering (0-based index)
+                            let excludeColumns = []; // Example: Excluding 2nd and 4th columns
+
+                            // Center align table content, except for excluded columns
+                            let tableBody = doc.content[1].table.body;
+                            tableBody.forEach(function (row, rowIndex) {
+                                row.forEach(function (cell, colIndex) {
+                                    if (!excludeColumns.includes(colIndex)) {
+                                        cell.alignment = 'center'; // Center align text in all cells except excluded columns
+                                    }
+                                });
+                            });
+                        }
+
+                    },
+                             // {
+                             //     extend: 'csv',
+                             //     filename: function () {
+                             //         return generateFilename('DAK_Report');
+                             //     },
+                             //     text: '<i class="fas fa-file-csv"></i> Export CSV',
+                             //     className: 'dt-button btn btn-info'
+                             // },
+                             // {
+                             //     extend: 'print',
+                             //     title: 'DAK Report',
+                             //     text: '<i class="fas fa-print"></i> Print',
+                             //     className: 'dt-button btn btn-primary'
+                             // }
                          ],
                          info: false, ordering: false,
                      });

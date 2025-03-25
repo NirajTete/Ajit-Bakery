@@ -23,54 +23,54 @@ LBLCOND 3,2
 OPTIMIZE "BATCH" ON
 PP8,95:AN7
 BARSET "DATAMATRIX",1,1,3,66,0,7
-PB "AB00003#Black Forest  - .25#218#697.6"
+PB "AB00049#Rasmalai - 1#1000#1000"
 PP83,116:NASC 8
 FT "CG Triumvirate Condensed Bold",6,0,99
-PT "Black Fores"
+PT "Rasmalai - "
 PP83,92:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "t  - .25"
+PT "1"
 PP83,68:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "218 GMS"
+PT "1000 GMS"
 PP83,44:FT "CG Triumvirate Condensed Bold",6,0,99
 PT "MRP:Rs."
 PP167,46:FT "CG Triumvirate Condensed Bold",7,0,99
-PT "697.6"
+PT "1000"
 PP279,95:BARSET "DATAMATRIX",1,1,3,66,0,7
-PB "AB00003#Black Forest  - .25#218#697.6"
+PB "AB00049#Rasmalai - 1#1000#1000"
 PP354,116:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "Black Fores"
+PT "Rasmalai - "
 PP354,92:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "t  - .25"
+PT "1"
 PP354,68:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "218 GMS"
+PT "1000 GMS"
 PP354,44:FT "CG Triumvirate Condensed Bold",6,0,99
 PT "MRP:Rs."
 PP438,46:FT "CG Triumvirate Condensed Bold",7,0,99
-PT "697.6"
+PT "1000"
 PP551,95:BARSET "DATAMATRIX",1,1,3,66,0,7
-PB "AB00003#Black Forest  - .25#218#697.6"
+PB "AB00049#Rasmalai - 1#1000#1000"
 PP626,116:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "Black Fores"
+PT "Rasmalai - "
 PP626,92:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "t  - .25"
+PT "1"
 PP626,68:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "218 GMS"
+PT "1000 GMS"
 PP626,44:FT "CG Triumvirate Condensed Bold",6,0,99
 PT "MRP:Rs."
 PP710,46:FT "CG Triumvirate Condensed Bold",7,0,99
-PT "697.6"
+PT "1000"
 PP822,95:BARSET "DATAMATRIX",1,1,3,66,0,7
-PB "AB00003#Black Forest  - .25#218#697.6"
+PB "AB00049#Rasmalai - 1#1000#1000"
 PP897,116:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "Black Fores"
+PT "Rasmalai - "
 PP897,92:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "t  - .25"
+PT "1"
 PP897,68:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "218 GMS"
+PT "1000 GMS"
 PP897,44:FT "CG Triumvirate Condensed Bold",6,0,99
 PT "MRP:Rs."
 PP981,46:FT "CG Triumvirate Condensed Bold",7,0,99
-PT "697.6"
+PT "1000"
 LAYOUT RUN ""
 PF
 PRINT KEY OFF

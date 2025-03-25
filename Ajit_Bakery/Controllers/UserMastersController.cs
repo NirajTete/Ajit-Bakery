@@ -50,7 +50,7 @@ namespace Ajit_Bakery.Controllers
             {
                 // Fetch user details from the database using LINQ
                 var user = _context.UserMaster
-                            .Where(x => x.UserName.ToLower().Trim() == loginPage.UserName.ToLower().Trim())
+                            .Where(x => x.UserName.ToLower().Trim() == loginPage.UserName.ToLower().Trim() && x.UserPassward.Trim() == loginPage.UserPassward)
                             //.Select(x => new { x.UserPassward, x.UserDept, x.UserRole , x.UserName,})
                             .FirstOrDefault();
 
@@ -98,7 +98,7 @@ namespace Ajit_Bakery.Controllers
                 }
                 else
                 {
-                    _notyfyService.Warning("Invalid UserName!");
+                    _notyfyService.Warning("Invalid UserName! or Password!");
                     return RedirectToAction("Login", "UserMasters");
                 }
             }

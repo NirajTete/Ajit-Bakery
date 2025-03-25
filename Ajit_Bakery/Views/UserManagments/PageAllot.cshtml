@@ -11,9 +11,9 @@
         <div class="d-flex align-items-baseline">
             <a asp-action="Index" asp-controller="Home" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
             <h4 class="mx-auto text-white text-2xl font-semibold"> Registered Users List</h4>
-            <a asp-action="CreateUser" class="btn btn-success btn-sm text-white">
+           @*  <a asp-action="CreateUser" class="btn btn-success btn-sm text-white">
                 <i class="fas fa-plus-square"></i> Add User
-            </a>
+            </a> *@
         </div>
     </div>
     <div class="card-body mt-4">
@@ -42,7 +42,7 @@
                                         <i class="fa fa-pencil" aria-hidden="true"></i> Edit
                                     </a>
 
-                                    <a href="#" class="btn btn-sm btn-danger delete-button" data-username="@item.UserName">
+                                    <a href="#" class="btn btn-sm btn-danger delete-button" data-username="@item.UserName" onclick="">
                                         <i class="fas fa-trash-alt" aria-hidden="true"></i> Delete
                                     </a>
                                 }
@@ -78,52 +78,75 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
-    <script>
+  @*   <script>
         $(document).ready(function () {
             $('#UserReg').DataTable({
                 dom: 'Bfrtip', // Add button controls
                 buttons: [
-                    {
+                   {
                         extend: 'excel',
-                        title: 'DAK Report',
+                        title: 'Box Master',
                         filename: function () {
-                            return generateFilename('DAK_Report');
+                            return generateFilename('Box Master');
                         },
                         text: '<i class="fas fa-file-excel"></i> Export Excel',
-                        className: 'dt-button btn btn-success'
+                        className: 'dt-button btn btn-success',
+                        exportOptions: {
+                            columns: ':not(.noExport)' // Exclude columns with class 'noExport'
+                        },
                     },
                     {
                         extend: 'pdf',
-                        title: 'DAK Report',
+                        title: 'Box Master',
                         filename: function () {
-                            return generateFilename('DAK_Report');
+                            return generateFilename('Box Master');
                         },
                         text: '<i class="fas fa-file-pdf"></i> Export PDF',
                         className: 'dt-button btn btn-danger',
-                        // orientation: 'landscape',
                         pageSize: 'A4',
+                        exportOptions: {
+                            columns: ':not(.noExport)' // Exclude columns with class 'noExport'
+                        },
                         customize: function (doc) {
+                            // Centering the title
                             doc.styles.title = {
                                 fontSize: 16,
                                 bold: true,
                                 alignment: 'center'
                             };
+
+                            // Adjusting table width
+                            doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+
+                            // Define columns to exclude from centering (0-based index)
+                            let excludeColumns = []; // Example: Excluding 2nd and 4th columns
+
+                            // Center align table content, except for excluded columns
+                            let tableBody = doc.content[1].table.body;
+                            tableBody.forEach(function (row, rowIndex) {
+                                row.forEach(function (cell, colIndex) {
+                                    if (!excludeColumns.includes(colIndex)) {
+                                        cell.alignment = 'center'; // Center align text in all cells except excluded columns
+                                    }
+                                });
+                            });
                         }
+
                     },
-                    {
-                        extend: 'csv',
-                        filename: function () {
-                            return generateFilename('DAK_Report');
-                        },
-                        text: '<i class="fas fa-file-csv"></i> Export CSV',
-                        className: 'dt-button btn btn-info'
-                    },
-                    {
-                        extend: 'print',
-                        title: 'DAK Report',
-                        text: '<i class="fas fa-print"></i> Print',
-                        className: 'dt-button btn btn-primary'
-                    }
+                    // {
+                    //     extend: 'csv',
+                    //     filename: function () {
+                    //         return generateFilename('DAK_Report');
+                    //     },
+                    //     text: '<i class="fas fa-file-csv"></i> Export CSV',
+                    //     className: 'dt-button btn btn-info'
+                    // },
+                    // {
+                    //     extend: 'print',
+                    //     title: 'DAK Report',
+                    //     text: '<i class="fas fa-print"></i> Print',
+                    //     className: 'dt-button btn btn-primary'
+                    // }
                 ],
                 info: false, ordering: false,
             });
@@ -134,7 +157,7 @@
             const date = now.toISOString().slice(0, 10).replace(/-/g, '_'); // Format: YYYY_MM_DD
             return `${baseName}_${date}`;
         }
-    </script>
+    </script> *@
 
 
     <script>
@@ -185,7 +208,7 @@
         deleteButtons.forEach(function (button) {
             button.addEventListener('click', function (event) {
                 var username = button.dataset.username;
-                var row = button.closest('tr'); // Find the closest table row
+                var row = button.closest('tr'); // Find the closest table row               
                 confirmDelete(username, row);
             });
         });

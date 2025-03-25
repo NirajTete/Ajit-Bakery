@@ -43,13 +43,30 @@ public class HomeController : Controller
                 int.TryParse(parts[1], out int month) && month == currentMonth && // Match month
                 int.TryParse(parts[2], out int year) && year == currentYear // Match year
             )
-            .Count(); // Get the count
-                      
-        var list = _context.ProductionCapture.Where(a=>a.Status == "Pending").ToList().Count();
-        ViewBag.PendingOrders = list;
+            .Count(); // Get the count       
+
+        // Count completed dispatches
+        var completedDispatchCount = _context.Dispatch
+            .Count(x => x.Status == "Completed");
+
+        // Count pending production orders
+        var pendingProductionCount = _context.ProductionCapture
+            .Count(a => a.Status == "Pending");
+
+        // Count completed production orders
+        var completedProductionCount = _context.ProductionCapture
+            .Count(x => x.Status == "Completed");
+
+        // Assign values to ViewBag
+        ViewBag.PendingOrders = pendingProductionCount;
         ViewBag.TotalOrders = list1;
+        ViewBag.CompletedDispatches = completedDispatchCount;
+        ViewBag.CompletedProductions = completedProductionCount; // Added this
+
         return View();
     }
+
+
 
     public IActionResult StatusFound()
     {

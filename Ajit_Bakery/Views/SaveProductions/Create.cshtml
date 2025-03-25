@@ -21,11 +21,11 @@
                 <div class="row">
                     <div class="form-group col-sm-4">
                         <label asp-for="Production_Id" class="control-label fw-bold small">Production Id</label>
-                        <select asp-for="Production_Id" id="Production_Id" style="font-size:18px"; required class="form-control text-uppercase" asp-items="@ViewBag.GetProduction_Id" onchange="OnProduction_IdChange()">
+                        <select asp-for="Production_Id" id="Production_Id" style="font-size:18px" ; required class="form-control text-uppercase" asp-items="@ViewBag.GetProduction_Id" onchange="OnProduction_IdChange()">
                         </select>
                     </div>
                     <div class="col-sm-2">
-                        <label  class="control-label fw-bold small">&nbsp;</label>
+                        <label class="control-label fw-bold small">&nbsp;</label>
                         <button style="font-weight:600; font-size:16px;color:cornflowerblue" class="accordion-button collapsed " type="button" data-bs-toggle="collapse" data-bs-target="#TableDataId" aria-expanded="false" aria-controls="TableDataId">
                             View Detailed
                         </button>
@@ -39,20 +39,20 @@
                         <div id="TableDataId" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#tableAccordion">
                             <div class="accordion-body" style="display:none" id="TableDataId">
                                 @* <div class="row p-3"> *@
-                                    <table id="tableData" class="table table-bordered">
-                                        <thead class="thead-dark">
-                                            <tr>
-                                                <th>Outlet Name</th>
-                                                <th>Product Name</th>
-                                                <th>Range</th>
-                                                <th>Total Qty</th>
-                                                <th>Pending Qty</th>
-                                                <th>MRP</th>
-                                                <th>Selling</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
+                                <table id="tableData" class="table table-bordered">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>Outlet Name</th>
+                                            <th>Product Name</th>
+                                            <th>Range</th>
+                                            <th>Total Qty</th>
+                                            <th>Pending Qty</th>
+                                            <th>MRP</th>
+                                            <th>Selling</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
                                 @* </div> *@
 
                             </div>
@@ -60,7 +60,7 @@
                     </div>
                 </div>
 
-@*                 <div class="row p-3" style="display:none" id="TableDataId">
+                @*                 <div class="row p-3" style="display:none" id="TableDataId">
                     <table id="tableData" class="table table-bordered mt-3">
                         <thead class="thead-dark">
                             <tr>
@@ -79,15 +79,22 @@
  *@                <div class="row mt-2">
                     <div class="form-group col-sm-6">
                         <label asp-for="ProductName" class="control-label fw-bold small fw-bold small"></label>
-                        <select asp-for="ProductName" style="font-weight:600; font-size:18px;" class="form-control text-uppercase"  id="ProductName" required>
+                        <select asp-for="ProductName" style="font-weight:600; font-size:18px;" class="form-control text-uppercase" id="ProductName" required>
                         </select>
                     </div>
                     <div class="form-group col-sm-4">
                         <label asp-for="DialCode" class="control-label fw-bold small"></label>
-                        <select asp-for="DialCode" style="font-weight:600; font-size:18px;" class="form-control text-uppercase" id="DialCode" onchange="GetDialCodes()" required></select>
+                        <select asp-for="DialCode" style="font-weight:600; font-size:18px;" class="form-control text-uppercase" id="DialCode" onchange="GetDialCodes()" required>
+                        </select>
+
+                     @*    <select asp-for="DialCode" id="DialCode" required class="form-control text-uppercase" onchange="GetDialCodes()" style="font-size:18px;color: green; font-weight: 650;text-transform: uppercase">
+                            @* <option>KGS</option> *@
+                            @* <option>GMS</option> 
+                        </select> *@
+
                     </div>
                 </div>
-                <div class="row"  id="PartDial">
+                <div class="row" id="PartDial">
                     <div class="form-group col-sm-2" style="display:none">
                         <label asp-for="DialShape" class="control-label fw-bold small">Dial Shape</label>
                         <select asp-for="DialShape" class="form-control text-uppercase" id="DialShape" required>
@@ -111,18 +118,18 @@
                     </div>
                     <div class="form-group col-sm-4">
                         <label class="control-label fw-bold small">&nbsp;</label> <!-- Empty label for spacing -->
-                        <button type="button" class="btn btn-info form-control " onclick="displayNetwt()" >Get Wt</button>
+                        <button type="button" class="btn btn-info form-control " onclick="displayNetwt()">Get Wt</button>
                     </div>
                 </div>
-                 @* <div class="row">
+                @* <div class="row">
                     <button class="btn btn-info btn-sm col-sm-2" onclick="displayNetwt()">Get Net</button>
                 </div> *@ @*style="display:none" id="Netwt"*@
                 <div class="row" style="display:none" id="Partproduct">
                     <div class="form-group col-sm-1" style="display:none">
-                        <label  class="control-label fw-bold small">Qty</label>
-                        <input class="form-control" id="count" value="1"  style="height:5vh; font-size: 20px; color: green; font-weight: 650;" required readonly />
+                        <label class="control-label fw-bold small">Qty</label>
+                        <input class="form-control" id="count" value="1" style="height:5vh; font-size: 20px; color: green; font-weight: 650;" required readonly />
                     </div>
-                    <div class="form-group col-sm-3" >
+                    <div class="form-group col-sm-3">
                         <label asp-for="ProductGrossWg" class="control-label fw-bold small"></label>
                         <input asp-for="ProductGrossWg" id="ProductGrossWg" style="height:5vh; font-size: 18px; color: green; font-weight: 650;" class="form-control" required onchange="Refresh()" />
                     </div>
@@ -133,7 +140,7 @@
                             <option>GMS</option>
                         </select>
                     </div>
-                    <div class="form-group col-sm-2"  style="display:none" >
+                    <div class="form-group col-sm-2" style="display:none">
                         <label asp-for="ProductGrossWgValue" class="control-label fw-bold small"></label>
                         <input asp-for="ProductGrossWgValue" required id="ProductGrossWgValue" style="height:5vh; font-size: 18px; color:brown; font-weight: 650;" readonly class="form-control" />
                     </div>
@@ -148,11 +155,11 @@
                                required readonly id="sellingRs" class="form-control" />
                     </div>
                 </div>
-                <div class="row" style="display:none"  id="Partnetwt">
+                <div class="row" style="display:none" id="Partnetwt">
                     <div class="form-group col-sm-2">
                         <label asp-for="NetWg" class="control-label fw-bold small"></label>
-                        <input asp-for="NetWg" style="height:5vh; font-size: 18px; color: green; font-weight: 650;" readonly id="NetWg" 
-                        required class="form-control" />
+                        <input asp-for="NetWg" style="height:5vh; font-size: 18px; color: green; font-weight: 650;" readonly id="NetWg"
+                               required class="form-control" />
                     </div>
                     <div class="form-group col-sm-2">
                         <label asp-for="NetWg_uom" class="control-label fw-bold small">Uom</label>
@@ -160,18 +167,17 @@
                                required readonly id="NetWg_uom" class="form-control" />
                     </div>
                 </div>
-                <div class="row"  id="Partnetwt">
-                    
+                <div class="row" id="Partnetwt">
                 </div>
-                <div class="row"  id="Parttotal">
+                <div class="row" id="Parttotal">
                     <div class="form-group col-sm-3">
                         <label asp-for="TotalNetWg" class="control-label fw-bold small"></label>
                         <input asp-for="TotalNetWg" style="height:5vh; font-size: 18px; color: green; font-weight: 650;" readonly id="TotalNetWg" required class="form-control" />
                     </div>
                     <div class="form-group col-sm-3">
                         <label asp-for="TotalNetWg_Uom" class="control-label fw-bold small">Uom</label>
-                        <input asp-for="TotalNetWg_Uom" style="height:5vh; font-size: 18px; color: green; font-weight: 650;" 
-                        required readonly id="TotalNetWg_Uom" class="form-control" />
+                        <input asp-for="TotalNetWg_Uom" style="height:5vh; font-size: 18px; color: green; font-weight: 650;"
+                               required readonly id="TotalNetWg_Uom" class="form-control" />
                     </div>
                 </div>
                 <div class="row mb-3 p-2">
@@ -179,7 +185,7 @@
                         <input type="submit" value="Save" class="btn btn-primary btn-sm col-md-12" />
                     </div>
                 </div>
-               
+
             </form>
         </div>
 
@@ -262,7 +268,7 @@
 
                         if (weight > 0) {
                             $("#DialCode").prop("disabled", true);
-                        } 
+                        }
                         else if (weight == 0) {
                             $("#DialCode").prop("disabled", false);
                         }
@@ -339,6 +345,7 @@
             event.preventDefault();
             $("#Partproduct").show();
         }
+
         $("#ProductName").change(function () {
             var productName = $(this).val(); // Get selected product name
             var Production_Id = $("#Production_Id").val(); // Get selected product name
@@ -382,15 +389,22 @@
                                 // $("#count").val(response.data);
                                 $("#count").val(1);
                                 // 🔹 Populate the DialCode Dropdown
-                                var dialDropdown = $("#DialCode");
-                                dialDropdown.empty(); // Clear previous options
-                                dialDropdown.append('<option value="">Select Dial</option>'); // Default option
+                                // var dialDropdown = $("#DialCode");
+                                // dialDropdown.empty(); // Clear previous options
+                                // dialDropdown.append('<option value="">Select Dial</option>'); // Default option
 
+                                console.log(response.dialCodes);
                                 // Append new options using correct case
-                                $.each(response.dialCodes, function (index, value) {
-                                    dialDropdown.append('<option value="' + value + '">' + value + '</option>');
-                                });
+                                // $.each(response.dialCodes, function (index, value) {
+                                //     dialDropdown.append('<option value="' + value + '">' + value + '</option>');
+                                // });
 
+                              $('#DialCode').empty(); // Clears the contents of the element with the ID 'loadTxt'
+                              $('#DialCode').append('<option value="">Select Dial</option>');
+                              $.each(response.dialCodes, function (index, item) { // Iterates over each item in the 'response' array
+                                  console.log(item);
+                                  $('#DialCode').append($('<option>').text(item).val(item)); // Appends an <option> element to the element with the ID 'loadTxt', setting its text and value attributes based on the properties of the 'item' object
+                              });
                             }
                         } else {
                             alert("Product details not found.");
@@ -448,12 +462,13 @@
                             $tableBody.append(row);
                         });
 
-                         document.querySelectorAll("#SaveProduction input").forEach(input => {
+                        document.querySelectorAll("#SaveProduction input").forEach(input => {
                             if (input.type === "text" || input.type === "number") {
                                 input.value = "";
                             }
                         });
-                        document.getElementById("DialCode").disabled = false;
+
+                        // document.getElementById("DialCode").disabled = false;
                         $("#DialCode").val("");
                         //ended
                         // <td>${item.selling_Rs.toFixed(2)}</td>
@@ -594,7 +609,7 @@
                 } else if (DialTierWg > max) {
                     DialTierWg = max;
                 }
-                
+
 
                 $("#DialTierWg").val(DialTierWg);
             }
@@ -606,14 +621,20 @@
             calculateTotalNetWeight();
             var uom = $("#ProductGrossWg_Uom").val();
             var weight = parseFloat($("#ProductGrossWg").val()) || 0;
-            if (weight > 0) {
-                $("#DialCode").prop("disabled", true);
-            }else if(weight==0){
-                $("#DialCode").prop("disabled", false);
-            }
-            else {
-                $("#DialCode").prop("disabled", false);
-            }
+            
+            
+            // Comment By Niraj
+            // if (weight > 0) {
+            //     $("#DialCode").prop("disabled", true);
+            // }else if(weight==0){
+            //     $("#DialCode").prop("disabled", false);
+            // }
+            // else {
+            //     $("#DialCode").prop("disabled", false);
+            // }
+
+
+
             // $.ajax({
             //     url: "/SaveProductions/GetProductData",  // Update with your actual API/Action URL
             //     type: "GET",
@@ -652,7 +673,7 @@
                 convertedWeight = weight; // Already in GMS
                 $("#ProductGrossWg_Uom").val("GMS");
             }
-            
+
             $("#ProductGrossWgValue").val(convertedWeight + " GMS"); // Set converted value
         }
         function GetDialShape() {

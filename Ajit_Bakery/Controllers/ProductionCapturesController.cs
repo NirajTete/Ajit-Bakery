@@ -52,7 +52,7 @@ namespace Ajit_Bakery.Controllers
 
             lstProducts.Insert(0, defItem);
 
-            return lstProducts ;
+            return lstProducts;
         }
         private List<SelectListItem> ProductName()
         {
@@ -74,12 +74,12 @@ namespace Ajit_Bakery.Controllers
 
             lstProducts.Insert(0, defItem);
 
-            return lstProducts ;
+            return lstProducts;
         }
         private List<SelectListItem> GetProductionIds()
         {
             var lstProducts = _context.ProductionCapture
-                .Where(a => a.Status == "Pending" )
+                .Where(a => a.Status == "Pending")
                 .AsNoTracking()
                 .Select(n => new SelectListItem
                 {
@@ -97,7 +97,7 @@ namespace Ajit_Bakery.Controllers
 
             lstProducts.Insert(0, defItem);
 
-            return  lstProducts;
+            return lstProducts;
         }
 
 
@@ -126,11 +126,11 @@ namespace Ajit_Bakery.Controllers
                         int colCount = worksheet.Dimension.Columns;
 
                         List<ProductionCapture> productionList = new List<ProductionCapture>();
-                        var maxid = _context.ProductionCapture.Any() ? _context.ProductionCapture.Max(e => e.Id) + 0 : 0 ;
+                        var maxid = _context.ProductionCapture.Any() ? _context.ProductionCapture.Max(e => e.Id) + 0 : 0;
 
                         // Extract outlet names from the second row
                         List<string> outletNames = new List<string>();
-                        for (int col = 3; col < colCount ; col++) // Outlet names start from column index 3
+                        for (int col = 3; col < colCount; col++) // Outlet names start from column index 3
                         {
                             outletNames.Add(worksheet.Cells[2, col].Text.Trim()); // Read outlet names
                         }
@@ -160,8 +160,8 @@ namespace Ajit_Bakery.Controllers
                             {
                                 if (int.TryParse(worksheet.Cells[row, col].Text.Trim(), out int quantity) && quantity > 0)
                                 {
-                                var currentuser = HttpContext.User;
-                                string username = currentuser.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
+                                    var currentuser = HttpContext.User;
+                                    string username = currentuser.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
                                     maxid = maxid + 1;
                                     ProductionCapture production = new ProductionCapture
                                     {
@@ -195,30 +195,144 @@ namespace Ajit_Bakery.Controllers
                 return Json(new { success = false, message = "Error processing file: " + ex.Message });
             }
         }
+
+
+        /* public IActionResult ExportExcel()
+         {
+             // Path to the existing file
+             string templatePath = Path.Combine(_webHostEnvironment.WebRootPath, "Doc", "ExcelExport.xlsx");
+
+             if (!System.IO.File.Exists(templatePath))
+             {
+                 return NotFound("The requested file was not found.");
+             }
+
+             // Read file bytes
+             byte[] fileBytes = System.IO.File.ReadAllBytes(templatePath);
+
+             // Return the file for download
+             return File(fileBytes,
+                         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                         "ExcelExport.xlsx");
+         }*/
+
         public IActionResult ExportExcel()
         {
-            // Path to the existing file
-            string templatePath = Path.Combine(_webHostEnvironment.WebRootPath, "Doc", "ExcelExport.xlsx");
-
-            if (!System.IO.File.Exists(templatePath))
+            try
             {
-                return NotFound("The requested file was not found.");
+                var products = _context.ProductMaster.Select(p => new { p.ProductName, p.Uom }).Distinct().ToList();
+
+                var outlets = _context.OutletMaster.Select(p => p.OutletName).Distinct().Where(o => !string.IsNullOrEmpty(o)).ToList();
+
+                // **Set EPPlus License**
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+                using (var package = new ExcelPackage())
+                {
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Production Template");
+
+                    int totalColumns = outlets.Count + 3; // 2 columns for product & unit + outlet columns + total column
+
+                    // **Set title in the first row (Merged & Centered)**
+                    worksheet.Cells[1, 1, 1, totalColumns].Merge = true;
+                    worksheet.Cells[1, 1].Value = "DAILY ORDER SHEET";
+                    worksheet.Cells[1, 1].Style.Font.Size = 14;
+                    worksheet.Cells[1, 1].Style.Font.Bold = true;
+                    worksheet.Cells[1, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
+                    // **Set column headers in the second row**
+                    worksheet.Cells[2, 1].Value = "PRODUCT";
+                    worksheet.Cells[2, 2].Value = "UNIT";
+
+                    int colIndex = 3;
+                    foreach (var outlet in outlets)
+                    {
+                        worksheet.Cells[2, colIndex].Value = outlet;
+                        colIndex++;
+                    }
+
+                    worksheet.Cells[2, colIndex].Value = "TOTAL"; // Last column for total
+
+                    // **Style header row (Bold, Centered, Light Gray Background)**
+                    using (var range = worksheet.Cells[2, 1, 2, totalColumns])
+                    {
+                        range.Style.Font.Bold = true;
+                        range.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                        range.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray); // Light gray header
+                        range.Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin); // Border for headers
+                    }
+
+                    // Fill product names and UOM starting from row 3
+                    int rowIndex = 3;
+                    foreach (var product in products)
+                    {
+                        worksheet.Cells[rowIndex, 1].Value = product.ProductName; // Product Name (Left-aligned)
+                        worksheet.Cells[rowIndex, 2].Value = product.Uom; // Unit
+
+                        // Center align everything except product name
+                        using (var range = worksheet.Cells[rowIndex, 2, rowIndex, totalColumns])
+                        {
+                            range.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                        }
+
+                        // Insert formula in Total column to auto sum the row values
+                        string startColumn = "C"; // First outlet column
+                        string endColumn = GetExcelColumnName(totalColumns - 1); // Last outlet column before total
+                        worksheet.Cells[rowIndex, totalColumns].Formula = $"SUM({startColumn}{rowIndex}:{endColumn}{rowIndex})";
+
+                        rowIndex++;
+                    }
+
+                    // **Apply borders to all filled cells**
+                    using (var borderRange = worksheet.Cells[2, 1, rowIndex - 1, totalColumns])
+                    {
+                        borderRange.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                        borderRange.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                        borderRange.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                        borderRange.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                    }
+
+                    // Auto-fit columns
+                    worksheet.Cells.AutoFitColumns();
+
+                    // Convert Excel package to byte array
+                    var fileBytes = package.GetAsByteArray();
+
+                    return File(fileBytes,
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                "ProductionTemplate.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error generating file: " + ex.Message);
+            }
+        }
+
+        // Function to get Excel column name based on index (1 = A, 2 = B, ...)
+        private string GetExcelColumnName(int columnNumber)
+        {
+            int dividend = columnNumber;
+            string columnName = string.Empty;
+            int modulo;
+
+            while (dividend > 0)
+            {
+                modulo = (dividend - 1) % 26;
+                columnName = Convert.ToChar(65 + modulo) + columnName;
+                dividend = (dividend - modulo) / 26;
             }
 
-            // Read file bytes
-            byte[] fileBytes = System.IO.File.ReadAllBytes(templatePath);
-
-            // Return the file for download
-            return File(fileBytes,
-                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        "ExcelExport.xlsx");
+            return columnName;
         }
+
         public async Task<IActionResult> Index()
         {
-            List<ProductionCapture> ProductionCapture = new List<ProductionCapture>() ;
-            var list = await _context.ProductionCapture.OrderByDescending(a=>a.Id).ToListAsync();
+            List<ProductionCapture> ProductionCapture = new List<ProductionCapture>();
+            var list = await _context.ProductionCapture.OrderByDescending(a => a.Id).ToListAsync();
             var groupedData = _context.ProductionCapture
-                            .GroupBy(p => new { p.Production_Id, p.OutletName,p.Production_Date,p.ProductName ,p.Status})
+                            .GroupBy(p => new { p.Production_Id, p.OutletName, p.Production_Date, p.ProductName, p.Status })
                             .Select(g => new
                             {
                                 ProductName = g.Key.ProductName,
@@ -226,13 +340,13 @@ namespace Ajit_Bakery.Controllers
                                 OutletName = g.Key.OutletName,
                                 TotalProductionQty = g.Sum(x => x.TotalQty),
                                 DateTime = g.Key.Production_Date,
-                                Status = g.Key.Status, 
+                                Status = g.Key.Status,
                             })
                             .ToList();
 
             if (list.Count > 0)
             {
-                foreach(var item in groupedData)
+                foreach (var item in groupedData)
                 {
                     var founddata = list.Where(a => a.Production_Date.Trim() == item.DateTime.Trim()).FirstOrDefault();
                     var date = founddata.Production_Date + " - " + founddata.Production_Time;
@@ -251,7 +365,7 @@ namespace Ajit_Bakery.Controllers
                     ProductionCapture.Add(ProductionCapturenew);
                 }
             }
-            ProductionCapture= ProductionCapture.OrderByDescending(a=>a.Production_Id).ToList();
+            ProductionCapture = ProductionCapture.OrderByDescending(a => a.Production_Id).ToList();
             return View(ProductionCapture);
         }
 
@@ -271,7 +385,7 @@ namespace Ajit_Bakery.Controllers
 
             return View(productionCapture);
         }
-        
+
         public string GetProductionId()
         {
             // Step 1: Get current year and month in "YYMM" format
@@ -308,7 +422,7 @@ namespace Ajit_Bakery.Controllers
             }
 
             // Step 3: Generate the new BoxID
-            newBoxId = $"PID{currentYearMonth}{newCounter:D2}"; // Format: STBYYMMCC
+            newBoxId = $"PID{currentYearMonth}{newCounter:D3}"; // Format: STBYYMMCC
 
             // Step 4: Save the new BoxID to the database
             var maxId = _context.ProductionIds.Any() ? _context.ProductionIds.Max(e => e.id) + 1 : 1;
@@ -386,7 +500,7 @@ namespace Ajit_Bakery.Controllers
             return View();
         }
         [HttpGet]
-       public IActionResult CreateManually()
+        public IActionResult CreateManually()
         {
             ViewBag.ProductionId = GetProductionIds();
             ViewBag.GetOutlets = GetOutlets();
@@ -400,7 +514,7 @@ namespace Ajit_Bakery.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateManually( ProductionCapture productionCapture)
+        public async Task<IActionResult> CreateManually(ProductionCapture productionCapture)
         {
             try
             {
@@ -427,9 +541,9 @@ namespace Ajit_Bakery.Controllers
                 _context.SaveChanges();
                 return Json(new { success = true, message = "Successfully Done !" });
             }
-            catch(Exception EX)
+            catch (Exception EX)
             {
-                return Json(new { success = false, message = "Error :"+EX.Message });
+                return Json(new { success = false, message = "Error :" + EX.Message });
             }
         }
 
@@ -450,7 +564,7 @@ namespace Ajit_Bakery.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,  ProductionCapture productionCapture)
+        public async Task<IActionResult> Edit(int id, ProductionCapture productionCapture)
         {
             if (id != productionCapture.Id)
             {

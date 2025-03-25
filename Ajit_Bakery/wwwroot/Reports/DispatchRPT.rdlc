@@ -570,8 +570,12 @@
             </Style>
           </Image>
         </ReportItems>
-        <Height>2.58333in</Height>
-        <Style />
+        <Height>2.38541in</Height>
+        <Style>
+          <Border>
+            <Style>None</Style>
+          </Border>
+        </Style>
       </Body>
       <Width>2.95151in</Width>
       <Page>
