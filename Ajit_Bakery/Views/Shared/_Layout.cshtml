@@ -1,9 +1,7 @@
-﻿@* @if (!User.Identity.IsAuthenticated)
-{
-    <script>
-        window.location.href = "/UserMasters/Login";
-    </script>
-} *@
+﻿@using System.Security.Claims;
+@{
+    var userName = User.Identity.Name.ToUpper();
+}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -80,9 +78,54 @@
 
     <partial name="_Footer" />
 
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        var timeout;
+
+        // ✅ Function to start the session timeout countdown
+        function startTimer() {
+            timeout = setTimeout(function () {
+                Swal.fire({
+                    title: 'Session Expired',
+                    text: 'Your session has expired. Please log in again.',
+                    icon: 'warning',
+                    confirmButtonText: 'Login Again',
+                    confirmButtonColor: '#28a745',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '@Url.Action("Login", "UserMasters")';
+                    }
+                });
+            }, 180000 ); // 120 minutes 
+        }
+
+       
+
+        // ✅ Function to reset the session timeout when user interacts
+        function resetTimer() {
+            clearTimeout(timeout);
+            startTimer(); // Restart session timer
+        }
+
+        $(document).ready(function () {
+            console.log("User:", '@userName');
+
+            startTimer(); // Start session timeout on page load
+           
+            // Reset timer on user activity
+            document.onmousemove = resetTimer;
+            document.onkeypress = resetTimer;
+        });
+    </script>
+
+
+
     @* notification toast *@
     @await Component.InvokeAsync("Notyf")
-
 
     @* select 2 query *@
 
@@ -119,7 +162,7 @@
 
     <!-- DataTables Buttons CSS -->
     <link rel="stylesheet" href="~/datatable/buttons.dataTables.min.css" />
-    
+
     <!-- DataTables Buttons JS -->
     <script src="~/datatable/dataTables.buttons.min.js"></script>
     <script src="~/datatable/jszip.min.js"></script>

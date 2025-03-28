@@ -9,45 +9,51 @@
         <div class="d-flex align-items-baseline">
             <a asp-action="Index" asp-controller="Packagings" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
             <h4 class="mx-auto text-white text-2xl font-semibold"> Packaging - Add </h4>
-           @*  <a asp-action="Create" class="btn btn-success btn-sm text-white">
+            @*  <a asp-action="Create" class="btn btn-success btn-sm text-white">
                 <i class="fas fa-plus-square"></i> Packaging
             </a> *@
         </div>
     </div>
     <div class="card-body mt-4">
         <div class="row">
-            <form asp-action="Create" id="Packaging" >
+            <form asp-action="Create" id="Packaging">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="row">
                     <div class="form-group col-sm-4">
                         <label asp-for="Production_Id" class="control-label fw-bold small"></label>
-                        <select asp-for="Production_Id" id="Production_Id" class="form-control text-uppercase" asp-items="@ViewBag.GetProduction_Id" onchange="OnProduction_IdChange()">
+                        <select asp-for="Production_Id" id="Production_Id" class="form-control text-uppercase" asp-items="@ViewBag.GetProduction_Id" onchange="OnProduction_IdChange()" required>
                         </select>
                     </div>
                     <div class="form-group col-sm-4">
                         <label asp-for="Outlet_Name" class="control-label fw-bold small fw-bold small"></label>
-                        <select asp-for="Outlet_Name" class="form-control text-uppercase" id="Outlet_Name" onchange="OnOutletChange()" ></select>
+                        <select asp-for="Outlet_Name" class="form-control text-uppercase" id="Outlet_Name" onchange="OnOutletChange()"></select>
                     </div>
-                    <div class="form-group col-sm-4">
-                        <label asp-for="Box_No" class="control-label fw-bold small fw-bold small"></label>
-                        <select asp-for="Box_No" class="form-control text-uppercase" id="Box_No" asp-items="@ViewBag.GetBoxNos" ></select>
+                    <div class="form-group col-sm-4 text-center">
+                        <button id="viewDetailsBtn" style="font-weight:600; font-size:16px; color:cornflowerblue" class="accordion-button collapsed mt-5"
+                                type="button">
+                            View Detailed
+                        </button>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="form-group col-sm-8">
+                    <div class="form-group col-sm-3">
+                        <label asp-for="Box_No" class="control-label fw-bold small fw-bold small"></label>
+                        <select asp-for="Box_No" class="form-control text-uppercase" id="Box_No" asp-items="@ViewBag.GetBoxNos"></select>
+                    </div>
+                    <div class="form-group col-sm-5">
                         <label class="control-label fw-bold small">Scan Item Stickers</label>
                         <input type="text" id="ScanItem" class="form-control" onkeypress="InsertScanData(event)" placeholder="Please scan item sticker here.." />
                     </div>
-                    <div class="form-group  col-sm-2 mt-2">
+                    <div class="form-group  col-sm-2 ">
                         <label class="ccontrol-label fw-bold small">Scan Item Count</label>
-                        <input style="height:5vh; font-size: 20px; color: green; font-weight: 650;" id="qtypick"  class="form-control" type="text" value="0" readonly />
+                        <input style="height:5vh; font-size: 20px; color: green; font-weight: 650;" id="qtypick" class="form-control" type="text" value="0" readonly />
                     </div>
-                    <div class="form-group  col-sm-2 mt-2">
+                    <div class="form-group  col-sm-2 ">
                         <label class="control-label fw-bold small">Remaining Count</label>
                         <input style="height:5vh; font-size: 20px; color: red; font-weight: 650;" id="qtyremainig" class="form-control" type="text" value="0" readonly />
                     </div>
                 </div>
-                <div class="row m-3" >
+                <div class="row m-3">
                     <table class="table table-bordered table-striped table-sm" id="productTableBody">
                         <thead class="small text-center">
                             <tr>
@@ -59,7 +65,7 @@
                                 <th style="text-align:center">Total Net Wg</th>
                             </tr>
                         </thead>
-                        <tbody class ="small text-center">
+                        <tbody class="small text-center">
                         </tbody>
                     </table>
                 </div>
@@ -74,12 +80,46 @@
     </div>
 </div>
 
+<!-- Bootstrap Modal -->
+<div class="modal" id="cakeListModal" tabindex="-1" role="dialog" aria-labelledby="cakeListModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cakeListModalLabel">Cake List for <b> <span id="selectedOutlet"></span></b></h5>
+                @*  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button> *@
+            </div>
+            <div class="modal-body">
+                <table id="cakeTable" class="table table-striped table-bordered">
+                    <thead>
+                        <tr >
+                            <th>Product Name</th>
+                            <th class="text-center">Quantity</th>
+                            @* <th>Production Date</th> *@
+                            @* <th>Packaging Status</th> *@
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be inserted here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <div id="spinner" style="display: none;">
     <div class="spinner-border text-primary" role="status">
         <span class="sr-only">Loading...</span>
     </div>
     <p class="mt-2" style="font-weight:600">Please wait...</p>
 </div>
+
 <style>
     #spinner {
         position: fixed;
@@ -103,6 +143,86 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+                // Function to fetch and display cake details in the modal
+        function loadCakeDetails(outletName) {
+            if (!outletName) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: "Please select an outlet!",
+                    timer: 5000
+                });
+                return;
+            }
+
+            $("#selectedOutlet").text(outletName); // Update modal title
+
+            $.ajax({
+                url: "/Packagings/GetCakeList", // API endpoint
+                type: "GET",
+                data: { outletName: outletName },
+                success: function (response) {
+                    if (response.success) {
+                        console.log("API Response:", response);
+
+                        var tableBody = $("#cakeTable tbody");
+
+                        $.each(response.data, function (index, cake) {
+                            var row = `<tr>
+                                <td>${cake.productName}</td>
+                                <td class="text-center">${cake.remainingQty}</td>
+                               
+                            </tr>`;
+                            tableBody.append(row);
+                        });
+
+                        $("#cakeTable").DataTable({
+                            destroy: true,  // Ensure it reinitializes properly
+                            paging: true,   // Enable pagination
+                            searching: true, // Enable search
+                            ordering: false, // Disable sorting
+                            lengthChange: false, // Disable "Show X entries" dropdown
+                            pageLength: 10   
+                        });
+
+                        // Ensure modal is shown with fresh data
+                        $("#cakeListModal").modal("show");
+
+
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'No Data',
+                            text: "No cakes found for this outlet.",
+                            timer: 5000
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: "Error fetching data!",
+                        timer: 5000
+                    });
+                }
+            });
+        }
+
+        // Bind function to button click
+        $("#viewDetailsBtn").click(function () {
+            var selectedOutlet = $("#Outlet_Name").val();
+
+            // Show the modal immediately to prevent flickering effect
+            $("#cakeListModal").modal("show");
+
+            // Load data
+            loadCakeDetails(selectedOutlet);
+        });      
+    </script>
+
     <script>
         // $(document).ready(function () {
         //     $("#Packaging").submit(function (event) {
@@ -155,7 +275,7 @@
         //         });
         //     });
         // });
-        $(document).ready(function () {
+         $(document).ready(function () {
             $("#Packaging").submit(function (event) {
                 event.preventDefault(); // Prevent default form submission
 

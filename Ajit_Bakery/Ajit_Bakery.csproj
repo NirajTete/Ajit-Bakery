@@ -21,7 +21,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <EmbeddedResource Include="wwwroot\Reports\DispatchRPT.rdlc" />
+	  <EmbeddedResource Include="wwwroot\Reports\DispatchRPT.rdlc">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </EmbeddedResource>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -29,6 +31,7 @@
 	    <SubType>Designer</SubType>
 	    <LastGenOutput>DataSet1.Designer.cs</LastGenOutput>
 	    <Generator>MSDataSetGenerator</Generator>
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
 	</ItemGroup>
 
@@ -58,6 +61,12 @@
 		<PackageReference Include="System.Security.Permissions" Version="7.0.0" />
 		<PackageReference Include="WkHtmlToPdf" Version="1.0.1" />
 		<PackageReference Include="ZXing.Net" Version="0.16.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Update="wwwroot\Reports\PackagingSlip_20250325152417.pdf">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 
 </Project>

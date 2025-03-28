@@ -352,8 +352,16 @@ namespace Ajit_Bakery.Controllers
         }
         public IActionResult Create()
         {
+            int completecount = _context.SaveProduction.Count();
+            //int total_count = _context.ProductionCapture.Sum(sp => sp.TotalQty);
+            int pendingcount = Math.Max(0, _context.ProductionCapture.Sum(pc => pc.TotalQty) - completecount);
+
+
             ViewBag.GetProduction_Id = GetProduction_Id();
             ViewBag.GetProducts = GetProducts();
+            ViewBag.completecount = completecount;
+            ViewBag.pendingcount = pendingcount;
+
             return View();
         }
 

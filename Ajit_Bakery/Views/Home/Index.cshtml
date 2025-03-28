@@ -9,7 +9,7 @@
             <div class="card-body">
                 <h6 class="text-white">Orders Received</h6>
                 <h2 class="text-end text-white">
-                    <i class="feather icon-shopping-cart float-start"></i><span>@ViewBag.PendingOrders</span>
+                    <i class="feather icon-shopping-cart float-start"></i><span>@ViewBag.TotalOrders</span>
                 </h2>
                 @* <p class="m-b-0">This Month <span class="float-end">@ViewBag.TotalOrders</span></p> *@
             </div>
@@ -30,9 +30,18 @@
         </a>
     </div>
 
+    <div class="col-md-3 col-xl-3">
+        <div class="card bg-grd-warning order-card">
+            <div class="card-body">
+                <h6 class="text-white">Total Production</h6>
+                <h2 class="text-end text-white"><i class="feather icon-award float-start"></i><span>@ViewBag.CompletedProductions</span></h2>
+                @* <p class="m-b-0">This Month<span class="float-end">$542</span></p> *@
+            </div>
+        </div>
+    </div>
 
     <div class="col-md-3 col-xl-3">
-        <div class="card bg-grd-warning order-card ">
+        <div class="card bg-grd-danger order-card ">
             <div class="card-body">
                 <h6 class="text-white">Total Dispatches</h6>
                 <h2 class="text-end text-white"><i class="feather icon-repeat float-start"></i><span>@ViewBag.CompletedDispatches</span></h2>
@@ -41,15 +50,7 @@
         </div>
     </div>
 
-    <div class="col-md-3 col-xl-3">
-        <div class="card bg-grd-danger order-card">
-            <div class="card-body">
-                <h6 class="text-white">Total Production</h6>
-                <h2 class="text-end text-white"><i class="feather icon-award float-start"></i><span>@ViewBag.CompletedProductions</span></h2>
-                @* <p class="m-b-0">This Month<span class="float-end">$542</span></p> *@
-            </div>
-        </div>
-    </div>
+   
 
     @* Second Row *@
     <!-- <div class="col-md-4 col-sm-6">

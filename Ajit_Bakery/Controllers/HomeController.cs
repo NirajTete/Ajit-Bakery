@@ -54,8 +54,8 @@ public class HomeController : Controller
             .Count(a => a.Status == "Pending");
 
         // Count completed production orders
-        var completedProductionCount = _context.ProductionCapture
-            .Count(x => x.Status == "Completed");
+        var completedProductionCount = _context.SaveProduction
+            .Count(); /*x => x.Status == "Completed"*/
 
         // Assign values to ViewBag
         ViewBag.PendingOrders = pendingProductionCount;

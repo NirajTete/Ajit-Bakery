@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Ajit_Bakery.Models
 {
@@ -22,5 +23,17 @@ namespace Ajit_Bakery.Models
         public string? User { get; set; }
         public string? Status { get; set; }
 
+        [NotMapped]
+        public int GokulpethQty { get; set; }
+        [NotMapped]
+        public int BakersAndSnackersQty { get; set; }
+        [NotMapped]
+        public int TrimurtiQty { get; set; }
+        [NotMapped]
+        public int AjniQty { get; set; }
+        [NotMapped]
+        public Dictionary<string, int> OutletData { get; set; } // Dynamic outlet storage
+
     }
+
 }

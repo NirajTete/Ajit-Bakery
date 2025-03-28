@@ -24,20 +24,20 @@
                     var menuData = JsonConvert.DeserializeObject<List<MenuModel>>(menubar);
                     if (menuData != null && menuData.Any())
                     {
-                        var customOrder = new List<string> { "Dashboard", "Masters", "Operations", "User Managment", "Report" };
+                        var customOrder = new List<string> { "Dashboard", "Masters", "Operations", "Reprint", "User Managment", "Report" };
                         var submenus = new List<string> { "Production Planning", "Production", "Packaging", "Transfer To Dispatch", "Dispatch" };
+                        var ReprintList = new List<string> { "Item Sticker", "Packaging Receipt" };
 
                         var parentlist = menuData.Where(s => s.ParentMenuId == 0).OrderBy(s => customOrder.IndexOf(s.Title)).ToList();
-                        
+
                         @foreach (var item in parentlist)
                         {
-                            if(item.Title == "Dashboard")
+                            if (item.Title == "Dashboard")
                             {
                                 <li class="pc-item">
                                     <a class="pc-link" asp-controller="Home" asp-action="Index">
                                         <span class="pc-micon">
                                             <i class="@item.icon"></i>
-                                            @* <i class="ph ph-chart-line-up"></i> *@
                                         </span>
                                         <span class="pc-mtext">@item.Title</span>
                                     </a>
@@ -45,10 +45,21 @@
                             }
                             else
                             {
-                                var menulist = menuData.Where(s => s.ParentMenuId == item.MenuId).OrderBy(s => submenus.IndexOf(s.Title)).ToList();
+                                var menulist = menuData.Where(s => s.ParentMenuId == item.MenuId).ToList();
+
+                                // Order submenu differently if it's "Reprint"
+                                if (item.Title == "Reprint")
+                                {
+                                    menulist = menulist.OrderBy(s => ReprintList.IndexOf(s.Title)).ToList();
+                                }
+                                else
+                                {
+                                    menulist = menulist.OrderBy(s => submenus.IndexOf(s.Title)).ToList();
+                                }
+
                                 <li class="pc-item pc-hasmenu">
                                     <a href="#!" class="pc-link">
-                                        <span class="pc-micon"> <i class="@item.icon"></i></span>
+                                        <span class="pc-micon"><i class="@item.icon"></i></span>
                                         <span class="pc-mtext">@item.Title</span>
                                         <span class="pc-arrow">
                                             <i data-feather="chevron-right"></i>
@@ -57,17 +68,19 @@
                                     <ul class="pc-submenu">
                                         @foreach (var firstItem in menulist)
                                         {
-                                            <li class="pc-item"><a class="pc-link" asp-controller="@firstItem.Controller" asp-action="@firstItem.Action">@firstItem.Title</a></li>
+                                            <li class="pc-item">
+                                                <a class="pc-link" asp-controller="@firstItem.Controller" asp-action="@firstItem.Action">
+                                                    @firstItem.Title
+                                                </a>
+                                            </li>
                                         }
                                     </ul>
-                                    
-
                                 </li>
                             }
-                            
                         }
                     }
                 }
+
                 
                 @* <li class="pc-item">
                     <a class="pc-link" asp-controller="Home" asp-action="Index">

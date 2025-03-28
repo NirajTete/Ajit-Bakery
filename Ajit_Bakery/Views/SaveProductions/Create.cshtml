@@ -30,6 +30,21 @@
                             View Detailed
                         </button>
                     </div>
+                    <div class="col-sm-6">
+                        <div class="d-flex justify-content-center gap-4">
+                            <div class="text-center" style="width: 150px;">
+                                <label class="control-label fw-bold small text-center">Completed Production</label>
+                                <input id="completeCount" class="form-control text-white text-center" value="@ViewBag.completecount" style="background-color:rgb(25, 115, 73);" readonly />
+                            </div>
+                            <div class="text-center" style="width: 150px;">
+                                <label class="control-label fw-bold small text-center">Pending Production</label>
+                                <input id="pendingCount" class="form-control text-white text-center" value="@ViewBag.pendingcount" style="background-color:rgb(185, 43, 59);" readonly />
+                            </div>
+                        </div>
+
+
+                    </div>
+
                 </div>
                 <div class="accordion" id="tableAccordion">
                     <div class="accordion-item">
@@ -87,9 +102,9 @@
                         <select asp-for="DialCode" style="font-weight:600; font-size:18px;" class="form-control text-uppercase" id="DialCode" onchange="GetDialCodes()" required>
                         </select>
 
-                     @*    <select asp-for="DialCode" id="DialCode" required class="form-control text-uppercase" onchange="GetDialCodes()" style="font-size:18px;color: green; font-weight: 650;text-transform: uppercase">
+                        @*    <select asp-for="DialCode" id="DialCode" required class="form-control text-uppercase" onchange="GetDialCodes()" style="font-size:18px;color: green; font-weight: 650;text-transform: uppercase">
                             @* <option>KGS</option> *@
-                            @* <option>GMS</option> 
+                        @* <option>GMS</option> 
                         </select> *@
 
                     </div>
@@ -462,8 +477,24 @@
                             $tableBody.append(row);
                         });
 
+                        $("#tableData").DataTable({
+                            destroy: true,  // Ensure it reinitializes properly
+                            paging: true,   // Enable pagination
+                            searching: true, // Enable search
+                            ordering: false, // Disable sorting
+                            lengthChange: false, // Disable "Show X entries" dropdown
+                            pageLength: 10
+                        });
+
+                        // document.querySelectorAll("#SaveProduction input").forEach(input => {
+                        //     if (input.type === "text" || input.type === "number") {
+                        //         input.value = "";
+                        //     }
+                        // });
+
                         document.querySelectorAll("#SaveProduction input").forEach(input => {
-                            if (input.type === "text" || input.type === "number") {
+                            if ((input.type === "text" || input.type === "number") &&
+                                input.id !== "completeCount" && input.id !== "pendingCount") {
                                 input.value = "";
                             }
                         });
@@ -621,8 +652,8 @@
             calculateTotalNetWeight();
             var uom = $("#ProductGrossWg_Uom").val();
             var weight = parseFloat($("#ProductGrossWg").val()) || 0;
-            
-            
+
+
             // Comment By Niraj
             // if (weight > 0) {
             //     $("#DialCode").prop("disabled", true);

@@ -35,5 +35,7 @@ namespace Ajit_Bakery.Models
         public string? area { get; set;}
         [Display(Name = "User")]
         public string? User { get; set;}
+
+        public int Use_Flag { get; set; }
     }
 }

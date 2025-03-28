@@ -115,8 +115,14 @@ namespace Ajit_Bakery.Controllers
                         var totalInDb = _context.Packaging
                             .Where(a => a.DispatchReady_Flag == 1 && a.Outlet_Name.Trim() == dcno.Trim())
                             .Sum(a => (int?)a.Qty) ?? 0; // Summing directly in DB, handles empty case
+
+                        // Get total dispatched quantity from Dispatch table for the same outlet
+                        var dispatchedQty = _context.Dispatch
+                            .Where(d => d.OutletName.Trim() == dcno.Trim())
+                            .Sum(d => (int?)d.Qty) ?? 0;
+
                         var totalInList = Packagings_List.Sum(a => a.Qty); // Sum of in-memory list
-                        var remainingQty = totalInDb - totalInList; // Calculate remaining quantity
+                        var remainingQty = totalInDb - (totalInList + dispatchedQty); // Calculate remaining quantity
                         return Json(new { success = true, data = packingfoun, qtypick = remainingQty });
 
                         //var listr = _context.Packaging
@@ -137,14 +143,32 @@ namespace Ajit_Bakery.Controllers
         public IActionResult GetDCData(string dcno)
         {
             var getcount = 0;
-            if (dcno != null)
+
+            if (!string.IsNullOrEmpty(dcno))
             {
+                // Get total packaged quantity from Packaging table where DispatchReady_Flag == 1
                 getcount = _context.Packaging
-                .Where(a => a.DispatchReady_Flag == 1 && a.Outlet_Name.Trim() == dcno.Trim())
-                .Sum(a => (int?)a.Qty) ?? 0;
+                    .Where(a => a.DispatchReady_Flag == 1 && a.Outlet_Name.Trim() == dcno.Trim())
+                    .Sum(a => (int?)a.Qty) ?? 0;
+
+                // Get total dispatched quantity from Dispatch table for the same outlet
+                var dispatchedQty = _context.Dispatch
+                    .Where(d => d.OutletName.Trim() == dcno.Trim())
+                    .Sum(d => (int?)d.Qty) ?? 0;
+
+                // Subtract dispatched quantity from the total packaged quantity
+                getcount -= dispatchedQty;
+
+                // Ensure count doesn't go negative
+                if (getcount < 0) getcount = 0;
+
+                // Debugging logs
+                Console.WriteLine($"Outlet: {dcno}, Packaged Qty: {getcount + dispatchedQty}, Dispatched Qty: {dispatchedQty}, Remaining: {getcount}");
             }
+
             return Json(new { success = true, data = getcount });
         }
+
         public IActionResult GetDriverData(string VehicleDriverName)
         {
             var drivercontactno = "";
@@ -390,6 +414,7 @@ namespace Ajit_Bakery.Controllers
                         user = username.ToString(),
                     };
                     _context.Dispatch.Add(Dispatch);
+                    _context.BoxMaster.Where(b => b.BoxNumber == item.Box_No).ExecuteUpdate(setters => setters.SetProperty(b => b.Use_Flag, 2));
                     _context.SaveChanges();
 
                     //UPDATE PACKAGING TABLE

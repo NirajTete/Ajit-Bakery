@@ -123,7 +123,7 @@ namespace Ajit_Bakery.Controllers
 
                     // Filter out records already in Packagings_List
                     var checkagain = potentialRecords
-                        .FirstOrDefault(a => !SaveProduction_List.Any(p => p.Id == a.Id));
+                        .FirstOrDefault(a => !SaveProduction_List.Any(p => p.Id == a.Id && p.ProductName == a.ProductName));
 
                     if (checkagain != null)
                     {
@@ -219,123 +219,115 @@ namespace Ajit_Bakery.Controllers
             }
             return Json(new { success = false, message = "You have already picked all qty against " + Outlet_Name + "  outlet !" });
         }
-        //public IActionResult GetOutlets(string Production_Id)
-        //{
-        //    var lstProducts = new List<SelectListItem>();
-        //    if (Production_Id != null)
-        //    {
-        //        lstProducts = _context.ProductionCapture.Where(a => a.Status == "Pending" && a.Production_Id.Trim() == Production_Id.Trim()).AsNoTracking().Select(n =>
-        //    new SelectListItem
-        //    {
-        //        Value = n.OutletName,
-        //        Text = n.OutletName
-        //    }).Distinct().ToList();
 
-        //        var defItem = new SelectListItem()
-        //        {
-        //            Value = "",
-        //            Text = "----Select OutletName ----"
-        //        };
-        //        lstProducts.Insert(0, defItem);
-        //    }
-
-        //    return Json(new { success = true, data = lstProducts });
-        //}
-        public IActionResult GetOutlets(string Production_Id)
+        /* public IActionResult GetOutlets(string Production_Id)
         {
             var lstProducts = new List<SelectListItem>();
-
-            if (!string.IsNullOrEmpty(Production_Id))
+            if (Production_Id != null)
             {
-                lstProducts = _context.ProductionCapture
-                    .Where(a => a.Status == "Pending" && a.Production_Id.Trim() == Production_Id.Trim())
-                    .AsNoTracking()
-                    .Select(n => new SelectListItem
-                    {
-                        Value = n.OutletName.Trim(),
-                        Text = n.OutletName.Trim()
-                    })
-                    .Distinct()
-                    .ToList();
+                lstProducts = _context.ProductionCapture.Where(a => a.Status == "Pending" && a.Production_Id.Trim() == Production_Id.Trim()).AsNoTracking().Select(n =>
+            new SelectListItem
+            {
+                Value = n.OutletName,
+                Text = n.OutletName
+            }).Distinct().ToList();
 
                 var defItem = new SelectListItem()
                 {
                     Value = "",
                     Text = "----Select OutletName ----"
                 };
-
-                // Filter products where valuefound == 0
-                lstProducts = lstProducts.Where(item =>
-                {
-                    string outletName = item.Value.Trim();
-
-                    var Packagingdata = _context.Packaging
-                        .Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Outlet_Name.Trim() == outletName)
-                        .Sum(a => a.Qty);
-
-                    var Packagingdata1 = Packagings_List
-                        .Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Outlet_Name.Trim() == outletName)
-                        .Sum(a => a.Qty);
-
-                    var ProductionCapturedata = _context.ProductionCapture
-                        .Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Status.Trim() == "Pending" && a.OutletName.Trim() == outletName)
-                        .Sum(a => a.TotalQty);
-
-                    var ProductionCapturedata1 = ProductionCapture_List
-                        .Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Status.Trim() == "Pending" && a.OutletName.Trim() == outletName)
-                        .Sum(a => a.TotalQty);
-
-                    var qtyremaining = ProductionCapturedata + ProductionCapturedata1;
-                    var qtypick = Packagingdata + Packagingdata1;
-                    var valuefound = Math.Abs(qtypick - qtyremaining);
-
-                    if (valuefound > 0)
-                    {
-                        var exist = Packagings_List.ToList();
-                        if (exist.Count > 0)
-                        {
-                            var found = exist.Select(a => a.Outlet_Name.Trim()).FirstOrDefault();
-                            if (outletName != found)
-                            {
-                                return false; // Exclude this outlet, showing the error message separately
-                            }
-                        }
-                    }
-
-                    return valuefound != 0; // Keep only outlets where valuefound is NOT zero
-                }).ToList();
-
                 lstProducts.Insert(0, defItem);
+            }
 
-                //// If an outlet scan conflict is detected, return an error message
-                //if (lstProducts.Count == 1) // Only default item remains
-                //{
-                //    return Json(new { success = false, message = "You have already scanned items of another outlet. Please submit those first, then proceed with another!" });
-                //}
+            return Json(new { success = true, data = lstProducts });
+        }*/
+     
+        public IActionResult GetOutlets(string Production_Id)
+        {
+            var lstProducts = new List<SelectListItem>();
+
+            if (!string.IsNullOrEmpty(Production_Id))
+            {
+                // Fetch all outlets where production exists
+                var productionOutlets = _context.ProductionCapture
+                    .Where(pc => pc.Production_Id.Trim() == Production_Id.Trim())
+                    .Select(pc => pc.OutletName.Trim())
+                    .Distinct()
+                    .ToList();
+
+                // Fetch only those outlets where:
+                // - The production exists in `ProductionCapture`
+                // - The product is saved in `SaveProduction`
+                // - `Packaging_Flag == 0` (indicating it's not yet packed)
+                var validOutlets = productionOutlets
+                    .Where(outlet => _context.SaveProduction
+                        .Any(sp => sp.Production_Id.Trim() == Production_Id.Trim() &&
+                                   sp.Packaging_Flag == 0 &&
+                                   _context.ProductionCapture.Any(pc =>
+                                        pc.Production_Id.Trim() == Production_Id.Trim() &&
+                                        pc.OutletName.Trim() == outlet &&
+                                        sp.ProductName.Trim() == pc.ProductName.Trim()
+                                   )
+                        )
+                    )
+                    .Distinct()
+                    .ToList();
+
+                // Convert to dropdown list
+                lstProducts = validOutlets
+                    .Select(outlet => new SelectListItem
+                    {
+                        Value = outlet,
+                        Text = outlet
+                    })
+                    .ToList();
+
+                // Add default option
+                lstProducts.Insert(0, new SelectListItem()
+                {
+                    Value = "",
+                    Text = "----Select Outlet----"
+                });
+
+                // Debugging
+                Console.WriteLine($"Valid Outlets Count: {validOutlets.Count}");
+                foreach (var outlet in validOutlets)
+                {
+                    Console.WriteLine($"Outlet: {outlet}");
+                }
             }
 
             return Json(new { success = true, data = lstProducts });
         }
 
+
+
+
+
         private List<SelectListItem> GetBoxNos()
         {
-            var lstProducts = new List<SelectListItem>();
+            var lstProducts = _context.BoxMaster
+                    .Where(b => b.Use_Flag == 0)
+                    .AsNoTracking()
+                    .Select(n => n.BoxNumber)  // Select BoxNumber first
+                    .Distinct()                // Apply Distinct at the string level
+                    .Select(n => new SelectListItem
+                    {
+                        Value = n,
+                        Text = n
+                    })
+                    .ToList();
 
-            lstProducts = _context.BoxMaster.AsNoTracking().Select(n =>
-            new SelectListItem
-            {
-                Value = n.BoxNumber,
-                Text = n.BoxNumber
-            }).Distinct().ToList();
-
-            var defItem = new SelectListItem()
+            // Add default "Select" option
+            lstProducts.Insert(0, new SelectListItem
             {
                 Value = "",
                 Text = "----Select Box No ----"
-            };
+            });
 
-            lstProducts.Insert(0, defItem);
             return lstProducts;
+
         }
         private List<SelectListItem> GetProduction_Id()
         {
@@ -429,6 +421,7 @@ namespace Ajit_Bakery.Controllers
                     a.Packaging_Time = TIME;
                 });
                 _context.SaveProduction.UpdateRange(SaveProduction_List);
+                _context.BoxMaster.Where(b => b.BoxNumber == SaveProduction_List1[0].Box_No).ExecuteUpdate(setters => setters.SetProperty(b => b.Use_Flag, 1));
                 _context.SaveChanges();
 
                 foreach (var item in Packagings_List)
@@ -441,6 +434,7 @@ namespace Ajit_Bakery.Controllers
                     item.Reciept_Id = GetReciptId;
                     item.user = username.ToString();
                     _context.Packaging.Add(item);
+
                     _context.SaveChanges();
                 }
                 ////////END SAVE LGIC
@@ -626,5 +620,255 @@ namespace Ajit_Bakery.Controllers
         {
             return _context.Packaging.Any(e => e.Id == id);
         }
+
+
+        //[HttpGet]
+        //public IActionResult GetCakeList(string outletName)
+        //{
+        //    if (string.IsNullOrEmpty(outletName))
+        //    {
+        //        return Json(new { success = false, message = "Invalid outlet!" });
+        //    }
+
+        //    var cakeList = _context.ProductionCapture
+        //        .Where(pc => pc.OutletName.Trim() == outletName.Trim())
+        //        .Select(pc => new
+        //        {
+        //            ProductName = pc.ProductName,
+        //            Qty = pc.TotalQty,
+        //            ProductionDate = pc.Production_Date,
+        //            PackagingStatus = _context.Packaging.Any(p => p.Outlet_Name.Trim() == outletName.Trim() && p.Product_Name.Trim() == pc.ProductName.Trim()) ? "Packed" : "Pending"
+        //        })
+        //        .ToList();
+
+        //    return Json(new { success = true, data = cakeList });
+        //}
+
+        [HttpGet]
+        public IActionResult GetCakeList(string outletName)
+        {
+            if (string.IsNullOrEmpty(outletName))
+            {
+                return Json(new { success = false, message = "Invalid outlet!" });
+            }
+
+            var plannedProducts = _context.ProductionCapture
+                .Where(pc => pc.OutletName.Trim() == outletName.Trim())
+                .GroupBy(pc => new { pc.ProductName, pc.OutletName })
+                .Select(g => new
+                {
+                    ProductName = g.Key.ProductName,
+                    PlannedQty = g.Sum(pc => pc.TotalQty) // Total planned quantity
+                })
+                .ToList();
+
+            var producedProducts = _context.SaveProduction
+                .GroupBy(sp => sp.ProductName.Trim())
+                .Select(g => new
+                {
+                    ProductName = g.Key,
+                    ProducedQty = g.Sum(sp => sp.Qty) // Total produced quantity
+                })
+                .ToList();
+
+            // Filter only products where planned quantity > produced quantity
+            var remainingProducts = plannedProducts
+                .Select(pp =>
+                {
+                    var producedQty = producedProducts.FirstOrDefault(sp => sp.ProductName == pp.ProductName)?.ProducedQty ?? 0;
+                    var remainingQty = pp.PlannedQty - producedQty;
+
+                    return new
+                    {
+                        ProductName = pp.ProductName,
+                        RemainingQty = remainingQty > 0 ? remainingQty : 0  // Ensure it doesn't go negative
+                    };
+                })
+                .Where(p => p.RemainingQty > 0) // Only include products that still have remaining quantity
+                .ToList();
+
+            return Json(new { success = true, data = remainingProducts });
+        }
+
+
+        public async Task<IActionResult> PackagingReceipt(string selectedDate = null)
+        {
+            DateTime today = DateTime.Now.Date;
+            DateTime filterDate = string.IsNullOrEmpty(selectedDate) ? today : DateTime.ParseExact(selectedDate, "yyyy-MM-dd", null);
+
+            var packaging = await _context.Packaging
+                .Where(p => p.Packaging_Date == filterDate.ToString("dd-MM-yyyy"))
+                .Select(p => new Packaging
+                {
+                    Reciept_Id = p.Reciept_Id,
+                    Production_Id = p.Production_Id,
+                    Outlet_Name = p.Outlet_Name
+                })
+                .Distinct()
+                .ToListAsync();
+
+            return View(packaging);
+        }
+
+
+
+        /* public async Task<IActionResult> Reprint(string receiptId)
+         {
+             try
+             {
+                 if (string.IsNullOrEmpty(receiptId))
+                 {
+                     return Json(new { success = false, message = "Invalid Receipt ID!" });
+                 }
+
+                 var packagingList = _context.Packaging
+                     .Where(p => p.Reciept_Id == receiptId)
+                     .ToList();
+
+                 if (packagingList.Count == 0)
+                 {
+                     return Json(new { success = false, message = "No records found for this Receipt ID!" });
+                 }
+
+                 string DATE = DateTime.Now.ToString("dd-MM-yyyy");
+                 string BOXNO = packagingList.FirstOrDefault().Box_No;
+                 string OUTLET = packagingList.FirstOrDefault().Outlet_Name;
+
+                 // Generate QR Code
+                 string qrcode = BOXNO + "$" + receiptId;
+                 string image;
+                 using (MemoryStream ms = new MemoryStream())
+                 {
+                     QRCodeGenerator qrGenerator = new QRCodeGenerator();
+                     QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrcode, QRCodeGenerator.ECCLevel.Q);
+                     PngByteQRCode qrCode = new PngByteQRCode(qrCodeData);
+                     byte[] qrCodeBytes = qrCode.GetGraphic(20);
+                     ms.Write(qrCodeBytes, 0, qrCodeBytes.Length);
+                     image = Convert.ToBase64String(ms.ToArray());
+                 }
+
+                 DataTable table1 = new DataTable();
+                 table1.Columns.AddRange(new DataColumn[]
+                 {
+                     new DataColumn("product_name", typeof(string)),
+                     new DataColumn("qnty", typeof(string)),
+                     new DataColumn("wt", typeof(string)),
+                 });
+
+                 foreach (var item in packagingList)
+                 {
+                     table1.Rows.Add(item.Product_Name, item.Qty, item.TotalNetWg + " " + item.TotalNetWg_Uom);
+                 }
+
+                 var parameters = new[]
+                 {
+                     new ReportParameter("d1", DATE),
+                     new ReportParameter("pid", receiptId),
+                     new ReportParameter("qr", image),
+                     new ReportParameter("ot", OUTLET),
+                     new ReportParameter("bx", BOXNO),
+                     new ReportParameter("rd1", receiptId),
+                 };
+
+                 using var report = new LocalReport();
+                 report.ReportPath = $"{this._webHostEnvironment.WebRootPath}\\Reports\\DispatchRPT.rdlc";
+                 report.SetParameters(parameters);
+                 ReportDataSource rds = new ReportDataSource("DataSet1", table1);
+                 report.DataSources.Add(rds);
+
+                 string renderFormat = "PDF";
+                 var pdf = report.Render(renderFormat);
+
+                 string folderPath = $"{this._webHostEnvironment.WebRootPath}\\Reports\\";
+                 if (!Directory.Exists(folderPath))
+                 {
+                     Directory.CreateDirectory(folderPath);
+                 }
+
+                 // Delete old PDFs
+                 foreach (string pdfFile in Directory.GetFiles(folderPath, "*.pdf"))
+                 {
+                     if (System.IO.File.GetCreationTime(pdfFile) < DateTime.Now.AddHours(-24))
+                     {
+                         System.IO.File.Delete(pdfFile);
+                     }
+                 }
+
+                 string fileName = $"Reprint_PackagingSlip_{receiptId}.pdf";
+                 string filePath = System.IO.Path.Combine(folderPath, fileName);
+                 System.IO.File.WriteAllBytes(filePath, pdf);
+                 string pdfUrl = Url.Content("~/Reports/") + fileName;
+
+                 return Json(new { success = true, pdfUrl = pdfUrl });
+             }
+             catch (Exception ex)
+             {
+                 return Json(new { success = false, message = ex.Message });
+             }
+         }*/
+
+        [HttpPost]
+        public async Task<IActionResult> ReprintSticker([FromBody] List<string> receiptIds)
+        {
+            try
+            {
+                if (receiptIds == null || receiptIds.Count == 0)
+                {
+                    return Json(new { success = false, message = "No receipt selected!" });
+                }
+
+                // Fetch packaging data based on selected receipt IDs
+                var packagingList = _context.Packaging
+                    .Where(p => receiptIds.Contains(p.Reciept_Id))
+                    .ToList();
+
+                if (packagingList.Count == 0)
+                {
+                    return Json(new { success = false, message = "No matching receipts found!" });
+                }
+
+                // Re-generate PDF for selected receipts
+                string pdfUrl = GeneratePackagingSlip(packagingList);
+
+                return Json(new { success = true, pdfUrl });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        private string GeneratePackagingSlip(List<Packaging> packagingList)
+        {
+            string DATE = DateTime.Now.ToString("dd-MM-yyyy");
+            string folderPath = $"{this._webHostEnvironment.WebRootPath}\\Reports\\";
+            if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
+
+            string fileName = $"Reprint_{DateTime.Now:yyyyMMddHHmmss}.pdf";
+            string filePath = Path.Combine(folderPath, fileName);
+
+            using var report = new LocalReport();
+            report.ReportPath = $"{this._webHostEnvironment.WebRootPath}\\Reports\\DispatchRPT.rdlc";
+
+            DataTable table = new DataTable();
+            table.Columns.AddRange(new DataColumn[]
+            {
+        new DataColumn("product_name", typeof(string)),
+        new DataColumn("qnty", typeof(string)),
+        new DataColumn("wt", typeof(string)),
+            });
+
+            foreach (var item in packagingList)
+            {
+                table.Rows.Add(item.Product_Name, item.Qty, $"{item.TotalNetWg} {item.TotalNetWg_Uom}");
+            }
+
+            report.DataSources.Add(new ReportDataSource("DataSet1", table));
+            var pdf = report.Render("PDF");
+            System.IO.File.WriteAllBytes(filePath, pdf);
+
+            return Url.Content("~/Reports/") + fileName;
+        }
+
     }
 }

@@ -1,0 +1,130 @@
+﻿@model List<Packaging>
+
+<!-- [ breadcrumb ] start -->
+<div class="card">
+    <div class="card-header bg-dark text-white py-2">
+        <div class="d-flex align-items-baseline">
+            <a asp-action="Index" asp-controller="Home" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+            <h4 class="mx-auto text-white text-2xl font-semibold"> Reprint Product Stickers</h4>
+        </div>
+    </div>
+
+    <div class="card-body mt-4">
+        <!-- Button Reprint -->
+        <button id="bulkReprint" class="btn btn-success mb-3" disabled>
+            <span id="bulkReprintText">Reprint Selected</span>
+            <span id="loadingSpinner" class="spinner-border spinner-border-sm d-none"></span>
+        </button>
+
+        <!-- Table for Receipts -->
+        <div class="table table-responsive">
+            <table id="example" class="table table-striped table-bordered" style="width:100%">
+                <thead class="thead-dark">
+                    <tr>
+                        <th><input type="checkbox" id="selectAll" /></th>
+                        <th>Production ID</th>
+                        <th>Receipt ID</th>
+                        <th>Outlet</th>
+                    </tr>
+                </thead>
+                <tbody id="receiptTableBody">
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="sticker-checkbox" data-id="@item.Reciept_Id" />
+                                </td>
+                                <td>@item.Reciept_Id</td>
+                                <td>@item.Production_Id</td>
+                                <td>@item.Outlet_Name</td>
+                                @* <td>@item.mrpRs</td> *@
+                                @* <td>@item.SaveProduction_Date.ToString()</td> *@
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">No records found for the selected date.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Success Message (Hidden Initially) -->
+<div id="successMessage" class="alert alert-success d-none">Stickers reprinted successfully!</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let bulkReprintButton = document.getElementById("bulkReprint");
+            let bulkReprintText = document.getElementById("bulkReprintText");
+            let loadingSpinner = document.getElementById("loadingSpinner");
+            let selectAllCheckbox = document.getElementById("selectAll");
+            let successMessage = document.getElementById("successMessage");
+
+            // Event Delegation for Checkboxes
+            document.addEventListener("change", function (e) {
+                if (e.target.matches("#selectAll")) {
+                    let checkboxes = document.querySelectorAll(".sticker-checkbox");
+                    checkboxes.forEach(cb => cb.checked = e.target.checked);
+                }
+                toggleBulkReprintButton();
+            });
+
+            document.addEventListener("change", function (e) {
+                if (e.target.matches(".sticker-checkbox")) {
+                    toggleBulkReprintButton();
+                }
+            });
+
+            // Bulk Reprint Action
+            bulkReprintButton.addEventListener("click", function () {
+                let selectedIds = Array.from(document.querySelectorAll(".sticker-checkbox:checked"))
+                                       .map(cb => cb.getAttribute("data-id"));
+
+                if (selectedIds.length === 0) {
+                    alert("Please select at least one sticker to reprint.");
+                    return;
+                }
+
+                bulkReprintButton.disabled = true;
+                bulkReprintText.innerText = "Processing...";
+                loadingSpinner.classList.remove("d-none");
+
+                fetch('/Packagings/ReprintSticker', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(selectedIds)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log(data);
+                        window.open(data.pdfUrl, '_blank'); // ✅ Opens PDF in a new window
+                        successMessage.classList.remove("d-none");
+                        setTimeout(() => successMessage.classList.add("d-none"), 3000);
+                    } else {
+                        alert("Error: " + data.message);
+                    }
+                })
+                .catch(error => console.error('Error:', error))
+                .finally(() => {
+                    bulkReprintButton.disabled = false;
+                    bulkReprintText.innerText = "Reprint Selected";
+                    loadingSpinner.classList.add("d-none");
+                });
+            });
+
+            function toggleBulkReprintButton() {
+                bulkReprintButton.disabled = document.querySelectorAll(".sticker-checkbox:checked").length === 0;
+            }
+        });
+    </script>
+
+}

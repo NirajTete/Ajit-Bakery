@@ -9,7 +9,7 @@
         <div class="d-flex align-items-baseline">
             <a asp-action="Index" asp-controller="TransferToDispatches" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
             <h4 class="mx-auto text-white text-2xl font-semibold">  Transfer To Dispatch </h4>
-           
+
         </div>
     </div>
     <div class="card-body mt-4">
@@ -25,7 +25,7 @@
                         <label class="ccontrol-label fw-bold small">Scan Count</label>
                         <input style="height:5vh; font-size: 20px; color: green; font-weight: 650;" id="qtypick" class="form-control" type="text" value="0" readonly />
                     </div>
-                   
+
                 </div>
                 <div class="row m-3">
                     <table class="table table-bordered table-striped table-sm" id="productTableBody">
@@ -88,60 +88,73 @@
             $("#TransferToDispatch").submit(function (event) {
                 event.preventDefault(); // Prevent default form submission
 
-                Swal.fire({
-                    title: "Submit Form?",
-                    text: "Do you want to submit this entry?",
-                    icon: "question",
-                    showCancelButton: true,
-                    confirmButtonText: "Yes",
-                    cancelButtonText: "No"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        let formData = $(this).serialize(); // Serialize form data
-                        console.log("formData : " + formData);
-                        $('#spinner').show();
-                        $.ajax({
-                            type: "POST",
-                            url: "@Url.Action("Create", "TransferToDispatches")",
-                            data: formData,
-                            success: function (response) {
-                                console.log("response : " + response);
-                                if (response.success) {
+                let tableBody = $("#productTableBody tbody"); // Correct tbody selection
+
+                if (tableBody.children().length === 0) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "No Data Found!",
+                        text: "Please Scan at least one Receipt before submitting.",
+                        confirmButtonText: "OK",
+                    });
+                }
+                else
+                {
+                    Swal.fire({
+                        title: "Submit Form?",
+                        text: "Do you want to submit this entry?",
+                        icon: "question",
+                        showCancelButton: true,
+                        confirmButtonText: "Yes",
+                        cancelButtonText: "No"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            let formData = $(this).serialize(); // Serialize form data
+                            console.log("formData : " + formData);
+                            $('#spinner').show();
+                            $.ajax({
+                                type: "POST",
+                                url: "@Url.Action("Create", "TransferToDispatches")",
+                                data: formData,
+                                success: function (response) {
+                                    console.log("response : " + response);
+                                    if (response.success) {
+                                        $('#spinner').hide();
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Success!',
+                                            text: "Successfully Done !",
+                                            confirmButtonText: "OK"
+                                        }).then(() => {
+                                            window.location.href = "@Url.Action("Index", "TransferToDispatches")"; // Redirect to Index
+                                        });
+                                    }
+                                    else{
+                                        $('#spinner').hide();
+                                        Swal.fire({
+                                            icon: 'warning',
+                                            title: 'Warning!',
+                                            text: response.message,
+                                             // timer: 10000
+                                            confirmButtonText: "OK"
+                                        }).then(() => {
+                                            window.location.href = "@Url.Action("Index", "TransferToDispatches")"; // Redirect to Index
+                                        });;
+                                    }
+                                    $("#TransferToDispatch")[0].reset(); // Reset form
+                                },
+                                error: function () {
                                     $('#spinner').hide();
                                     Swal.fire({
-                                        icon: 'success',
-                                        title: 'Success!',
-                                        text: "Successfully Done !",
-                                        confirmButtonText: "OK"
-                                    }).then(() => {
-                                        window.location.href = "@Url.Action("Index", "TransferToDispatches")"; // Redirect to Index
+                                        icon: 'error',
+                                        title: 'Error!',
+                                        text: response.message,
                                     });
                                 }
-                                else{
-                                    $('#spinner').hide();
-                                    Swal.fire({
-                                        icon: 'warning',
-                                        title: 'Warning!',
-                                        text: response.message,
-                                         // timer: 10000
-                                        confirmButtonText: "OK"
-                                    }).then(() => {
-                                        window.location.href = "@Url.Action("Index", "TransferToDispatches")"; // Redirect to Index
-                                    });;
-                                }
-                                $("#TransferToDispatch")[0].reset(); // Reset form
-                            },
-                            error: function () {
-                                $('#spinner').hide();
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error!',
-                                    text: response.message,
-                                });
-                            }
-                        });
-                    }
-                });
+                            });
+                        }
+                    });
+                }
             });
         });
         function InsertScanData(event) {

@@ -47,7 +47,10 @@ namespace Ajit_Bakery.Models
         [Display(Name = "MRP (Rs/Gm)")]
         public double MRP_Rs { get; set; }
 
+        [Display(Name ="Product Height")]
         public double Height { get; set; }
+
+        [Display(Name ="Height UOM")]
         public string Height_Uom { get; set; }
 
         

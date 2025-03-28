@@ -1,4 +1,5 @@
 using Ajit_Bakery.Data;
+using Ajit_Bakery.Services;
 using AspNetCoreHero.ToastNotification;
 using AspNetCoreHero.ToastNotification.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -20,6 +21,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         option.Cookie.Name = "AjiBakery";
         option.LoginPath = "/UserMasters/Login";
         option.ExpireTimeSpan = TimeSpan.FromMinutes(120);
+        //option.ExpireTimeSpan = TimeSpan.FromSeconds(10);
         option.AccessDeniedPath = "/Access/AccessDenied";
     });
 
@@ -35,6 +37,9 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddSession();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Register the Background Service
+builder.Services.AddHostedService<BoxMasterResetService>();
 
 var app = builder.Build();
 

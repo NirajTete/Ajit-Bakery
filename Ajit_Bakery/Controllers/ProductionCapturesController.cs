@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.AspNetCore.Authorization;
 using DocumentFormat.OpenXml.Bibliography;
 using System.Security.Claims;
+using iText.Commons.Actions.Data;
 
 namespace Ajit_Bakery.Controllers
 {
@@ -327,47 +328,117 @@ namespace Ajit_Bakery.Controllers
             return columnName;
         }
 
+
+        //public async Task<IActionResult> Index()
+        //{
+        //    List<ProductionCapture> ProductionCapture = new List<ProductionCapture>();
+        //    var list = await _context.ProductionCapture.OrderByDescending(a => a.Id).ToListAsync();
+        //    var groupedData = _context.ProductionCapture
+        //                    .GroupBy(p => new { p.Production_Id, p.OutletName, p.Production_Date, p.ProductName, p.Status })
+        //                    .Select(g => new
+        //                    {
+        //                        ProductName = g.Key.ProductName,
+        //                        ProductionOrderId = g.Key.Production_Id,
+        //                        OutletName = g.Key.OutletName,
+        //                        TotalProductionQty = g.Sum(x => x.TotalQty),
+        //                        DateTime = g.Key.Production_Date,
+        //                        Status = g.Key.Status,
+        //                    })
+        //                    .ToList();
+
+        //    if (list.Count > 0)
+        //    {
+        //        foreach (var item in groupedData)
+        //        {
+        //            var founddata = list.Where(a => a.Production_Date.Trim() == item.DateTime.Trim()).FirstOrDefault();
+        //            var date = founddata.Production_Date + " - " + founddata.Production_Time;
+
+        //            //var checkstore = _context.SaveProduction.ToList();
+
+        //            ProductionCapture ProductionCapturenew = new ProductionCapture()
+        //            {
+        //                ProductName = item.ProductName,
+        //                Production_Id = item.ProductionOrderId,
+        //                OutletName = item.OutletName,
+        //                TotalQty = item.TotalProductionQty,
+        //                Production_Date = date,
+        //                Status = item.Status,
+        //            };
+        //            ProductionCapture.Add(ProductionCapturenew);
+        //        }
+        //    }
+        //    ProductionCapture = ProductionCapture.OrderByDescending(a => a.Production_Id).ToList();
+        //    return View(ProductionCapture);
+        //}
+
         public async Task<IActionResult> Index()
         {
-            List<ProductionCapture> ProductionCapture = new List<ProductionCapture>();
+            List<ProductionCapture> productionCaptures = new List<ProductionCapture>();
+
+            //Fetch ordered data from database
             var list = await _context.ProductionCapture.OrderByDescending(a => a.Id).ToListAsync();
-            var groupedData = _context.ProductionCapture
-                            .GroupBy(p => new { p.Production_Id, p.OutletName, p.Production_Date, p.ProductName, p.Status })
-                            .Select(g => new
-                            {
-                                ProductName = g.Key.ProductName,
-                                ProductionOrderId = g.Key.Production_Id,
-                                OutletName = g.Key.OutletName,
-                                TotalProductionQty = g.Sum(x => x.TotalQty),
-                                DateTime = g.Key.Production_Date,
-                                Status = g.Key.Status,
-                            })
-                            .ToList();
 
-            if (list.Count > 0)
-            {
-                foreach (var item in groupedData)
+            //Get distinct outlet names dynamically from the data
+            var allOutlets = list.Select(x => x.OutletName).Distinct().ToList();
+
+            //Group data properly by Production_Id
+            var groupedData = list
+                .GroupBy(p => new { p.Production_Id, p.Production_Date, p.Status })
+                .Select(g => new
                 {
-                    var founddata = list.Where(a => a.Production_Date.Trim() == item.DateTime.Trim()).FirstOrDefault();
-                    var date = founddata.Production_Date + " - " + founddata.Production_Time;
+                    ProductionOrderId = g.Key.Production_Id,
+                    ProductionDate = g.Key.Production_Date,
+                    Status = g.Key.Status,
+                    Products = g.GroupBy(x => x.ProductName)
+                                .Select(p => new
+                                {
+                                    ProductName = p.Key,
+                                    TotalProductionQty = p.Sum(x => x.TotalQty),
+                                    Outlets = p.GroupBy(x => x.OutletName)
+                                               .ToDictionary(gn => gn.Key, gn => gn.Sum(x => x.TotalQty))
+                                })
+                                .ToList()
+                })
+                .ToList();
 
-                    //var checkstore = _context.SaveProduction.ToList();
+            //Process grouped data
+            foreach (var group in groupedData)
+            {
+                //Fetch the matching record to get the correct timestamp
+                var foundData = list.FirstOrDefault(a => a.Production_Date == group.ProductionDate);
+                string formattedDate = foundData != null
+                    ? $"{foundData.Production_Date} - {foundData.Production_Time}"
+                    : group.ProductionDate.ToString();
 
-                    ProductionCapture ProductionCapturenew = new ProductionCapture()
+                foreach (var product in group.Products)
+                {
+                    //Create a new object for the ViewModel
+
+                    ProductionCapture productionCaptureNew = new ProductionCapture
                     {
-                        ProductName = item.ProductName,
-                        Production_Id = item.ProductionOrderId,
-                        OutletName = item.OutletName,
-                        TotalQty = item.TotalProductionQty,
-                        Production_Date = date,
-                        Status = item.Status,
+                        Production_Id = group.ProductionOrderId,
+                        ProductName = product.ProductName,
+                        TotalQty = product.TotalProductionQty,
+                        Status = group.Status,
+                        Production_Date = formattedDate, // Date moved to last in the table
+                        OutletData = product.Outlets,
                     };
-                    ProductionCapture.Add(ProductionCapturenew);
+
+                    productionCaptures.Add(productionCaptureNew);
                 }
             }
-            ProductionCapture = ProductionCapture.OrderByDescending(a => a.Production_Id).ToList();
-            return View(ProductionCapture);
+
+            //Final sorting
+            productionCaptures = productionCaptures.OrderByDescending(a => a.Production_Id).ToList();
+
+            int totat_Qty = _context.ProductionCapture.Sum(pc => pc.TotalQty);
+
+            ViewBag.totat_Qty = totat_Qty;
+            ViewBag.AllOutlets = allOutlets; // Send outlet names dynamically to the view
+            return View(productionCaptures);
         }
+
+
 
         public async Task<IActionResult> Details(int? id)
         {
