@@ -4,52 +4,56 @@
     ViewData["Title"] = "Create";
 }
 
-<div class="container-fluid">
-    <div class="card shadow-sm mt-3">
-        <div class="card-header bg-dark text-white py-2">
 
-            <div class="d-flex align-items-baseline">
-                <a asp-action="Index" asp-controller="TransportMasters" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
-                <h5 class="mx-auto text-white text-2xl font-semibold"> Transport Master - Add</h5>
-            </div>
-        </div>
-        <div class="card-body p-2">
-            <form asp-action="Create" id="productForm" onsubmit="return validateForm()">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="row">
-                    <div class="form-group col-sm-4">
-                        <label asp-for="DriverName" class="control-label fw-bold small">Driver Name</label>
-                        <input type="text" asp-for="DriverName" id="DriverName" class="form-control" required />
-                        <span asp-validation-for="DriverName" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-sm-2">
-                        <label asp-for="DriverContactNo" class="control-label fw-bold small"> Contact No.</label>
-                        <input type="text" asp-for="DriverContactNo" class="form-control" required
-                               pattern="\d{10}" title="Please enter exactly 10 digits" maxlength="10" />
-                    </div>
+<div class="card">
 
-                    <div class="form-group col-sm-3">
-                        <label asp-for="VehicleNo" class="control-label fw-bold small">Vehicle No.</label>
-                        <input type="text" asp-for="VehicleNo" class="form-control" required />
-                    </div>
-                    <div class="form-group col-sm-3">
-                        <label asp-for="VehicleOwn" class="control-label fw-bold small"></label>
-                        <select asp-for="VehicleOwn" class="form-control text-uppercase" autocomplete="off" id="VehicleOwn" required>
-                            <option>Self</option>
-                            <option>Contractor</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row mb-3 p-2">
-                    <div class="form-group col-sm-12 ">
-                        <input type="submit" value="Save" class="btn btn-primary btn-sm col-md-12" />
-                    </div>
-                </div>
-            </form>
-
+    <div class="card-header bg-dark text-white py-2">
+        <div class="d-flex align-items-baseline">
+            <a asp-action="Index" asp-controller="TransportMasters" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+            <h4 class="mx-auto text-white text-2xl font-semibold"> Transport Master - Add </h4>
+            @*  <a asp-action="Create" class="btn btn-success btn-sm text-white">
+                <i class="fas fa-plus-square"></i> Packaging
+            </a> *@
         </div>
     </div>
+    <div class="card-body mt-4">
+
+        <form asp-action="Create" id="productForm" onsubmit="return validateForm()">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="row">
+                <div class="form-group col-sm-4">
+                    <label asp-for="DriverName" class="control-label fw-bold small">Driver Name</label>
+                    <input type="text" asp-for="DriverName" id="DriverName" class="form-control" required />
+                    <span asp-validation-for="DriverName" class="text-danger"></span>
+                </div>
+                <div class="form-group col-sm-2">
+                    <label asp-for="DriverContactNo" class="control-label fw-bold small"> Contact No.</label>
+                    <input type="text" asp-for="DriverContactNo" class="form-control" required
+                           pattern="\d{10}" title="Please enter exactly 10 digits" maxlength="10" />
+                </div>
+
+                <div class="form-group col-sm-3">
+                    <label asp-for="VehicleNo" class="control-label fw-bold small">Vehicle No.</label>
+                    <input type="text" asp-for="VehicleNo" class="form-control" required />
+                </div>
+                <div class="form-group col-sm-3">
+                    <label asp-for="VehicleOwn" class="control-label fw-bold small"></label>
+                    <select asp-for="VehicleOwn" class="form-control text-uppercase" autocomplete="off" id="VehicleOwn" required>
+                        <option>Self</option>
+                        <option>Contractor</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-3 p-2">
+                <div class="form-group col-sm-12 ">
+                    <input type="submit" value="Save" class="btn btn-primary btn-sm col-md-12" />
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
+
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 @section Scripts {
@@ -57,7 +61,7 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-        
+
         $(document).ready(function () {
             $("#productForm").submit(function (event) {
                 event.preventDefault(); // Prevent default form submission
@@ -116,4 +120,3 @@
     </script>
 }
 
-    

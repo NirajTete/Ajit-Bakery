@@ -4,53 +4,57 @@
     ViewData["Title"] = "Create";
 }
 
-<div class="container-fluid">
-    <div class="card shadow-sm mt-3">
-        <div class="card-header bg-dark text-white py-2">
 
-            <div class="d-flex align-items-baseline">
-                <a asp-action="Index" asp-controller="OutletMasters" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
-                <h5 class="mx-auto text-white text-2xl font-semibold"> Outlet Master - Add</h5>
-            </div>
-        </div>
-        <div class="card-body p-2">
-            <form asp-action="Create" id="productForm" onsubmit="return validateForm()">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="row">
-                    <div class="form-group col-sm-2">
-                        <label asp-for="OutletCode" class="control-label fw-bold small"></label>
-                        <input type="text" asp-for="OutletCode" id="OutletCode" value="@ViewBag.outletcode" class="form-control" readonly required />
-                        <span asp-validation-for="OutletCode" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-sm-5">
-                        <label asp-for="OutletName" class="control-label fw-bold small"></label>
-                        <input type="text" asp-for="OutletName"  class="form-control" required />
-                    </div>
-                    <div class="form-group col-sm-5">
-                        <label asp-for="OutletContactPerson" class="control-label fw-bold small"></label>
-                        <input type="text" asp-for="OutletContactPerson" class="form-control" required />
-                    </div>
-                    <div class="form-group col-sm-3">
-                        <label asp-for="OutletContactNo" class="control-label fw-bold small"></label>
-                        <input type="text" asp-for="OutletContactNo" id="OutletContactNo" class="form-control"
-                               maxlength="10" pattern="[0-9]{10}" title="Enter exactly 10 digits" required />
-                        <span asp-validation-for="OutletContactNo" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-sm-9">
-                        <label asp-for="OutletAddress" class="control-label fw-bold small"></label>
-                        <input type="text" asp-for="OutletAddress" class="form-control" required />
-                    </div>
-                </div>
-                <div class="row mb-3 p-2">
-                    <div class="form-group col-sm-12 ">
-                        <input type="submit" value="Save" class="btn btn-primary btn-sm col-md-12" />
-                    </div>
-                </div>
-            </form>
+<div class="card">
 
+    <div class="card-header bg-dark text-white py-2">
+        <div class="d-flex align-items-baseline">
+            <a asp-action="Index" asp-controller="OutletMasters" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+            <h4 class="mx-auto text-white text-2xl font-semibold"> Outlet Master - Add </h4>
+            @*  <a asp-action="Create" class="btn btn-success btn-sm text-white">
+                <i class="fas fa-plus-square"></i> Packaging
+            </a> *@
         </div>
     </div>
+    <div class="card-body mt-4">
+
+        <form asp-action="Create" id="productForm" onsubmit="return validateForm()">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="row">
+                <div class="form-group col-sm-2">
+                    <label asp-for="OutletCode" class="control-label fw-bold small"></label>
+                    <input type="text" asp-for="OutletCode" id="OutletCode" value="@ViewBag.outletcode" class="form-control" readonly required />
+                    <span asp-validation-for="OutletCode" class="text-danger"></span>
+                </div>
+                <div class="form-group col-sm-5">
+                    <label asp-for="OutletName" class="control-label fw-bold small"></label>
+                    <input type="text" asp-for="OutletName" class="form-control" required />
+                </div>
+                <div class="form-group col-sm-5">
+                    <label asp-for="OutletContactPerson" class="control-label fw-bold small"></label>
+                    <input type="text" asp-for="OutletContactPerson" class="form-control" required />
+                </div>
+                <div class="form-group col-sm-3">
+                    <label asp-for="OutletContactNo" class="control-label fw-bold small"></label>
+                    <input type="text" asp-for="OutletContactNo" id="OutletContactNo" class="form-control"
+                           maxlength="10" pattern="[0-9]{10}" title="Enter exactly 10 digits" required />
+                    <span asp-validation-for="OutletContactNo" class="text-danger"></span>
+                </div>
+                <div class="form-group col-sm-9">
+                    <label asp-for="OutletAddress" class="control-label fw-bold small"></label>
+                    <input type="text" asp-for="OutletAddress" class="form-control" required />
+                </div>
+            </div>
+            <div class="row mb-3 p-2">
+                <div class="form-group col-sm-12 ">
+                    <input type="submit" value="Save" class="btn btn-primary btn-sm col-md-12" />
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
+
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 @section Scripts {
@@ -58,7 +62,7 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-        
+
         $(document).ready(function () {
             $("#productForm").submit(function (event) {
                 event.preventDefault(); // Prevent default form submission
@@ -117,4 +121,3 @@
     </script>
 }
 
-    
