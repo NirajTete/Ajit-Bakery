@@ -5,10 +5,14 @@
 }
 
 <div class="card">
-    <div class="card-header text-white py-2 bg-dark"@*  style="background-color:rgb(0 96 193) !important; *@">
+    <div class="card-header text-white py-2 bg-dark">
+        @*  style="background-color:rgb(0 96 193) !important; *@
         <div class="d-flex align-items-baseline">
             <a asp-action="Index" asp-controller="Home" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
             <h4 class="mx-auto text-white text-2xl font-semibold"> Box Master</h4>
+           @*  <a asp-action="Create" class="btn btn-success btn-sm text-white">
+                <i class="fas fa-plus-square"></i> Add
+            </a> *@
             <a asp-action="Create" class="btn btn-success btn-sm text-white">
                 <i class="fas fa-plus-square"></i> Add
             </a>
