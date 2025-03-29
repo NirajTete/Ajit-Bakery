@@ -4,47 +4,53 @@
     ViewData["Title"] = "CreateManually";
 }
 
-<div class="container-fluid">
-    <div class="card shadow-sm mt-3">
-        <div class="card-header bg-dark text-white py-2">
-            <div class="d-flex align-items-baseline">
-                <a asp-action="Index" asp-controller="ProductionCaptures" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
-                <h5 class="mx-auto text-white text-2xl font-semibold"> Production Capture - Add Manually</h5>
-            </div>
-        </div>
-        <div class="card-body p-2">
-            <form asp-action="CreateManually" id="CreateManually" onsubmit="return validateForm()">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="row mt-5">
-                    <div class="form-group col-sm-2">
-                        <label asp-for="Production_Id" class="control-label fw-bold small"></label>
-                        <select asp-for="Production_Id" id="Production_Id" style="font-size:14px" required
-                                class="form-control text-uppercase" asp-items="@ViewBag.ProductionId">
-                        </select>
-                    </div>
-                    <div class="form-group col-sm-3">
-                        <label asp-for="OutletName" class="control-label fw-bold small fw-bold small"></label>
-                        <select asp-for="OutletName" class="form-control text-uppercase" required asp-items="@ViewBag.GetOutlets"
-                                id="Outlet_Name"></select>
-                    </div>
-                    <div class="form-group col-sm-3">
-                        <label asp-for="ProductName" class="control-label fw-bold small fw-bold small"></label>
-                        <select asp-for="ProductName" class="form-control text-uppercase" required asp-items="@ViewBag.ProductName"
-                                id="ProductName"></select>
-                    </div>
-                    <div class="form-group col-sm-2">
-                        <label asp-for="TotalQty" class="control-label fw-bold small"></label>
-                        <input asp-for="TotalQty" type="number" style="height:5vh; font-size: 18px; color: green; font-weight: 650;"
-                               id="TotalQty" required class="form-control" />
-                    </div>
-                    <div class="form-group col-sm-2 d-flex align-items-center mt-4">
-                        <button type="submit" id="btnSave" class="btn btn-sm btn-primary w-100">Save</button>
-                    </div>
-                </div>
-            </form>
+
+<div class="card">
+
+    <div class="card-header bg-dark text-white py-2">
+        <div class="d-flex align-items-baseline">
+            <a asp-action="Index" asp-controller="ProductionCaptures" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+            <h4 class="mx-auto text-white text-2xl font-semibold"> Production Capture - Add Manually </h4>
+            @*  <a asp-action="Create" class="btn btn-success btn-sm text-white">
+                <i class="fas fa-plus-square"></i> Packaging
+            </a> *@
         </div>
     </div>
+    <div class="card-body mt-4">
+
+        <form asp-action="CreateManually" id="CreateManually" onsubmit="return validateForm()">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="row mt-5">
+                <div class="form-group col-sm-2">
+                    <label asp-for="Production_Id" class="control-label fw-bold small"></label>
+                    <select asp-for="Production_Id" id="Production_Id" style="font-size:14px" required
+                            class="form-control text-uppercase" asp-items="@ViewBag.ProductionId">
+                    </select>
+                </div>
+                <div class="form-group col-sm-3">
+                    <label asp-for="OutletName" class="control-label fw-bold small fw-bold small"></label>
+                    <select asp-for="OutletName" class="form-control text-uppercase" required asp-items="@ViewBag.GetOutlets"
+                            id="Outlet_Name"></select>
+                </div>
+                <div class="form-group col-sm-3">
+                    <label asp-for="ProductName" class="control-label fw-bold small fw-bold small"></label>
+                    <select asp-for="ProductName" class="form-control text-uppercase" required asp-items="@ViewBag.ProductName"
+                            id="ProductName"></select>
+                </div>
+                <div class="form-group col-sm-2">
+                    <label asp-for="TotalQty" class="control-label fw-bold small"></label>
+                    <input asp-for="TotalQty" type="number" style="height:5vh; font-size: 18px; color: green; font-weight: 650;"
+                           id="TotalQty" required class="form-control" />
+                </div>
+                <div class="form-group col-sm-2 d-flex align-items-center mt-4">
+                    <button type="submit" id="btnSave" class="btn btn-sm btn-primary w-100">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
+
+
 
 <div id="spinner" style="display: none;">
     <div class="spinner-border text-primary" role="status">

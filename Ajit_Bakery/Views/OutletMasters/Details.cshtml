@@ -3,72 +3,71 @@
 @{
     ViewData["Title"] = "Details";
 }
-<div class="container-fluid">
-    <div class="card shadow-sm mt-3">
-        <div class="card-header bg-dark text-white py-2">
 
-            <div class="d-flex align-items-baseline">
-                <a asp-action="Index" asp-controller="OutletMasters" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
-                <h5 class="mx-auto text-white text-2xl font-semibold"> Outlet Master - Detailes</h5>
-            </div>
+<div class="card">
+
+    <div class="card-header bg-dark text-white py-2">
+        <div class="d-flex align-items-baseline">
+            <a asp-action="Index" asp-controller="OutletMasters" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+            <h4 class="mx-auto text-white text-2xl font-semibold"> Outlet Master - Detailes </h4>
+            @*  <a asp-action="Create" class="btn btn-success btn-sm text-white">
+                <i class="fas fa-plus-square"></i> Packaging
+            </a> *@
         </div>
-        <div class="card-body p-5">
-
+    </div>
+    <div class="card-body mt-4">
         <dl class="row">
-        <dt class = "col-sm-3">
-                    Outlet Code
-        </dt>
-        <dd class = "col-sm-9">
-            @Html.DisplayFor(model => model.OutletCode)
-        </dd>
-        <dt class = "col-sm-3">
-                    Outlet Name
-        </dt>
-        <dd class = "col-sm-9">
-            @Html.DisplayFor(model => model.OutletName)
-        </dd>
-        <dt class = "col-sm-3">
-                    Outlet Address
-        </dt>
-        <dd class = "col-sm-9">
-            @Html.DisplayFor(model => model.OutletAddress)
-        </dd>
-        <dt class = "col-sm-3">
-                    Outlet Contact No.
-        </dt>
-        <dd class = "col-sm-9">
-            @Html.DisplayFor(model => model.OutletContactNo)
-        </dd>
-        <dt class = "col-sm-3">
-                    Outlet Contact Person
-        </dt>
-        <dd class = "col-sm-9">
-            @Html.DisplayFor(model => model.OutletContactPerson)
-        </dd>
-        <dt class = "col-sm-3">
-            @Html.DisplayNameFor(model => model.CreateDate)
-        </dt>
-        <dd class = "col-sm-9">
-            @Html.DisplayFor(model => model.CreateDate)
-        </dd>
-        
-        <dt class = "col-sm-3">
-            @Html.DisplayNameFor(model => model.ModifiedDate)
-        </dt>
-        <dd class = "col-sm-9">
-            @Html.DisplayFor(model => model.ModifiedDate)
-        </dd>
-       
-        <dt class = "col-sm-3">
-            @Html.DisplayNameFor(model => model.User)
-        </dt>
-        <dd class = "col-sm-9">
-            @Html.DisplayFor(model => model.User)
-        </dd>
-    </dl>
+            <dt class="col-sm-3">
+                Outlet Code
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.OutletCode)
+            </dd>
+            <dt class="col-sm-3">
+                Outlet Name
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.OutletName)
+            </dd>
+            <dt class="col-sm-3">
+                Outlet Address
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.OutletAddress)
+            </dd>
+            <dt class="col-sm-3">
+                Outlet Contact No.
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.OutletContactNo)
+            </dd>
+            <dt class="col-sm-3">
+                Outlet Contact Person
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.OutletContactPerson)
+            </dd>
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.CreateDate)
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.CreateDate)
+            </dd>
 
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.ModifiedDate)
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.ModifiedDate)
+            </dd>
 
-        </div>
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.User)
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.User)
+            </dd>
+        </dl>
     </div>
 </div>
 

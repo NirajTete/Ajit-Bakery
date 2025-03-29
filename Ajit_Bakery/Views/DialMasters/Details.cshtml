@@ -3,70 +3,73 @@
 @{
     ViewData["Title"] = "Details";
 }
-<div class="container-fluid">
-    <div class="card shadow-sm mt-3">
-        <div class="card-header bg-dark text-white py-2">
 
-            <div class="d-flex align-items-baseline">
-                <a asp-action="Index" asp-controller="DialMasters" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
-                <h5 class="mx-auto text-white text-2xl font-semibold"> Dial Master - Detailes</h5>
-            </div>
-        </div>
-        <div class="card-body p-5">
-            <dl class="row">
-                <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.DialCode)
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.DialCode)
-                </dd>
-                <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.DialShape)
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.DialShape)
-                </dd>
-                <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.value)
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.value)
-                </dd>
-               
-                <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.calvalue)
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.calvalue)
-                </dd>
-                <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.areacalvalue)
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.areacalvalue)
-                </dd>
-                <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.CreateDate)
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.CreateDate)
-                </dd>
-                <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.ModifiedDate)
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.ModifiedDate)
-                </dd>
-                
-                <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.User)
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.User)
-                </dd>
-            </dl>
 
+<div class="card">
+
+    <div class="card-header bg-dark text-white py-2">
+        <div class="d-flex align-items-baseline">
+            <a asp-action="Index" asp-controller="DialMasters" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+            <h4 class="mx-auto text-white text-2xl font-semibold"> Dial Master - Detailes </h4>
+            @*  <a asp-action="Create" class="btn btn-success btn-sm text-white">
+                <i class="fas fa-plus-square"></i> Packaging
+            </a> *@
         </div>
+    </div>
+    <div class="card-body mt-4">
+        <dl class="row">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.DialCode)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.DialCode)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.DialShape)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.DialShape)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.value)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.value)
+            </dd>
+
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.calvalue)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.calvalue)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.areacalvalue)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.areacalvalue)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.CreateDate)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.CreateDate)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.ModifiedDate)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.ModifiedDate)
+            </dd>
+
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.User)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.User)
+            </dd>
+        </dl>
+
     </div>
 </div>
 

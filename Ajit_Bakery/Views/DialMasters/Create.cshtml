@@ -3,103 +3,106 @@
 @{
     ViewData["Title"] = "Create";
 }
-<div class="container-fluid">
-    <div class="card shadow-sm mt-3">
-        <div class="card-header bg-dark text-white py-2">
 
-            <div class="d-flex align-items-baseline">
-                <a asp-action="Index" asp-controller="DialMasters" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
-                <h5 class="mx-auto text-white text-2xl font-semibold"> Dial Master - Add</h5>
+<div class="card">
+
+    <div class="card-header bg-dark text-white py-2">
+        <div class="d-flex align-items-baseline">
+            <a asp-action="Index" asp-controller="DialMasters" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+            <h4 class="mx-auto text-white text-2xl font-semibold"> Dial Master - Add </h4>
+            @*  <a asp-action="Create" class="btn btn-success btn-sm text-white">
+                <i class="fas fa-plus-square"></i> Packaging
+            </a> *@
+        </div>
+    </div>
+    <div class="card-body mt-4">
+        <form asp-action="Create" id="productForm" onsubmit="return validateForm()">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="row">
+                <div class="form-group col-sm-3" style="display:none">
+                    <label asp-for="DialCode" class="control-label fw-bold small">Dial Code</label>
+                    <input asp-for="DialCode" class="form-control" value="@ViewBag.dialcode" readonly required />
+                </div>
+                <div class="form-group col-sm-6">
+                    <label asp-for="DialShape" class="control-label fw-bold small">Dial Shape</label>
+                    <select asp-for="DialShape" class="form-control text-uppercase" id="DialShape" required>
+                        <option value="Circle">Circle</option>
+                        <option value="Square">Square</option>
+                    </select>
+                </div>
+                <div class="form-group col-sm-3">
+                    <label asp-for="DialWg" class="control-label fw-bold small">Dial Wg</label>
+                    <input type="number" value="0" asp-for="DialWg" class="form-control" required min="1" max="50" />
+                </div>
+                <div class="form-group col-sm-3">
+                    <label asp-for="DialWgUom" class="control-label fw-bold small">Dial Uom</label>
+                    <select asp-for="DialWgUom" class="form-control text-uppercase" autocomplete="off" id="DialWgUom" required>
+                        <option>Gms</option>
+                    </select>
+                </div>
             </div>
-        </div>
-        <div class="card-body p-2">
-            <form asp-action="Create" id="productForm" onsubmit="return validateForm()">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="row">
-                    <div class="form-group col-sm-3" style="display:none">
-                        <label asp-for="DialCode" class="control-label fw-bold small">Dial Code</label>
-                        <input asp-for="DialCode" class="form-control" value="@ViewBag.dialcode" readonly required />
-                    </div>
-                    <div class="form-group col-sm-6">
-                        <label asp-for="DialShape" class="control-label fw-bold small">Dial Shape</label>
-                        <select asp-for="DialShape" class="form-control text-uppercase" id="DialShape" required>
-                            <option value="Circle">Circle</option>
-                            <option value="Square">Square</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-sm-3">
-                        <label asp-for="DialWg" class="control-label fw-bold small">Dial Wg</label>
-                        <input type="number" value="0" asp-for="DialWg" class="form-control" required min="1" max="50" />
-                    </div>
-                    <div class="form-group col-sm-3">
-                        <label asp-for="DialWgUom" class="control-label fw-bold small">Dial Uom</label>
-                        <select asp-for="DialWgUom" class="form-control text-uppercase" autocomplete="off" id="DialWgUom" required>
-                            <option>Gms</option>
-                        </select>
-                    </div>
+            <div class="row">
+                <div class="form-group col-sm-2" id="diameterDiv">
+                    <label asp-for="DialDiameter" class="control-label fw-bold small">Dial Diameter</label>
+                    <input type="number" asp-for="DialDiameter" class="form-control" min="1" max="50" />
+                    <span asp-validation-for="DialDiameter" class="text-danger"></span>
                 </div>
-                <div class="row">
-                    <div class="form-group col-sm-2" id="diameterDiv">
-                        <label asp-for="DialDiameter" class="control-label fw-bold small">Dial Diameter</label>
-                        <input type="number" asp-for="DialDiameter" class="form-control" min="1" max="50" />
-                        <span asp-validation-for="DialDiameter" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-sm-2" id="lengthBreadthDiv">
-                        <label asp-for="DialLength" class="control-label fw-bold small">Dial Length</label>
-                        <input type="number" asp-for="DialLength" class="form-control" />
-                        <span asp-validation-for="DialLength" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-sm-2" id="breadthDiv">
-                        <label asp-for="DialBreadth" class="control-label fw-bold small">Dial Breadth</label>
-                        <input type="number" asp-for="DialBreadth" class="form-control" />
-                        <span asp-validation-for="DialBreadth" class="text-danger"></span>
-                    </div>
+                <div class="form-group col-sm-2" id="lengthBreadthDiv">
+                    <label asp-for="DialLength" class="control-label fw-bold small">Dial Length</label>
+                    <input type="number" asp-for="DialLength" class="form-control" />
+                    <span asp-validation-for="DialLength" class="text-danger"></span>
+                </div>
+                <div class="form-group col-sm-2" id="breadthDiv">
+                    <label asp-for="DialBreadth" class="control-label fw-bold small">Dial Breadth</label>
+                    <input type="number" asp-for="DialBreadth" class="form-control" />
+                    <span asp-validation-for="DialBreadth" class="text-danger"></span>
+                </div>
 
-                    <div class="form-group col-sm-2">
-                        <label asp-for="LengthUom" class="control-label fw-bold small"> Length Uom</label>
-                        <select asp-for="LengthUom" class="form-control text-uppercase" id="LengthUom" required>
-                            <option value="CM">CM</option>
-                            <option value="MM">MM</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-sm-2">
-                        <label asp-for="DialArea" class="control-label fw-bold small"> Dial Area</label>
-                        <input type="number" value="0" readonly asp-for="DialArea" class="form-control" />
-                        <span asp-validation-for="DialArea" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-sm-3" >
-                        <label asp-for="DialUsedForCakes" class="control-label fw-bold small"></label>
-                        <input type="number" value="0" id="DialUsedForCakes" asp-for="DialUsedForCakes"  class="form-control"
-                        required min="1" max="5000" />
-                    </div>
-                   
-                    <div class="form-group col-sm-3">
-                        <label asp-for="DialUsedForCakes_Uom" class="control-label fw-bold small"></label>
-                        <select asp-for="DialUsedForCakes_Uom" class="form-control text-uppercase" autocomplete="off"
-                                id="DialUsedForCakes_Uom" required>
-                            <option>KGS</option>
-                            <option>GMS</option>
-                        </select>
-                    </div>
+                <div class="form-group col-sm-2">
+                    <label asp-for="LengthUom" class="control-label fw-bold small"> Length Uom</label>
+                    <select asp-for="LengthUom" class="form-control text-uppercase" id="LengthUom" required>
+                        <option value="CM">CM</option>
+                        <option value="MM">MM</option>
+                    </select>
                 </div>
-                <div class="row mb-3 p-2">
-                    <div class="form-group col-sm-12 ">
-                        <input type="submit" value="Save" class="btn btn-primary btn-sm col-md-12" />
-                    </div>
+                <div class="form-group col-sm-2">
+                    <label asp-for="DialArea" class="control-label fw-bold small"> Dial Area</label>
+                    <input type="number" value="0" readonly asp-for="DialArea" class="form-control" />
+                    <span asp-validation-for="DialArea" class="text-danger"></span>
                 </div>
-            </form>
+                <div class="form-group col-sm-3">
+                    <label asp-for="DialUsedForCakes" class="control-label fw-bold small"></label>
+                    <input type="number" value="0" id="DialUsedForCakes" asp-for="DialUsedForCakes" class="form-control"
+                           required min="1" max="5000" />
+                </div>
 
-        </div>
+                <div class="form-group col-sm-3">
+                    <label asp-for="DialUsedForCakes_Uom" class="control-label fw-bold small"></label>
+                    <select asp-for="DialUsedForCakes_Uom" class="form-control text-uppercase" autocomplete="off"
+                            id="DialUsedForCakes_Uom" required>
+                        <option>KGS</option>
+                        <option>GMS</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-3 p-2">
+                <div class="form-group col-sm-12 ">
+                    <input type="submit" value="Save" class="btn btn-primary btn-sm col-md-12" />
+                </div>
+            </div>
+        </form>
+
     </div>
 </div>
 
-
-
+    
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
     <script>
         // function ceckqty(){
         //     OnUomChange();

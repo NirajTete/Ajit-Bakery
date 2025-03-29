@@ -5,65 +5,68 @@
 
 }
 
-<div class="container-fluid">
-    <div class="card shadow-sm mt-3">
-        <div class="card-header bg-dark text-white py-2">
 
-            <div class="d-flex align-items-baseline">
-                <a asp-action="Index" asp-controller="UserMasters" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
-                <h5 class="mx-auto text-white text-2xl font-semibold"> User Master - Edit</h5>
-            </div>
-        </div>
-        <div class="card-body p-2">
-            <form asp-action="Edit" id="productForm" onsubmit="return validateForm()">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="row p-3">
-                    <div class="form-group col-sm-2 ">
-                        <label asp-for="UserCode" class="control-label fw-bold small"></label>
-                        <input asp-for="UserCode" readonly data-uppercase autocomplete="off" class="form-control" id="uomcode" required />
-                    </div>
-                    <div class="form-group col-sm-3 ">
-                        <label asp-for="UserName" class="control-label fw-bold small"></label>
-                        <input asp-for="UserName" data-uppercase autocomplete="off" class="form-control" id="uomname" required />
-                    </div>
-                    <div class="form-group col-sm-4 ">
-                        <label asp-for="Email" class="control-label fw-bold small"></label>
-                        <input asp-for="Email" data-uppercase autocomplete="off" class="form-control" id="uomcode" required />
-                    </div>
-                    <div class="form-group col-sm-3 ">
-                        <label asp-for="UserPassward" class="control-label fw-bold small"></label>
-                        <input asp-for="UserPassward" data-uppercase autocomplete="off" class="form-control" id="uomcode" required />
-                    </div>
-                </div>
-                <div class="row  p-3">
-                    <div class="form-group col-sm-3">
-                        <label asp-for="UserDept" class="control-label fw-bold small"></label>
-                        <select asp-for="UserDept" class="form-control text-uppercase" autocomplete="off" onchange="dropdownChanged()" id="customerName" required>
-                            <option value="Manufacturing">Manufacturing</option>
-                            <option value="Account">Account</option>
-                            <option value="Production">Production</option>
-                            <option value="Dispatch">Dispatch</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-sm-3 ">
-                        <label asp-for="UserContactNo" class="control-label fw-bold small"></label>
-                        <input asp-for="UserContactNo" data-uppercase autocomplete="off" class="form-control" id="uomcode" required maxlength="10" title="Enter exactly 10 digits" />
-                    </div>
-                    <div class="form-group col-sm-3 ">
-                        <label asp-for="UserRole" class="control-label fw-bold small"></label>
-                        <input asp-for="UserRole" data-uppercase autocomplete="off" class="form-control" value="User" id="uomcode" readonly required />
-                    </div>
-                </div>
-                <div class="row mb-3 p-2">
-                    <div class="form-group col-sm-12 ">
-                        <input type="submit" value="Save" class="btn btn-primary btn-sm col-md-12" />
-                    </div>
-                </div>
-            </form>
+<div class="card">
 
+    <div class="card-header bg-dark text-white py-2">
+        <div class="d-flex align-items-baseline">
+            <a asp-action="Index" asp-controller="UserMasters" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+            <h4 class="mx-auto text-white text-2xl font-semibold"> User Master - Edit </h4>
+            @*  <a asp-action="Create" class="btn btn-success btn-sm text-white">
+                <i class="fas fa-plus-square"></i> Packaging
+            </a> *@
         </div>
     </div>
+    <div class="card-body mt-4">
+        <form asp-action="Edit" id="productForm" onsubmit="return validateForm()">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="row p-3">
+                <div class="form-group col-sm-2 ">
+                    <label asp-for="UserCode" class="control-label fw-bold small"></label>
+                    <input asp-for="UserCode" readonly data-uppercase autocomplete="off" class="form-control" id="uomcode" required />
+                </div>
+                <div class="form-group col-sm-3 ">
+                    <label asp-for="UserName" class="control-label fw-bold small"></label>
+                    <input asp-for="UserName" data-uppercase autocomplete="off" class="form-control" id="uomname" required />
+                </div>
+                <div class="form-group col-sm-4 ">
+                    <label asp-for="Email" class="control-label fw-bold small"></label>
+                    <input asp-for="Email" data-uppercase autocomplete="off" class="form-control" id="uomcode" required />
+                </div>
+                <div class="form-group col-sm-3 ">
+                    <label asp-for="UserPassward" class="control-label fw-bold small"></label>
+                    <input asp-for="UserPassward" data-uppercase autocomplete="off" class="form-control" id="uomcode" required />
+                </div>
+            </div>
+            <div class="row  p-3">
+                <div class="form-group col-sm-3">
+                    <label asp-for="UserDept" class="control-label fw-bold small"></label>
+                    <select asp-for="UserDept" class="form-control text-uppercase" autocomplete="off" onchange="dropdownChanged()" id="customerName" required>
+                        <option value="Manufacturing">Manufacturing</option>
+                        <option value="Account">Account</option>
+                        <option value="Production">Production</option>
+                        <option value="Dispatch">Dispatch</option>
+                    </select>
+                </div>
+                <div class="form-group col-sm-3 ">
+                    <label asp-for="UserContactNo" class="control-label fw-bold small"></label>
+                    <input asp-for="UserContactNo" data-uppercase autocomplete="off" class="form-control" id="uomcode" required maxlength="10" title="Enter exactly 10 digits" />
+                </div>
+                <div class="form-group col-sm-3 ">
+                    <label asp-for="UserRole" class="control-label fw-bold small"></label>
+                    <input asp-for="UserRole" data-uppercase autocomplete="off" class="form-control" value="User" id="uomcode" readonly required />
+                </div>
+            </div>
+            <div class="row mb-3 p-2">
+                <div class="form-group col-sm-12 ">
+                    <input type="submit" value="Save" class="btn btn-primary btn-sm col-md-12" />
+                </div>
+            </div>
+        </form>
+
+    </div>
 </div>
+
 @* <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> *@
 
 @section Scripts {

@@ -3,64 +3,69 @@
 @{
     ViewData["Title"] = "Details";
 }
-<div class="container-fluid">
-    <div class="card shadow-sm mt-3">
-        <div class="card-header bg-dark text-white py-2">
 
-            <div class="d-flex align-items-baseline">
-                <a asp-action="Index" asp-controller="UserMasters" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
-                <h5 class="mx-auto text-white text-2xl font-semibold"> User Master - Detailes</h5>
-            </div>
-        </div>
-        <div class="card-body p-5">
-            <dl class="row">
-                <dt class="col-sm-2">
-                    User Name
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.UserName)
-                </dd>
-                <dt class="col-sm-2">
-                    User Code
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.UserCode)
-                </dd>
-                
-                <dt class="col-sm-2">
-                    User Dept.
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.UserDept)
-                </dd>
-                <dt class="col-sm-2">
-                    User Contact No.
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.UserContactNo)
-                </dd>
-                <dt class="col-sm-2">
-                    User Role
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.UserRole)
-                </dd>
-                <dt class="col-sm-2">
-                    Create Date
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.CreateDate)
-                </dd>
-                <dt class="col-sm-2">
-                    Modified Date
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.ModifiedDate)
-                </dd>
-               
 
-            </dl>
+<div class="card">
+
+    <div class="card-header bg-dark text-white py-2">
+        <div class="d-flex align-items-baseline">
+            <a asp-action="Index" asp-controller="UserMasters" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+            <h4 class="mx-auto text-white text-2xl font-semibold"> User Master - Detailes </h4>
+            @*  <a asp-action="Create" class="btn btn-success btn-sm text-white">
+                <i class="fas fa-plus-square"></i> Packaging
+            </a> *@
         </div>
     </div>
+    <div class="card-body mt-4">
+        <dl class="row">
+            <dt class="col-sm-2">
+                User Name
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.UserName)
+            </dd>
+            <dt class="col-sm-2">
+                User Code
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.UserCode)
+            </dd>
+
+            <dt class="col-sm-2">
+                User Dept.
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.UserDept)
+            </dd>
+            <dt class="col-sm-2">
+                User Contact No.
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.UserContactNo)
+            </dd>
+            <dt class="col-sm-2">
+                User Role
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.UserRole)
+            </dd>
+            <dt class="col-sm-2">
+                Create Date
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.CreateDate)
+            </dd>
+            <dt class="col-sm-2">
+                Modified Date
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.ModifiedDate)
+            </dd>
+
+
+        </dl>
+
+    </div>
 </div>
+
 

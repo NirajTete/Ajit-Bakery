@@ -4,115 +4,118 @@
     ViewData["Title"] = "Create";
 }
 
-<div class="container-fluid">
-    <div class="card shadow-sm mt-3">
-        <div class="card-header bg-dark text-white py-2">
-          
-            <div class="d-flex align-items-baseline">
-                <a asp-action="Index" asp-controller="ProductMasters" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
-                <h5 class="mx-auto text-white text-2xl font-semibold"> Product Master - Add</h5>
-            </div>
-        </div>
-        <div class="card-body p-2">
-            <form asp-action="Create" id="productForm" onsubmit="return validateForm()">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="row">
-                    <div class="form-group col-sm-2">
-                        <label asp-for="ProductCode" class="control-label fw-bold small"></label>
-                        <input type="text" asp-for="ProductCode" id="ProductCode" readonly class="form-control" required/>
-                        <span asp-validation-for="ProductCode" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-sm-4">
-                        <label asp-for="ProductName" class="control-label fw-bold small"></label>
-                        <input type="text" asp-for="ProductName" id="ProductName" onchange="GetProCode()" class="form-control" required />
-                        <span asp-validation-for="ProductName" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-sm-2">
-                        <label asp-for="Qty" class="control-label fw-bold small"></label>
-                        <input type="number" value="1" asp-for="Qty" class="form-control" required min="1" max="10" />
-                        <span asp-validation-for="Qty" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-sm-2">
-                        <label asp-for="Unitqty" class="control-label fw-bold small">Unit Qty (Gms)</label>
-                        <input type="number" value="0" min="1" id="Unitqty" max="5000" asp-for="Unitqty" class="form-control" onchange="OnRangeInput()" required />
-                        <span asp-validation-for="Unitqty" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-sm-2">
-                        <label asp-for="Uom" class="control-label fw-bold small"></label>
-                        <select asp-for="Uom" class="form-control text-uppercase" autocomplete="off" id="Uom" required>
-                            <option value="GMS">GMS</option>
-                            @* <option value="KGS">KGS</option> *@
-                        </select>
-                        <span asp-validation-for="Uom" class="text-danger"></span>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="form-group col-sm-2">
-                        <label asp-for="MRP" class="control-label fw-bold small"></label>
-                        <input type="number" oninput="onmrpinput()" asp-for="MRP" id="MRP" class="form-control" required />
-                        <span asp-validation-for="MRP" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-sm-2">
-                        <label asp-for="MRP_Rs" class="control-label fw-bold small"></label>
-                        <input type="number" readonly asp-for="MRP_Rs" class="form-control" required />
-                        <span asp-validation-for="MRP_Rs" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-sm-2">
-                        <label asp-for="Selling" class="control-label fw-bold small"></label>
-                        <input type="number" id="Selling" oninput="onsellinginout()" asp-for="Selling" class="form-control" required />
-                        <span asp-validation-for="Selling" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-sm-2">
-                        <label asp-for="Selling_Rs" class="control-label fw-bold small"></label>
-                        <input type="number" id="Selling_Rs" readonly asp-for="Selling_Rs" class="form-control" required />
-                        <span asp-validation-for="Selling_Rs" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-sm-2">
-                        <label asp-for="Dial"  class="control-label fw-bold small small w-600  "></label>
-                        <select id="Dial" class="form-control" asp-for="Dial" required></select>
-                    </div>
-                    <div class="form-group col-sm-2">
-                        <label asp-for="Category" class="control-label fw-bold small"></label>
-                        <select asp-for="Category" class="form-control text-uppercase" autocomplete="off" id="Category" required>
-                            <option>Regular</option>
-                            <option>Fancy</option>
-                            <option>Preminum</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="form-group col-sm-2">
-                        <label asp-for="Type" class="control-label fw-bold small"></label>
-                        <select id="Type" class="form-control" asp-for="Type" required>
-                            <option>Cake</option>
-                            <option>Pastry</option>
-                        </select>
-                        <span asp-validation-for="Type" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-sm-2">
-                        <label asp-for="Height" class="control-label fw-bold small"></label>
-                        <input type="number" value="0" min="1" id="Height" asp-for="Height" class="form-control" required />
-                        <span asp-validation-for="Height" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-sm-2">
-                        <label asp-for="Height_Uom" class="control-label fw-bold small"></label>
-                        <select asp-for="Height_Uom" class="form-control text-uppercase" autocomplete="off" id="Uom" required>
-                            <option value="GMS">GMS</option>
-                            @* <option value="KGS">KGS</option> *@
-                        </select>
-                        <span asp-validation-for="Height_Uom" class="text-danger"></span>
-                    </div>
-                </div>
-                <div class="row mb-3 p-2">
-                    <div class="form-group col-sm-12 ">
-                        <input type="submit" value="Save" class="btn btn-primary btn-sm col-md-12" />
-                    </div>
-                </div>
-            </form>
-
+<div class="card">
+    
+    <div class="card-header bg-dark text-white py-2">
+        <div class="d-flex align-items-baseline">
+            <a asp-action="Index" asp-controller="ProductMasters" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+            <h4 class="mx-auto text-white text-2xl font-semibold"> Product Master - Add </h4>
+            @*  <a asp-action="Create" class="btn btn-success btn-sm text-white">
+                <i class="fas fa-plus-square"></i> Packaging
+            </a> *@
         </div>
     </div>
+    <div class="card-body mt-4">
+        <form asp-action="Create" id="productForm" onsubmit="return validateForm()">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="row">
+                <div class="form-group col-sm-2">
+                    <label asp-for="ProductCode" class="control-label fw-bold small"></label>
+                    <input type="text" asp-for="ProductCode" id="ProductCode" readonly class="form-control" required />
+                    <span asp-validation-for="ProductCode" class="text-danger"></span>
+                </div>
+                <div class="form-group col-sm-4">
+                    <label asp-for="ProductName" class="control-label fw-bold small"></label>
+                    <input type="text" asp-for="ProductName" id="ProductName" onchange="GetProCode()" class="form-control" required />
+                    <span asp-validation-for="ProductName" class="text-danger"></span>
+                </div>
+                <div class="form-group col-sm-2">
+                    <label asp-for="Qty" class="control-label fw-bold small"></label>
+                    <input type="number" value="1" asp-for="Qty" class="form-control" required min="1" max="10" />
+                    <span asp-validation-for="Qty" class="text-danger"></span>
+                </div>
+                <div class="form-group col-sm-2">
+                    <label asp-for="Unitqty" class="control-label fw-bold small">Unit Qty (Gms)</label>
+                    <input type="number" value="0" min="1" id="Unitqty" max="5000" asp-for="Unitqty" class="form-control" onchange="OnRangeInput()" required />
+                    <span asp-validation-for="Unitqty" class="text-danger"></span>
+                </div>
+                <div class="form-group col-sm-2">
+                    <label asp-for="Uom" class="control-label fw-bold small"></label>
+                    <select asp-for="Uom" class="form-control text-uppercase" autocomplete="off" id="Uom" required>
+                        <option value="GMS">GMS</option>
+                        @* <option value="KGS">KGS</option> *@
+                    </select>
+                    <span asp-validation-for="Uom" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-2">
+                    <label asp-for="MRP" class="control-label fw-bold small"></label>
+                    <input type="number" oninput="onmrpinput()" asp-for="MRP" id="MRP" class="form-control" required />
+                    <span asp-validation-for="MRP" class="text-danger"></span>
+                </div>
+                <div class="form-group col-sm-2">
+                    <label asp-for="MRP_Rs" class="control-label fw-bold small"></label>
+                    <input type="number" readonly asp-for="MRP_Rs" class="form-control" required />
+                    <span asp-validation-for="MRP_Rs" class="text-danger"></span>
+                </div>
+                <div class="form-group col-sm-2">
+                    <label asp-for="Selling" class="control-label fw-bold small"></label>
+                    <input type="number" id="Selling" oninput="onsellinginout()" asp-for="Selling" class="form-control" required />
+                    <span asp-validation-for="Selling" class="text-danger"></span>
+                </div>
+                <div class="form-group col-sm-2">
+                    <label asp-for="Selling_Rs" class="control-label fw-bold small"></label>
+                    <input type="number" id="Selling_Rs" readonly asp-for="Selling_Rs" class="form-control" required />
+                    <span asp-validation-for="Selling_Rs" class="text-danger"></span>
+                </div>
+                <div class="form-group col-sm-2">
+                    <label asp-for="Dial" class="control-label fw-bold small small w-600  "></label>
+                    <select id="Dial" class="form-control" asp-for="Dial" required></select>
+                </div>
+                <div class="form-group col-sm-2">
+                    <label asp-for="Category" class="control-label fw-bold small"></label>
+                    <select asp-for="Category" class="form-control text-uppercase" autocomplete="off" id="Category" required>
+                        <option>Regular</option>
+                        <option>Fancy</option>
+                        <option>Preminum</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-2">
+                    <label asp-for="Type" class="control-label fw-bold small"></label>
+                    <select id="Type" class="form-control" asp-for="Type" required>
+                        <option>Cake</option>
+                        <option>Pastry</option>
+                    </select>
+                    <span asp-validation-for="Type" class="text-danger"></span>
+                </div>
+                <div class="form-group col-sm-2">
+                    <label asp-for="Height" class="control-label fw-bold small"></label>
+                    <input type="number" value="0" min="1" id="Height" asp-for="Height" class="form-control" required />
+                    <span asp-validation-for="Height" class="text-danger"></span>
+                </div>
+                <div class="form-group col-sm-2">
+                    <label asp-for="Height_Uom" class="control-label fw-bold small"></label>
+                    <select asp-for="Height_Uom" class="form-control text-uppercase" autocomplete="off" id="Uom" required>
+                        <option value="GMS">GMS</option>
+                        @* <option value="KGS">KGS</option> *@
+                    </select>
+                    <span asp-validation-for="Height_Uom" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row mb-3 p-2">
+                <div class="form-group col-sm-12 ">
+                    <input type="submit" value="Save" class="btn btn-primary btn-sm col-md-12" />
+                </div>
+            </div>
+        </form>
+
+    </div>
 </div>
+
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 @section Scripts {
