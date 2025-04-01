@@ -56,6 +56,7 @@ namespace Ajit_Bakery.Controllers
             return View(dialMaster);
         }
 
+        [HttpGet]
         public IActionResult Create()
         {
             return View();

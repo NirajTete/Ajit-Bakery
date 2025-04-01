@@ -23,54 +23,54 @@ LBLCOND 3,2
 OPTIMIZE "BATCH" ON
 PP8,95:AN7
 BARSET "DATAMATRIX",1,1,3,66,0,7
-PB "AB00014#Mango - .5#550#880"
+PB "AB00015#Mango - .25#200#640"
 PP83,116:NASC 8
 FT "CG Triumvirate Condensed Bold",6,0,99
-PT "Mango - .5"
+PT "Mango - .25"
 PP83,92:FT "CG Triumvirate Condensed Bold",6,0,99
 PT ""
 PP83,68:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "550 GMS"
+PT "200 GMS"
 PP83,44:FT "CG Triumvirate Condensed Bold",6,0,99
 PT "MRP:Rs."
 PP167,46:FT "CG Triumvirate Condensed Bold",7,0,99
-PT "880"
+PT "640"
 PP279,95:BARSET "DATAMATRIX",1,1,3,66,0,7
-PB "AB00014#Mango - .5#550#880"
+PB "AB00015#Mango - .25#200#640"
 PP354,116:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "Mango - .5"
+PT "Mango - .25"
 PP354,92:FT "CG Triumvirate Condensed Bold",6,0,99
 PT ""
 PP354,68:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "550 GMS"
+PT "200 GMS"
 PP354,44:FT "CG Triumvirate Condensed Bold",6,0,99
 PT "MRP:Rs."
 PP438,46:FT "CG Triumvirate Condensed Bold",7,0,99
-PT "880"
+PT "640"
 PP551,95:BARSET "DATAMATRIX",1,1,3,66,0,7
-PB "AB00014#Mango - .5#550#880"
+PB "AB00015#Mango - .25#200#640"
 PP626,116:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "Mango - .5"
+PT "Mango - .25"
 PP626,92:FT "CG Triumvirate Condensed Bold",6,0,99
 PT ""
 PP626,68:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "550 GMS"
+PT "200 GMS"
 PP626,44:FT "CG Triumvirate Condensed Bold",6,0,99
 PT "MRP:Rs."
 PP710,46:FT "CG Triumvirate Condensed Bold",7,0,99
-PT "880"
+PT "640"
 PP822,95:BARSET "DATAMATRIX",1,1,3,66,0,7
-PB "AB00014#Mango - .5#550#880"
+PB "AB00015#Mango - .25#200#640"
 PP897,116:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "Mango - .5"
+PT "Mango - .25"
 PP897,92:FT "CG Triumvirate Condensed Bold",6,0,99
 PT ""
 PP897,68:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "550 GMS"
+PT "200 GMS"
 PP897,44:FT "CG Triumvirate Condensed Bold",6,0,99
 PT "MRP:Rs."
 PP981,46:FT "CG Triumvirate Condensed Bold",7,0,99
-PT "880"
+PT "640"
 LAYOUT RUN ""
 PF
 PRINT KEY OFF
