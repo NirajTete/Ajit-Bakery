@@ -17,6 +17,7 @@ using System.Data;
 using Microsoft.ReportingServices.ReportProcessing.ReportObjectModel;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using iTextSharp.text.pdf.qrcode;
 //using AspNetCore.Reporting.ReportExecutionService;
 
 namespace Ajit_Bakery.Controllers
@@ -849,6 +850,19 @@ namespace Ajit_Bakery.Controllers
 
             using var report = new LocalReport();
             report.ReportPath = $"{this._webHostEnvironment.WebRootPath}\\Reports\\DispatchRPT.rdlc";
+            var boxno = packagingList.Select(a => a.Box_No).FirstOrDefault();
+
+            string qrcode = boxno + "$" + packagingList.Select(a => a.Reciept_Id.Trim()).FirstOrDefault();
+            string image;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                QRCodeGenerator qrGenerator = new QRCodeGenerator();
+                QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrcode, QRCodeGenerator.ECCLevel.Q);
+                PngByteQRCode qrCode = new PngByteQRCode(qrCodeData);
+                byte[] qrCodeBytes = qrCode.GetGraphic(20);
+                ms.Write(qrCodeBytes, 0, qrCodeBytes.Length);
+                image = Convert.ToBase64String(ms.ToArray());
+            }
 
             DataTable table = new DataTable();
             table.Columns.AddRange(new DataColumn[]
@@ -858,10 +872,46 @@ namespace Ajit_Bakery.Controllers
         new DataColumn("wt", typeof(string)),
             });
 
-            foreach (var item in packagingList)
-            {
-                table.Rows.Add(item.Product_Name, item.Qty, $"{item.TotalNetWg} {item.TotalNetWg_Uom}");
-            }
+            /* foreach (var item in packagingList)
+             {
+                 table.Rows.Add(item.Product_Name, item.Qty, $"{item.TotalNetWg} {item.TotalNetWg_Uom}");
+             }*/
+
+            var groupedList = packagingList
+                                 .GroupBy(p => new { p.Box_No, p.Outlet_Name }) // Group by multiple fields
+                                 .Select(g => new
+                                 {
+                                     BoxNo = g.Key.Box_No,
+                                     OutletName = g.Key.Outlet_Name,
+                                     Products = g.Select(p => new
+                                     {
+                                         p.Product_Name,
+                                         p.Qty,
+                                         p.TotalNetWg,
+                                         p.TotalNetWg_Uom,
+                                     }).ToList()
+                                 }).ToList();
+            string pdfUrl = "";
+
+            packagingList.ForEach(item => table.Rows.Add(item.Product_Name, item.Qty, item.TotalNetWg + " " + item.TotalNetWg_Uom));
+            var proid = packagingList.Select(a => a.Production_Id).FirstOrDefault();
+            var Outlet_Name = packagingList.Select(a => a.Outlet_Name).FirstOrDefault();
+            var parameters = new[]
+                {
+                        new ReportParameter("d1", DATE),
+                        new ReportParameter("pid", proid),
+                        new ReportParameter("qr", image),
+                        new ReportParameter("ot", Outlet_Name),
+                        new ReportParameter("bx", boxno),
+                        new ReportParameter("rd1", qrcode),
+                    };
+
+            report.SetParameters(parameters);
+            //ReportDataSource rds = new ReportDataSource("DataSet1", table1);
+            //report.DataSources.Add(rds);
+            //var pdf = report.Render(renderFormat);
+
+
 
             report.DataSources.Add(new ReportDataSource("DataSet1", table));
             var pdf = report.Render("PDF");
