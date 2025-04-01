@@ -851,6 +851,7 @@ namespace Ajit_Bakery.Controllers
             using var report = new LocalReport();
             report.ReportPath = $"{this._webHostEnvironment.WebRootPath}\\Reports\\DispatchRPT.rdlc";
             var boxno = packagingList.Select(a => a.Box_No).FirstOrDefault();
+            var rd = packagingList.Select(a => a.Reciept_Id).FirstOrDefault();
 
             string qrcode = boxno + "$" + packagingList.Select(a => a.Reciept_Id.Trim()).FirstOrDefault();
             string image;
@@ -903,7 +904,7 @@ namespace Ajit_Bakery.Controllers
                         new ReportParameter("qr", image),
                         new ReportParameter("ot", Outlet_Name),
                         new ReportParameter("bx", boxno),
-                        new ReportParameter("rd1", qrcode),
+                        new ReportParameter("rd1", rd),
                     };
 
             report.SetParameters(parameters);
