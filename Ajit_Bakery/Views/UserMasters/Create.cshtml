@@ -48,7 +48,10 @@
                 </div>
                 <div class="form-group col-sm-3 ">
                     <label asp-for="UserContactNo" class="control-label fw-bold small"></label>
-                    <input asp-for="UserContactNo" data-uppercase autocomplete="off" class="form-control" id="uomcode" required maxlength="10" title="Enter exactly 10 digits" />
+                    @* <input asp-for="UserContactNo" data-uppercase autocomplete="off" class="form-control" id="uomcode" required maxlength="10" 
+                    title="Enter exactly 10 digits" /> *@
+                    <input type="text" asp-for="UserContactNo" id="UserContactNo" class="form-control"
+                           maxlength="10" pattern="[0-9]{10}" title="Enter exactly 10 digits" required />
                 </div>
                 <div class="form-group col-sm-3 ">
                     <label asp-for="UserRole" class="control-label fw-bold small"></label>
@@ -72,6 +75,11 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
+        $(document).ready(function () {
+            $("#UserContactNo").on("input", function () {
+                this.value = this.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+            });
+        });
         $(document).ready(function () {
             function calculateArea() {
                 var length = parseFloat($("#BoxLength").val()) || 0;
