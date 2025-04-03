@@ -208,8 +208,8 @@ namespace Ajit_Bakery.Controllers
         private List<SelectListItem> GetProduction_Id()
         {
             var lstProducts = new List<SelectListItem>();
-
-            lstProducts = _context.Packaging.Where(a => a.DispatchReady_Flag == 1).AsNoTracking().Select(n =>
+            var currentdate = DateTime.Now.ToString("dd-MM-yyyy");
+            lstProducts = _context.Packaging.Where(a => a.DispatchReady_Flag == 1 && a.Packaging_Date == currentdate.Trim()).AsNoTracking().Select(n =>
             new SelectListItem
             {
                 Value = n.Production_Id,
@@ -381,7 +381,7 @@ namespace Ajit_Bakery.Controllers
                     DAProduction_id = Packagings_List.Select(a => a.Production_Id.Trim()).FirstOrDefault() ?? "NA";
                     DAOutletName = Packagings_List.Select(a => a.Outlet_Name.Trim()).FirstOrDefault() ?? "NA";
                     var SaveProduction_Date = _context.SaveProduction.Where(a => a.Production_Id.Trim() == item.Production_Id.Trim() && a.ProductName.Trim() == item.Product_Name.Trim() && a.TotalNetWg == item.TotalNetWg && a.TotalNetWg_Uom.Trim() == item.TotalNetWg_Uom.Trim() && a.Box_No.Trim() == item.Box_No.Trim()).FirstOrDefault();
-
+                    var productiondetails = _context.ProductionCapture.Where(a=>a.ProductName.Trim() == item.Product_Name.Trim() && a.OutletName.Trim() == item.Outlet_Name.Trim()).FirstOrDefault();
                     var maxId = _context.Dispatch.Any() ? _context.Dispatch.Max(e => e.Id) + 1 : 1;
                     
                     //ADD INTO DISPATCH TABLE
@@ -397,8 +397,8 @@ namespace Ajit_Bakery.Controllers
                         Qty =item.Qty,
                         TotalNetWg =item.TotalNetWg,
                         TotalNetWg_Uom =item.TotalNetWg_Uom,
-                        Production_Date =item.Production_Dt,
-                        Production_Time =item.Production_Tm,
+                        Production_Date = productiondetails.Production_Date,
+                        Production_Time = productiondetails.Production_Time,
                         SaveProduction_Date = SaveProduction_Date.SaveProduction_Date,
                         SaveProduction_Time = SaveProduction_Date.SaveProduction_Time,
                         Packaging_Date = item.Packaging_Date,
@@ -532,6 +532,58 @@ namespace Ajit_Bakery.Controllers
         private bool DispatchExists(int id)
         {
           return (_context.Dispatch?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        public IActionResult GetDMData(string ProductionId, string DCNo, string BoxNo, string ReceiptNo, string OutletName)
+        {
+            List<Dispatch> dispatch = new List<Dispatch>();
+            double totalqty = 0;
+            double totalamount = 0;
+            string Datee = "";
+            string category = "";
+
+            var list = _context.Dispatch
+                .Where(a => a.OutletName.Trim() == OutletName.Trim() &&
+                            a.ReceiptNo.Trim() == ReceiptNo.Trim() &&
+                            a.DCNo.Trim() == DCNo.Trim() &&
+                            a.ProductionId.Trim() == ProductionId.Trim())
+                .ToList();
+
+            if (list.Any())
+            {
+                Datee = list.First().Dispatch_Date;
+
+                foreach (var item in list)
+                {
+                    double sellingrate = _context.Packaging
+                        .Where(a => a.Production_Id.Trim() == item.ProductionId.Trim() &&
+                                    a.Reciept_Id.Trim() == item.ReceiptNo.Trim() &&
+                                    a.DCNo.Trim() == item.DCNo.Trim() &&
+                                    a.Product_Name.Trim() == item.ProductName.Trim()
+                                    && a.TotalNetWg == item.TotalNetWg)
+                        .Select(a => a.sellingRs)
+                        .FirstOrDefault();
+
+                    category = _context.ProductMaster
+                        .Where(a => a.ProductName.Trim() == item.ProductName.Trim())
+                        .Select(a => a.Type)
+                        .FirstOrDefault() ?? "NA";
+
+                    dispatch.Add(new Dispatch
+                    {
+                        ProductName = item.ProductName,
+                        Qty = item.Qty,
+                        rate = sellingrate,
+                        categary = category,
+                        amount = item.Qty * sellingrate
+                    });
+
+                    totalamount += item.Qty * sellingrate;
+                    totalqty += item.Qty;
+                }
+            }
+
+            return Json(new { success = true, tabledata = dispatch, totalamount, totalqty, DCNo, OutletName, Datee, category });
         }
     }
 }

@@ -38,11 +38,18 @@
                             id="ProductName"></select>
                 </div>
                 <div class="form-group col-sm-2">
+                    <label asp-for="CakeDesign" class="control-label fw-bold small fw-bold small"> Design <span class="small" style="color:red"> (Optional)</span></label>
+                    <select asp-for="CakeDesign" class="form-control text-uppercase"  asp-items="@ViewBag.CakeDesign"
+                            id="CakeDesign"></select>
+                </div>
+                <div class="form-group col-sm-2">
                     <label asp-for="TotalQty" class="control-label fw-bold small"></label>
                     <input asp-for="TotalQty" type="number" style="height:5vh; font-size: 18px; color: green; font-weight: 650;"
                            id="TotalQty" required class="form-control" />
                 </div>
-                <div class="form-group col-sm-2 d-flex align-items-center mt-4">
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-12 d-flex align-items-center mt-4">
                     <button type="submit" id="btnSave" class="btn btn-sm btn-primary w-100">Save</button>
                 </div>
             </div>

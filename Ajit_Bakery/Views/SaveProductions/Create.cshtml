@@ -264,8 +264,33 @@
                     TotalNetWg: parseFloat(TotalNetWg1)
                 },
                 success: function (response) {
-                    if(response.success){
+                    console.log(response);
+                    console.log(JSON.stringify(response));
+                    if (response.success) {
+                        var Tvalue = parseInt($("#TotalNetWg").val()) || 0; // Ensure it's a number
+                        console.log("parseInt(Tvalue) : " + Tvalue);
+                        console.log("response.unitqty : " + response.unitqty);
 
+                        if (Tvalue < response.unitqty) {  // Change the condition to check if it's less
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Warning!',
+                                text: "Please, Take proper weighing!"
+                            });
+
+                            // Reset form values
+                            $("#ProductGrossWg").val(0);
+                            $("#ProductGrossWgValue").val("");
+                            $("#TotalNetWg").val("");
+                            $("#mrpRs").val("");
+                            $("#sellingRs").val("");
+
+                            // Handle the DialCode button
+                            var weight = parseFloat($("#ProductGrossWg").val()) || 0;
+                            $("#DialCode").prop("disabled", weight > 0 ? true : false);
+
+                            return;
+                        }
                     }
                     else{
                         Swal.fire({

@@ -123,7 +123,7 @@ namespace Ajit_Bakery.Controllers
         private List<SelectListItem> GetReportMenu()
         {
             var lstProducts = new List<SelectListItem>();
-            lstProducts = _context.MenuModel.Where(a => a.ParentMenuId == 36).AsNoTracking().Select(n =>
+            lstProducts = _context.MenuModel.Where(a => a.ParentMenuId == 17).AsNoTracking().Select(n =>
             new SelectListItem
             {
                 Value = n.Title,

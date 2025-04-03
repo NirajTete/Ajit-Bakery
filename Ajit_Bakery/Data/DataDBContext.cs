@@ -21,6 +21,7 @@ namespace Ajit_Bakery.Data
         public DbSet<Ajit_Bakery.Models.MenuModel> MenuModel { get; set; } 
         public DbSet<Ajit_Bakery.Models.UserManagment> UserManagment { get; set; } 
         public DbSet<Ajit_Bakery.Models.UserType> UserType { get; set; } = default!;
+        public DbSet<Ajit_Bakery.Models.CakeDesign> CakeDesign { get; set; }
         //OPERATIONS
         public DbSet<Ajit_Bakery.Models.ProductionCapture> ProductionCapture { get; set; } 
         public DbSet<Ajit_Bakery.Models.SaveProduction> SaveProduction { get; set; }

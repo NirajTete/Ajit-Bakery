@@ -31,6 +31,7 @@ namespace Ajit_Bakery.Models
         public int TrimurtiQty { get; set; }
         [NotMapped]
         public int AjniQty { get; set; }
+        public string? CakeDesign { get; set; }
         [NotMapped]
         public Dictionary<string, int> OutletData { get; set; } // Dynamic outlet storage
 

@@ -8,7 +8,12 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 //ADD NOTIFY
-builder.Services.AddNotyf(config => { config.DurationInSeconds = 5; config.IsDismissable = true; config.Position = NotyfPosition.TopRight; });
+builder.Services.AddNotyf(config => 
+{ 
+    config.DurationInSeconds = 5; 
+    config.IsDismissable = true; 
+    config.Position = NotyfPosition.TopRight; 
+});
 //ADD CONNECTION STRINGG
 var connectionString = builder.Configuration.GetConnectionString("ContextDBConnection") ?? throw new InvalidOperationException("Connection string 'ContextDBConnection' not found.");
 builder.Services.AddDbContext<DataDBContext>(options =>

@@ -154,6 +154,7 @@
                     text: "Please select an outlet!",
                     timer: 5000
                 });
+                $("#cakeListModal").modal("hide");
                 return;
             }
 
@@ -172,7 +173,7 @@
                         $.each(response.data, function (index, cake) {
                             var row = `<tr>
                                 <td>${cake.productName}</td>
-                                <td class="text-center">${cake.remainingQty}</td>
+                                        <td class="text-center">${cake.producedQty}</td>
                                
                             </tr>`;
                             tableBody.append(row);

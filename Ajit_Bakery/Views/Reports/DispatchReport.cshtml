@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Ajit_Bakery.Models.Packaging>
+﻿@model IEnumerable<Ajit_Bakery.Models.Dispatch>
 
 @{
     ViewData["Title"] = "Index";
@@ -7,27 +7,29 @@
 <div class="card">
     <div class="card-header bg-dark text-white py-2">
         <div class="d-flex align-items-baseline">
-            <a asp-action="Index" asp-controller="Home" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
-            <h4 class="mx-auto text-white text-2xl font-semibold">  Transfer To Dispatch </h4>
-            <a asp-action="Create" asp-controller="TransferToDispatches" class="btn btn-success btn-sm text-white">
-                <i class="fas fa-plus-square"></i>  Transfer To Dispatch
-            </a>
+            <a asp-action="Index" asp-controller="Home"  class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+            <h4 class="mx-auto text-white text-2xl font-semibold">  Dispatch Report </h4>
+            @* <a asp-action="Create" asp-controller="Dispatches" class="btn btn-success btn-sm text-white">
+                <i class="fas fa-plus-square"></i>    Dispatch Report
+            </a> *@
         </div>
     </div>
     <div class="card-body mt-4">
         <div class="table table-responsive">
-            <table id="SavePackaging" class="table table-striped table-bordered" style="width:100%">
+            <table id="DispatchProcess" class="table table-striped table-bordered" style="width:100%">
                 <thead class="thead-light">
                     <tr class="text-center small">
                         <th class="text-center">Sr.No.</th>
+                        <th class="text-center">Dispatch Dt.</th>
                         <th class="text-center">Production Id </th>
-                        @* <th class="text-center">DC No. </th> *@
+                        <th class="text-center">DC No. </th>
                         <th class="text-center">Outlet Name </th>
                         <th class="text-center">Box No.</th>
-                        <th class="text-center" >Receipt No.</th>
+                        <th class="text-center">Receipt No.</th>
                         <th class="text-center">Product Name.</th>
-                        <th class="text-center">Category</th>
+                        @* <th class="text-center">Category</th> *@
                         <th class="text-center">Total Qty</th>
+                        @* <th class="text-center">Status</th> *@
                         @* <th>DC Download</th> *@
                     </tr>
                 </thead>
@@ -39,20 +41,14 @@
                     {
                         <tr>
                             <td class="text-center">@counter</td>
-                            <td style="font-weight:600;color:rebeccapurple">@Html.DisplayFor(modelItem => item.Production_Id)</td>
-                            @* <td style="font-weight:600;color:cadetblue">@Html.DisplayFor(modelItem => item.DCNo)</td> *@
-                            <td style="font-weight:600;color:chocolate">@Html.DisplayFor(modelItem => item.Outlet_Name)</td>
-                            <td style="font-weight:600;color:green">@Html.DisplayFor(modelItem => item.Box_No)</td>
-                            <td><span class="badge bg-primary">@Html.DisplayFor(modelItem => item.Reciept_Id)</span></td>
-                            <td>@Html.DisplayFor(modelItem => item.Product_Name)</td>
-                            <td>@Html.DisplayFor(modelItem => item.Category)</td>
-                            <td  style="text-align:center">@Html.DisplayFor(modelItem => item.Qty)</td>
-                          @*   <td>
-                                <button class="btn btn-warning btn-sm"
-                                        onclick="GenerateDCPdf('@item.Production_Id', '@item.DCNo', '@item.Box_No', '@item.Reciept_Id')">
-                                    <i class="fas fa-file-invoice"></i> DC
-                                </button>
-                            </td> *@
+                            <td style="font-weight:600;color:black">@Html.DisplayFor(modelItem => item.Dispatch_Date)</td>
+                            <td style="font-weight:600;color:rebeccapurple">@Html.DisplayFor(modelItem => item.ProductionId)</td>
+                            <td style="font-weight:600;color:cadetblue">@Html.DisplayFor(modelItem => item.DCNo)</td>
+                            <td style="font-weight:600;color:brown">@Html.DisplayFor(modelItem => item.OutletName)</td>
+                            <td style="font-weight:600;color:green">@Html.DisplayFor(modelItem => item.BoxNo)</td>
+                            <td><span class="badge bg-primary">@Html.DisplayFor(modelItem => item.ReceiptNo)</span></td>
+                            <td>@Html.DisplayFor(modelItem => item.ProductName)</td>
+                            <td style="text-align:center">@Html.DisplayFor(modelItem => item.Qty)</td>
                         </tr>
                         counter++;
                     }
@@ -69,44 +65,19 @@
     }
     <script>
         function GenerateDCPdf(Production_Id, DCNo, Box_No, Reciept_Id) {
-            // $('#loadingIndicator').show();
             console.log("GenerateDCPdf called with Sono:", Production_Id, "Id:", Reciept_Id);
             Swal.fire({ icon: 'warning', title: 'Warning', text: 'Functionality is not define !' });
-            // $.ajax({
-            //     url: '/TransferToDispatches/GenerateDCPdf',
-            //     method: 'POST',
-            //     contentType: 'application/json',
-            //     data: JSON.stringify({ Production_Id: Production_Id, DCNo: DCNo, Box_No: Box_No, Reciept_Id: Reciept_Id }),
-            //     xhrFields: { responseType: 'blob' }, // Handle binary files
-            //     success: function (blob) {
-            //         // $('#loadingIndicator').hide();
-            //         console.log("blob: " + blob);
-            //         var link = document.createElement('a');
-            //         var url = window.URL.createObjectURL(blob);
-            //         link.href = url;
-            //         link.download = "DeliveryChallan.pdf";
-            //         document.body.appendChild(link);
-            //         link.click();
-            //         document.body.removeChild(link);
-            //         window.URL.revokeObjectURL(url);
-            //     },
-            //     error: function (xhr, status, error) {
-            //         console.error("GenerateDCPdf Error:", error);
-            //         // $('#loadingIndicator').hide();
-            //         Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to generate PDF.' });
-            //     }
-            // });
         }
 
         // $(document).ready(function () {
-        //     $('#SavePackaging').DataTable({
+        //     $('#DispatchProcess').DataTable({
         //         dom: 'Bfrtip', // Add button controls
         //         buttons: [
-        //            {
+        //             {
         //                 extend: 'excel',
-        //                 title: 'Packaging Report',
+        //                 title: 'Dispatch Report',
         //                 filename: function () {
-        //                     return generateFilename('Packaging Report');
+        //                     return generateFilename('Dispatch Report');
         //                 },
         //                 text: '<i class="fas fa-file-excel"></i> Export Excel',
         //                 className: 'dt-button btn btn-success',
@@ -116,9 +87,9 @@
         //             },
         //             {
         //                 extend: 'pdf',
-        //                 title: 'Packaging Report',
+        //                 title: 'Dispatch Report',
         //                 filename: function () {
-        //                     return generateFilename('Packaging Report');
+        //                     return generateFilename('Dispatch Report');
         //                 },
         //                 text: '<i class="fas fa-file-pdf"></i> Export PDF',
         //                 className: 'dt-button btn btn-danger',
@@ -152,65 +123,82 @@
         //                 }
 
         //             },
-                  
+                    
         //         ],
         //         info: false, ordering: false,
         //     });
         // });
         $(document).ready(function () {
-            $('#SavePackaging').DataTable({
+            $('#DispatchProcess').DataTable({
                 dom: 'Bfrtip', // Add button controls
                 buttons: [
                     {
                         extend: 'excel',
-                        title: 'Packaging Report',
+                        title: 'Dispatch Report',
                         filename: function () {
-                            return generateFilename('Packaging Report');
+                            return generateFilename('Dispatch Report');
                         },
                         text: '<i class="fas fa-file-excel"></i> Export Excel',
                         className: 'dt-button btn btn-success',
                         exportOptions: {
-                            columns: ':not(:last-child)' // Exclude the last column
+                            columns: ':not(.noExport)' // Exclude columns with class 'noExport'
                         },
                     },
                     {
                         extend: 'pdf',
-                        title: 'Packaging Report',
+                        title: 'Dispatch Report',
                         filename: function () {
-                            return generateFilename('Packaging Report');
+                            return generateFilename('Dispatch Report');
                         },
                         text: '<i class="fas fa-file-pdf"></i> Export PDF',
                         className: 'dt-button btn btn-danger',
                         pageSize: 'A4',
                         exportOptions: {
-                            columns: ':not(:last-child)' // Exclude the last column
+                            columns: ':not(.noExport)' // Exclude columns with class 'noExport'
                         },
                         customize: function (doc) {
                             // Centering the title
                             doc.styles.title = {
-                                fontSize: 16,
+                                fontSize: 12, // Smaller font size
                                 bold: true,
                                 alignment: 'center'
                             };
 
-                            // Adjusting table width
-                            doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                            // Adjusting table width for 9 columns
+                            doc.content[1].table.widths = ['12%', '12%', '12%', '12%', '12%', '12%', '12%', '12%', '12%'];
 
-                            // Center align table content
+                            // Reduce font size for table content
+                            doc.styles.tableHeader = {
+                                fontSize: 10, // Smaller header font
+                                bold: true,
+                                alignment: 'center',
+                                fillColor: '#343a40', // Dark header color
+                                color: 'white' // White text
+                            };
+                            doc.styles.tableBody = {
+                                fontSize: 9, // Small font for table data
+                                alignment: 'center'
+                            };
+
+                            // Define columns to exclude from centering (0-based index)
+                            let excludeColumns = [];
+
+                            // Center align table content, except for excluded columns
                             let tableBody = doc.content[1].table.body;
-                            tableBody.forEach(function (row) {
-                                row.forEach(function (cell) {
-                                    cell.alignment = 'center'; // Center align text in all cells
+                            tableBody.forEach(function (row, rowIndex) {
+                                row.forEach(function (cell, colIndex) {
+                                    if (!excludeColumns.includes(colIndex)) {
+                                        cell.alignment = 'center'; // Center align text in all cells except excluded columns
+                                    }
                                 });
                             });
                         }
-                    }
+                    },
                 ],
                 info: false,
                 ordering: false,
             });
         });
-
 
         function generateFilename(baseName) {
             const now = new Date();

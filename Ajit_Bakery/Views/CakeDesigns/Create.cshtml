@@ -1,0 +1,101 @@
+﻿@model Ajit_Bakery.Models.CakeDesign
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+
+<div class="card">
+
+    <div class="card-header bg-dark text-white py-2">
+        <div class="d-flex align-items-baseline">
+            <a asp-action="Index" asp-controller="CakeDesigns" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+            <h4 class="mx-auto text-white text-2xl font-semibold"> Cake Design Master - Add </h4>
+         
+        </div>
+    </div>
+    <div class="card-body mt-4">
+        <form asp-action="Create" id="productForm" onsubmit="return validateForm()">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="row">
+                <div class="form-group col-sm-2">
+                    <label asp-for="CakeDesign_Code" class="control-label fw-bold small">CakeDesign Code</label>
+                    <input type="text" asp-for="CakeDesign_Code" id="CakeDesign_Code" value="@ViewBag.Code" class="form-control" required readonly />
+                    <span asp-validation-for="CakeDesign_Code" class="text-danger"></span>
+                </div>
+                <div class="form-group col-sm-10">
+                    <label asp-for="CakeDesign_Name" class="control-label fw-bold small">Cake Design Name</label>
+                    <input type="text" asp-for="CakeDesign_Name"  class="form-control" required />
+                </div>
+            </div>
+            <div class="row mb-3 p-2">
+                <div class="form-group col-sm-12 ">
+                    <input type="submit" value="Save" class="btn btn-primary btn-sm col-md-12" />
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            $("#productForm").submit(function (event) {
+                event.preventDefault(); // Prevent default form submission
+                var formData = $(this).serialize(); // Serialize form data
+                console.log("formData : " + formData);
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("Create", "CakeDesigns")", // Replace with your controller name
+                    data: formData,
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: response.message,
+                                confirmButtonText: "OK"
+                            }).then(() => {
+                                window.location.href = "@Url.Action("Index", "CakeDesigns")"; // Redirect to Index
+                            });
+                            $("#productForm")[0].reset(); // Reset form after success
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: response.message
+                            });
+                            return;
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Something went wrong! Please try again.'
+                        });
+                    }
+                });
+            });
+        });
+        function validateForm() {
+            let isValid = true;
+            let fields = document.querySelectorAll(".required-field");
+
+            for (let field of fields) {
+                if (field.value.trim() === "") {
+                    alert("Please fill out all required fields.");
+                    field.focus(); // Focus on the first empty field
+                    return false; // Prevent form submission
+                }
+            }
+            return true; // Allow form submission if all fields are filled
+        }
+    </script>
+}

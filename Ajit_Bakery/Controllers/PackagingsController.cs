@@ -302,10 +302,6 @@ namespace Ajit_Bakery.Controllers
             return Json(new { success = true, data = lstProducts });
         }
 
-
-
-
-
         private List<SelectListItem> GetBoxNos()
         {
             var lstProducts = _context.BoxMaster
@@ -333,8 +329,8 @@ namespace Ajit_Bakery.Controllers
         private List<SelectListItem> GetProduction_Id()
         {
             var lstProducts = new List<SelectListItem>();
-
-            lstProducts = _context.SaveProduction.Where(a => a.Packaging_Flag == 0).AsNoTracking().Select(n =>
+            var currentdate = DateTime.Now.ToString("dd-MM-yyyy");
+            lstProducts = _context.SaveProduction.Where(a => a.Packaging_Flag == 0 && a.SaveProduction_Date.Trim() == currentdate.Trim()).AsNoTracking().Select(n =>
             new SelectListItem
             {
                 Value = n.Production_Id,
@@ -672,23 +668,7 @@ namespace Ajit_Bakery.Controllers
                 })
                 .ToList();
 
-            // Filter only products where planned quantity > produced quantity
-            var remainingProducts = plannedProducts
-                .Select(pp =>
-                {
-                    var producedQty = producedProducts.FirstOrDefault(sp => sp.ProductName == pp.ProductName)?.ProducedQty ?? 0;
-                    var remainingQty = pp.PlannedQty - producedQty;
-
-                    return new
-                    {
-                        ProductName = pp.ProductName,
-                        RemainingQty = remainingQty > 0 ? remainingQty : 0  // Ensure it doesn't go negative
-                    };
-                })
-                .Where(p => p.RemainingQty > 0) // Only include products that still have remaining quantity
-                .ToList();
-
-            return Json(new { success = true, data = remainingProducts });
+            return Json(new { success = true, data = producedProducts });
         }
 
 

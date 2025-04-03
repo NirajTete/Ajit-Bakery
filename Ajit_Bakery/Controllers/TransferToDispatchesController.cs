@@ -420,8 +420,8 @@ namespace Ajit_Bakery.Controllers
         private List<SelectListItem> GetProduction_Id()
         {
             var lstProducts = new List<SelectListItem>();
-
-            lstProducts = _context.ProductionCapture.Where(a => a.Status == "Pending").AsNoTracking().Select(n =>
+            var currentdate = DateTime.Now.ToString("dd-MM-yyyy");
+            lstProducts = _context.ProductionCapture.Where(a => a.Status == "Pending" && a.Production_Date.Trim() == currentdate.Trim()).AsNoTracking().Select(n =>
             new SelectListItem
             {
                 Value = n.Production_Id,

@@ -28,8 +28,8 @@
                         <th class="text-center">Product Name.</th>
                         @* <th class="text-center">Category</th> *@
                         <th class="text-center">Total Qty</th>
-                        <th class="text-center">Status</th>
-                        @* <th>DC Download</th> *@
+                        @* <th class="text-center">Status</th> *@
+                        <th>DC Download</th>
                     </tr>
                 </thead>
                 <tbody class="small text-center">
@@ -48,7 +48,7 @@
                             <td>@Html.DisplayFor(modelItem => item.ProductName)</td>
                             @* <td>@Html.DisplayFor(modelItem => item.Category)</td> *@
                             <td style="text-align:center">@Html.DisplayFor(modelItem => item.Qty)</td>
-                            <td style="text-align:center">
+                            @* <td style="text-align:center">
                                 @if (item.Status == "Completed")
                                 {
                                     <span class="badge bg-success">Completed</span>
@@ -57,12 +57,18 @@
                                 {
                                     <span class="badge bg-warning text-dark">@item.Status</span>
                                 }
-                            </td>                            @* <td>
+                            </td>      *@                       @* <td>
                                 <button class="btn btn-warning btn-sm"
                                         onclick="GenerateDCPdf('@item.Production_Id', '@item.DCNo', '@item.Box_No', '@item.Reciept_Id')">
                                     <i class="fas fa-file-invoice"></i> DC
                                 </button>
                             </td> *@
+                            <td>
+                                <button class="btn btn-warning btn-sm" id="generatePDF"
+                                        onclick="GenerateDCPdf('@item.ProductionId', '@item.DCNo', '@item.BoxNo', '@item.ReceiptNo','@item.OutletName')">
+                                    <i class="fas fa-file-invoice"></i> DC
+                                </button>
+                            </td>
                         </tr>
                         counter++;
                     }
@@ -73,40 +79,276 @@
     </div>
 </div>
 
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- jsPDF AutoTable Plugin -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-        function GenerateDCPdf(Production_Id, DCNo, Box_No, Reciept_Id) {
-            // $('#loadingIndicator').show();
-            console.log("GenerateDCPdf called with Sono:", Production_Id, "Id:", Reciept_Id);
-            Swal.fire({ icon: 'warning', title: 'Warning', text: 'Functionality is not define !' });
-            // $.ajax({
-            //     url: '/Dispatch/GenerateDCPdf',
-            //     method: 'POST',
-            //     contentType: 'application/json',
-            //     data: JSON.stringify({ Production_Id: Production_Id, DCNo: DCNo, Box_No: Box_No, Reciept_Id: Reciept_Id }),
-            //     xhrFields: { responseType: 'blob' }, // Handle binary files
-            //     success: function (blob) {
-            //         // $('#loadingIndicator').hide();
-            //         console.log("blob: " + blob);
-            //         var link = document.createElement('a');
-            //         var url = window.URL.createObjectURL(blob);
-            //         link.href = url;
-            //         link.download = "DeliveryChallan.pdf";
-            //         document.body.appendChild(link);
-            //         link.click();
-            //         document.body.removeChild(link);
-            //         window.URL.revokeObjectURL(url);
-            //     },
-            //     error: function (xhr, status, error) {
-            //         console.error("GenerateDCPdf Error:", error);
-            //         // $('#loadingIndicator').hide();
-            //         Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to generate PDF.' });
-            //     }
-            // });
+        // function GenerateDCPdf(ProductionId, DCNo, BoxNo, ReceiptNo, OutletName) {
+        //     $.ajax({
+        //         type: "POST",
+        //         url: "@Url.Action("GetDMData", "Dispatches")",
+        //         data: { ProductionId, DCNo, BoxNo, ReceiptNo, OutletName },
+        //         success: function (response) {
+        //             console.log("response : " + response);
+        //             console.log("response.categary : " + response.categary);
+        //             console.log("response : " + JSON.stringify(response));
+        //             if (response.success) {
+        //                 const { jsPDF } = window.jspdf;
+        //                 const doc = new jsPDF("p", "mm", "a4");
+
+        //                 // Header - Business Name
+        //                 doc.setFont("helvetica", "bold");
+        //                 doc.setFontSize(14);
+        //                 doc.text("AJIT BAKERY", 105, 12, { align: "center" });
+
+        //                 // Subtitle
+        //                 doc.setFontSize(10);
+        //                 doc.text("DELIVERY MEMO", 105, 17, { align: "center" });
+
+        //                 // Line separator
+        //                 doc.setLineWidth(0.4);
+        //                 doc.line(10, 22, 200, 22);
+
+        //                 // Memo Details
+        //                 doc.setFont("helvetica", "normal");
+        //                 doc.setFontSize(9);
+        //                 doc.text(`DM NO: ${response.dcNo}`, 10, 28);
+        //                 doc.text(`DATE: ${response.datee}`, 140, 28);
+        //                 doc.text(`PARTY NAME: ${response.outletName}`, 10, 34);
+
+        //                 // Table Data
+        //                 const columns = ["SR", "ITEM NAME", "QTY", "RATE", "UOM", "AMOUNT"];
+        //                 const rows = [];
+
+        //                 response.tabledata.forEach((item, index) => {
+        //                     rows.push([
+        //                         (index + 1).toString(), // Serial No.
+        //                         item.productName || "-", // Product Name
+        //                         item.qty || 0, // Quantity
+        //                         item.rate ? item.rate.toFixed(2) : "0.00", // Rate
+        //                         item.categary ? item.categary : "NA", // Rate
+        //                         item.amount ? item.amount.toFixed(2) : "0.00" // Amount
+        //                     ]);
+        //                 });
+
+        //                 // Add Total Row
+        //                 rows.push(["", "Total", response.totalqty || 0, "", "", response.totalamount ? response.totalamount.toFixed(2) : "0.00"]);
+
+        //                 doc.autoTable({
+        //                     startY: 40,
+        //                     head: [columns],
+        //                     body: rows,
+        //                     theme: "grid",
+        //                     styles: { fontSize: 8, cellPadding: 2 },
+        //                     headStyles: { fillColor: [50, 50, 50], textColor: [255, 255, 255], fontSize: 9 },
+        //                     alternateRowStyles: { fillColor: [245, 245, 245] },
+        //                     columnStyles: {
+        //                         0: { halign: "center", cellWidth: 10 }, // SR No.
+        //                         2: { halign: "center", cellWidth: 15 }, // QTY
+        //                         3: { halign: "right", cellWidth: 20 }, // RATE
+        //                         5: { halign: "right", cellWidth: 25 }  // AMOUNT
+        //                     }
+        //                 });
+
+        //                 let finalY = doc.lastAutoTable.finalY + 6;
+
+        //                 // Amount Chargeable in Words
+        //                 doc.setFont("helvetica", "bold");
+        //                 doc.setFontSize(9);
+        //                 doc.text("Amount Chargeable (in words):", 10, finalY);
+        //                 doc.setFont("helvetica", "normal");
+        //                 doc.text(`INR ${numberToWords(response.totalamount)} Only`, 70, finalY);
+
+        //                 // Footer
+        //                 finalY += 8;
+        //                 doc.setLineWidth(0.3);
+        //                 doc.line(10, finalY, 200, finalY); // Line Separator
+
+        //                 doc.text("FOR DESPATCH", 10, finalY + 6);
+        //                 doc.text("AUTHORISED SIGNATORY", 160, finalY + 6);
+
+        //                 // Save PDF
+        //                 doc.save("Delivery_Memo.pdf");
+        //             } else {
+        //                 Swal.fire({
+        //                     icon: 'warning',
+        //                     title: 'Warning!',
+        //                     text: response.message
+        //                 });
+        //             }
+        //         },
+        //         error: function () {
+        //             Swal.fire({
+        //                 icon: 'error',
+        //                 title: 'Error!',
+        //                 text: 'Something went wrong! Please try again.'
+        //             });
+        //         }
+        //     });
+        // }
+
+
+        // Function to Convert Numbers to Words
+
+        function GenerateDCPdf(ProductionId, DCNo, BoxNo, ReceiptNo, OutletName) {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("GetDMData", "Dispatches")",
+                data: { ProductionId, DCNo, BoxNo, ReceiptNo, OutletName },
+                success: function (response) {
+                    console.log("response : " + JSON.stringify(response));
+
+                    if (response.success) {
+                        const { jsPDF } = window.jspdf;
+                        const doc = new jsPDF("p", "mm", "a4");
+
+                        // Header - Business Name
+                        doc.setFont("helvetica", "bold");
+                        doc.setFontSize(14);
+                        doc.text("AJIT BAKERY", 105, 12, { align: "center" });
+
+                        // Subtitle
+                        doc.setFontSize(10);
+                        doc.text("DELIVERY MEMO", 105, 17, { align: "center" });
+
+                        // Line separator
+                        doc.setLineWidth(0.4);
+                        doc.line(10, 22, 200, 22);
+
+                        // Memo Details
+                        doc.setFont("helvetica", "normal");
+                        doc.setFontSize(9);
+                        doc.text(`DM NO     : ${response.dcNo}`, 15, 28);
+                        doc.text(`DATE: ${response.datee}`, 168, 28);
+                        doc.text(`PARTY NAME: ${response.outletName}`, 15, 34);
+
+                        // Table Data
+                        const columns = ["SR", "ITEM NAME", "QTY", "RATE", "UOM", "AMOUNT"];
+                        const rows = [];
+
+                        response.tabledata.forEach((item, index) => {
+                            rows.push([
+                                (index + 1).toString(), // Serial No.
+                                item.productName || "-", // Product Name
+                                item.qty || 0, // Quantity
+                                item.rate ? item.rate.toFixed(2) : "0.00", // Rate
+                                item.categary ? item.categary : "NA", // UOM
+                                item.amount ? item.amount.toFixed(2) : "0.00" // Amount
+                            ]);
+                        });
+
+                        // Add Total Row
+                        rows.push(["", "Total", response.totalqty || 0, "", "", response.totalamount ? response.totalamount.toFixed(2) : "0.00"]);
+
+                        // Generate Table
+                        doc.autoTable({
+                            startY: 40,
+                            head: [columns],
+                            body: rows,
+                            theme: "grid",
+                            styles: {
+                                fontSize: 9,
+                                cellPadding: 3,
+                                halign: "center",
+                                valign: "middle"
+                            },
+                            headStyles: {
+                                fillColor: [50, 50, 50],
+                                textColor: [255, 255, 255],
+                                fontSize: 10,
+                                fontStyle: "bold",
+                                halign: "center"
+                            },
+                            alternateRowStyles: { fillColor: [245, 245, 245] },
+                            columnStyles: {
+                                0: { halign: "center", cellWidth: 20 }, // SR
+                                1: { halign: "center", cellWidth: 60 }, // ITEM NAME
+                                2: { halign: "center", cellWidth: 20 }, // QTY
+                                3: { halign: "center", cellWidth: 30 }, // RATE
+                                4: { halign: "center", cellWidth: 20 }, // UOM
+                                5: { halign: "center", cellWidth: 30 } // AMOUNT
+                            }
+                        });
+
+                        let finalY = doc.lastAutoTable.finalY + 2;
+
+                        // Add Total Row
+                        doc.autoTable({
+                            startY: finalY,
+                            // body: [["", "Total", response.totalqty || 0, "", "", response.totalamount.toFixed(2) + " Rs"]],
+                            styles: { fontSize: 9, fontStyle: "bold", halign: "center" },
+                            columnStyles: {
+                                1: { halign: "left" }, // Total text aligned left
+                                2: { halign: "center" }, // Total quantity centered
+                                5: { halign: "right" } // Total amount right-aligned
+                            }
+                        });
+
+                        finalY = doc.lastAutoTable.finalY + 6;
+
+                        // Amount Chargeable in Words
+                        doc.setFont("helvetica", "bold");
+                        doc.setFontSize(9);
+                        doc.text("Amount Chargeable (in words):", 10, finalY);
+                        doc.setFont("helvetica", "normal");
+                        doc.text(` ${numberToWords(response.totalamount)} Only`, 70, finalY);
+
+                        // Footer
+                        finalY += 8;
+                        doc.setLineWidth(0.3);
+                        doc.line(10, finalY, 200, finalY); // Line Separator
+
+                        doc.text("FOR DESPATCH", 10, finalY + 6);
+                        doc.text("AUTHORISED SIGNATORY", 160, finalY + 6);
+
+                        // Save PDF
+                        doc.save("Delivery_Memo.pdf");
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning!',
+                            text: response.message
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'Something went wrong! Please try again.'
+                    });
+                }
+            });
         }
+
+
+        function numberToWords(amount) {
+            const words = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
+                "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen",
+                "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+
+            if (amount < 20) return words[amount];
+            if (amount < 100) return words[18 + Math.floor(amount / 10)] + (amount % 10 !== 0 ? " " + words[amount % 10] : "");
+
+            if (amount < 1000) return words[Math.floor(amount / 100)] + " Hundred" + (amount % 100 !== 0 ? " " + numberToWords(amount % 100) : "");
+
+            if (amount < 100000) return numberToWords(Math.floor(amount / 1000)) + " Thousand" + (amount % 1000 !== 0 ? " " + numberToWords(amount % 1000) : "");
+
+            return amount.toString();
+        }
+
 
         $(document).ready(function () {
             $('#DispatchProcess').DataTable({

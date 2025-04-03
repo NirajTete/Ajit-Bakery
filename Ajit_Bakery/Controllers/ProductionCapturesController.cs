@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 using DocumentFormat.OpenXml.Bibliography;
 using System.Security.Claims;
 using iText.Commons.Actions.Data;
+using AspNetCoreHero.ToastNotification.Abstractions;
 
 namespace Ajit_Bakery.Controllers
 {
@@ -26,12 +27,13 @@ namespace Ajit_Bakery.Controllers
         private readonly DataDBContext _context;
         private IWebHostEnvironment _webHostEnvironment;
         private readonly IConfiguration _config;
-
-        public ProductionCapturesController(DataDBContext context, IWebHostEnvironment webHostEnvironment, IConfiguration config)
+        public INotyfService _notyfyService { get; }
+        public ProductionCapturesController(DataDBContext context, IWebHostEnvironment webHostEnvironment, IConfiguration config, INotyfService notyfyService)
         {
             _context = context;
             _config = config;
             _webHostEnvironment = webHostEnvironment;
+            _notyfyService = notyfyService;
         }
         private List<SelectListItem> GetOutlets()
         {
@@ -48,7 +50,7 @@ namespace Ajit_Bakery.Controllers
             var defItem = new SelectListItem()
             {
                 Value = "",
-                Text = "----Select Outlets ----"
+                Text = "- Select Outlets -"
             };
 
             lstProducts.Insert(0, defItem);
@@ -70,7 +72,7 @@ namespace Ajit_Bakery.Controllers
             var defItem = new SelectListItem()
             {
                 Value = "",
-                Text = "----Select ProductName ----"
+                Text = "- Select ProductName -"
             };
 
             lstProducts.Insert(0, defItem);
@@ -93,7 +95,7 @@ namespace Ajit_Bakery.Controllers
             var defItem = new SelectListItem()
             {
                 Value = "",
-                Text = "----Select Production Id ----"
+                Text = "- Select Production Id -"
             };
 
             lstProducts.Insert(0, defItem);
@@ -373,6 +375,16 @@ namespace Ajit_Bakery.Controllers
 
         public async Task<IActionResult> Index()
         {
+            //if (TempData["NotyfMessage"] != null)
+            //{
+            //    string message = TempData["NotyfMessage"].ToString();
+            //    string type = TempData["NotyfType"].ToString();
+
+            //    if (type == "Warning")
+            //        _notyfyService.Warning(message);
+            //    else
+            //        _notyfyService.Information(message); // You can handle other types if needed
+            //}
             List<ProductionCapture> productionCaptures = new List<ProductionCapture>();
 
             //Fetch ordered data from database
@@ -509,6 +521,28 @@ namespace Ajit_Bakery.Controllers
 
             return newBoxId;
         }
+        private List<SelectListItem> GetCakeDesign()
+        {
+            var lstProducts = _context.CakeDesign
+                .AsNoTracking()
+                .Select(n => new SelectListItem
+                {
+                    Value = n.CakeDesign_Name,
+                    Text = n.CakeDesign_Name
+                })
+                .Distinct()
+                .ToList();
+
+            var defItem = new SelectListItem()
+            {
+                Value = "",
+                Text = "-Select Design-"
+            };
+
+            lstProducts.Insert(0, defItem);
+
+            return lstProducts;
+        }
 
         public string GetProductionId1()
         {
@@ -567,12 +601,25 @@ namespace Ajit_Bakery.Controllers
         [HttpGet]
         public IActionResult Create()
         {
+            var currentdate = DateTime.Now.ToString("dd-MM-yyyy");
+            var checkiffound = _context.ProductionCapture.OrderByDescending(a=>a.Id).Select(a => a.Production_Date).FirstOrDefault();
+            var proid = _context.ProductionCapture.OrderByDescending(a => a.Id).Select(a => a.Production_Id).FirstOrDefault();
+            if(checkiffound != null)
+            {
+                if (currentdate.Trim() == checkiffound.Trim())
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            
             ViewBag.ProductionId = GetProductionId1();
+            
             return View();
         }
         [HttpGet]
         public IActionResult CreateManually()
         {
+            ViewBag.CakeDesign = GetCakeDesign();
             ViewBag.ProductionId = GetProductionIds();
             ViewBag.GetOutlets = GetOutlets();
             ViewBag.ProductName = ProductName();

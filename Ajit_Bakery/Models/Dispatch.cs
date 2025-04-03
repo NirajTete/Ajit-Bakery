@@ -34,5 +34,11 @@ namespace Ajit_Bakery.Models
         [NotMapped]
         public string category { get; set; }
         public string? user { get; set; }
+        [NotMapped]
+        public double amount { get; set; }
+        [NotMapped]
+        public double rate { get; set; }
+        [NotMapped]
+        public string categary { get; set; }
     }
 }

@@ -8,10 +8,10 @@
     <div class="card-header bg-dark text-white py-2">
         <div class="d-flex align-items-baseline">
             <a asp-action="Index" asp-controller="Home" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
-            <h4 class="mx-auto text-white text-2xl font-semibold"> Production </h4>
-            <a asp-action="Create" class="btn btn-success btn-sm text-white">
+            <h4 class="mx-auto text-white text-2xl font-semibold"> Production Report </h4>
+            @* <a asp-action="Create" class="btn btn-success btn-sm text-white">
                 <i class="fas fa-plus-square"></i> Save Production
-            </a>
+            </a> *@
         </div>
     </div>
     <div class="card-body mt-4">
@@ -20,6 +20,7 @@
                 <thead class="thead-light">
                     <tr class="text-center small">
                         <th class="text-center">Sr.No.</th>
+                        <th class="text-center">Production Dt.</th>
                         <th class="text-center">Production Id.</th>
                         <th class="text-center">Product Name.</th>
                         <th class="text-center">Qty</th>
@@ -27,7 +28,6 @@
                         <th class="text-center">Selling (Rs.)</th>
                         <th class="text-center">MRP (Rs.)</th>
                         
-                        <th class="text-center">Production Dt.</th>
                         <th class="text-center">Exp Dt.</th>
                     </tr>
                 </thead>
@@ -39,6 +39,7 @@
                     {
                         <tr>
                             <td class="text-center">@counter</td>
+                            <td>@Html.DisplayFor(modelItem => item.SaveProduction_Date)</td>
                             <td style="font-weight:600;color:rebeccapurple">@Html.DisplayFor(modelItem => item.Production_Id)</td>
                             <td>@Html.DisplayFor(modelItem => item.ProductName)</td>
                             <td class="text-center">@Html.DisplayFor(modelItem => item.Qty)</td>
@@ -46,20 +47,8 @@
                             <td class="text-center">@Html.DisplayFor(modelItem => item.sellingRs)</td>
                             <td class="text-center">@Html.DisplayFor(modelItem => item.mrpRs)</td>
                             
-                            <td>@Html.DisplayFor(modelItem => item.SaveProduction_Date)</td>
                             <td>@Html.DisplayFor(modelItem => item.Exp_Date)</td>
-                            @* <td class="text-center" style="display:none">
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-success" title="Edit">
-                                        <i class="fas fa-pencil-alt"></i>
-                                    </a>
-                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-warning" title="Details">
-                                        <i class="fa fa-eye"></i>
-                                    </a>
-                                  
-
-                                </div>
-                            </td> *@
+                     
                         </tr>
                         counter++;
                     }
@@ -263,9 +252,9 @@
                             }
                         });
                     }
-                        ],
+                                ],
                     info: false, ordering: false,
-                    });
+                            });
             });
 
 

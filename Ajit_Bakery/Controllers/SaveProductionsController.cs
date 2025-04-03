@@ -50,11 +50,11 @@ namespace Ajit_Bakery.Controllers
                     {
                         if (TotalNetWg > product.Unitqty && TotalNetWg <= (product.Unitqty * 2))
                         {
-
+                            return Json(new { success = true,  unitqty = product.Unitqty });
                         }
                         else
                         {
-                            return Json(new { success = false, message = "Enter Correct Wt.,item unit range i,e " + product.Unitqty + " and you have enter " + TotalNetWg });
+                            return Json(new { success = false, message = "Enter Correct Wt.,item unit range i,e " + product.Unitqty + " and you have enter " + TotalNetWg , unitqty= product.Unitqty });
                         }
 
                     }
@@ -312,8 +312,8 @@ namespace Ajit_Bakery.Controllers
         private List<SelectListItem> GetProduction_Id()
         {
             var lstProducts = new List<SelectListItem>();
-
-            lstProducts = _context.ProductionCapture.Where(a => a.Status == "Pending").AsNoTracking().Select(n =>
+            var currentdate = DateTime.Now.ToString("dd-MM-yyyy");
+            lstProducts = _context.ProductionCapture.Where(a => a.Status == "Pending" && a.Production_Date.Trim() == currentdate.Trim()).AsNoTracking().Select(n =>
             new SelectListItem
             {
                 Value = n.Production_Id,
@@ -440,6 +440,10 @@ namespace Ajit_Bakery.Controllers
                     int def = Convert.ToInt32(qnty / 4);
                     int mod = Convert.ToInt32(qnty % 4);
                     int count1 = 0;
+
+                    var DT = DateTime.Now.ToString("dd-MM-yyyy");
+                    var TM = DateTime.Now.ToString("hh:mm");
+
                     if (def > 0)
                     {
                         for (int i = 0; i < def; i++)
@@ -448,8 +452,13 @@ namespace Ajit_Bakery.Controllers
                             string s1 = SaveProduction_list[count1 + 1].productname;
                             string s2 = SaveProduction_list[count1 + 2].productname;
                             string s3 = SaveProduction_list[count1 + 3].productname;
-                            prnFilePath = $"{_webHostEnvironment.WebRootPath}\\Sticker\\Cake20x10-300-DP-4.prn";
-                            var valuee = $"{_webHostEnvironment.WebRootPath}\\Sticker\\Cake20x10-300-DP-4VALUE.prn";
+                            //prnFilePath = $"{_webHostEnvironment.WebRootPath}\\Sticker\\Cake20x10-300-DP-4.prn";
+                            //var valuee = $"{_webHostEnvironment.WebRootPath}\\Sticker\\Cake20x10-300-DP-4VALUE.prn";
+                            prnFilePath = $"{_webHostEnvironment.WebRootPath}\\Sticker\\Cake20x10-300-DP-4-Dt.prn";
+                            var valuee = $"{_webHostEnvironment.WebRootPath}\\Sticker\\Cake20x10-300-DP-4-DtVALUE.prn";
+
+                            //take 20 charcters from productname
+
                             if (System.IO.File.Exists(valuee))
                             {
                                 System.IO.File.Delete(valuee);
@@ -464,6 +473,8 @@ namespace Ajit_Bakery.Controllers
                                 .Replace("<MRP>", (saveProduction.mrpRs).ToString())
                                 .Replace("<PRODUCT_NAME1>", SaveProduction_list[count1].productname1)
                                 .Replace("<PRODUCT_NAME2>", SaveProduction_list[count1].productname2)
+                                .Replace("<DT>", DT)
+                                .Replace("<TM>", TM)
 
                                 .Replace("<PRODUCT_NAME_1>", SaveProduction_list[count1 + 1].productname)//2
                                 .Replace("<PRODUCT_CODE_1>", SaveProduction_list[count1 + 1].productcode)//2
@@ -472,6 +483,8 @@ namespace Ajit_Bakery.Controllers
                                 .Replace("<MRP_1>", (saveProduction.mrpRs).ToString())
                                 .Replace("<PRODUCT_NAME1_1>", SaveProduction_list[count1 + 1].productname1)
                                 .Replace("<PRODUCT_NAME2_1>", SaveProduction_list[count1 + 1].productname2)
+                                .Replace("<DT>", DT)
+                                .Replace("<TM>", TM)
 
                                 .Replace("<PRODUCT_NAME_2>", SaveProduction_list[count1 + 2].productname)//3
                                 .Replace("<PRODUCT_CODE_2>", SaveProduction_list[count1 + 2].productcode)//3
@@ -480,6 +493,8 @@ namespace Ajit_Bakery.Controllers
                                 .Replace("<MRP_2>", (saveProduction.mrpRs).ToString())
                                 .Replace("<PRODUCT_NAME1_2>", SaveProduction_list[count1 + 2].productname1)
                                 .Replace("<PRODUCT_NAME2_2>", SaveProduction_list[count1 + 2].productname2)
+                                .Replace("<DT>", DT)
+                                .Replace("<TM>", TM)
 
                                 .Replace("<PRODUCT_NAME_3>", SaveProduction_list[count1 + 3].productname)//4
                                 .Replace("<PRODUCT_CODE_3>", SaveProduction_list[count1 + 3].productcode)//4
@@ -487,7 +502,9 @@ namespace Ajit_Bakery.Controllers
                                 .Replace("<WGVALUE_3>", SaveProduction_list[count1 + 3].wgvalue.ToString())
                                 .Replace("<MRP_3>", (saveProduction.mrpRs).ToString())
                                 .Replace("<PRODUCT_NAME1_3>", SaveProduction_list[count1 + 3].productname1)
-                                .Replace("<PRODUCT_NAME2_3>", SaveProduction_list[count1 + 3].productname2);
+                                .Replace("<PRODUCT_NAME2_3>", SaveProduction_list[count1 + 3].productname2)
+                                .Replace("<DT>", DT)
+                                .Replace("<TM>", TM);
 
                             System.IO.File.WriteAllText(valuee, fileContent);
                             string fileContent1 = System.IO.File.ReadAllText(valuee);
