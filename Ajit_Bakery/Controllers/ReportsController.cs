@@ -1,6 +1,7 @@
 ﻿using Ajit_Bakery.Data;
 using Ajit_Bakery.Models;
 using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -42,6 +43,7 @@ namespace Ajit_Bakery.Controllers
                    a.category,
                    a.Status,
                    a.Dispatch_Date,
+                   a.Dispatch_Time,
                })
                .Select(g => new Dispatch
                {
@@ -53,6 +55,7 @@ namespace Ajit_Bakery.Controllers
                    ProductName = g.Key.ProductName,
                    Dispatch_Date = g.Key.Dispatch_Date,
                    category = g.Key.category, // Ensure it's available in memory
+                   Dispatch_Time = g.Key.Dispatch_Time, // Ensure it's available in memory
                    Status = g.Key.Status, // Ensure it's available in memory
                    Qty = g.Sum(a => a.Qty) // Summing the Quantity
                })
@@ -64,7 +67,9 @@ namespace Ajit_Bakery.Controllers
                 {
                     item.category = check.Type;
                 }
+                item.Dispatch_Date = item.Dispatch_Date + " " + item.Dispatch_Time;
             }
+
             return View(list);
         }
         [HttpGet]
@@ -136,27 +141,66 @@ namespace Ajit_Bakery.Controllers
         public IActionResult TATReport()
         {
             List<TATReport> TATReport = new List<TATReport>();
-            var list = _context.Dispatch.OrderByDescending(a => a.Id).ToList();
+            var list = _context.ProductionCapture.AsNoTracking().OrderByDescending(a => a.Id).ToList();
             foreach (var item in list)
             {
-                var orderdatetime = _context.ProductionCapture.Where(a => a.Production_Id == item.ProductionId && a.OutletName.Trim() == item.OutletName.Trim() && a.ProductName.Trim() == item.ProductName.Trim()).FirstOrDefault();
-                TATReport tt = new TATReport()
+                var totalnetwt = "-";
+                var production_time = "-";
+                var saveproduction_time = "-";
+                var Packaging_time = "-";
+                var transfer_time = "-";
+                var Dispatch_Time = "-";
+
+                if(item.TotalQty>0)
                 {
-                    ProductionId = item.ProductionId,
-                    outlet = item.OutletName,
-                    productname = item.ProductName,
-                    totalnetwg = item.TotalNetWg + " " + item.TotalNetWg_Uom,
-                    order_date = item.Production_Date + " " + ConvertTo12HourFormat(item.Production_Time),
-                    //production_date = item.SaveProduction_Time,
-                    //packaging_date = item.Packaging_Time,
-                    //transfer_date = item.TransferToDispatch_Time,
-                    //dispatch_date = item.Dispatch_Time,
-                    production_date = ConvertTo12HourFormat(item.SaveProduction_Time),
-                    packaging_date = ConvertTo12HourFormat(item.Packaging_Time),
-                    transfer_date = ConvertTo12HourFormat(item.TransferToDispatch_Time),
-                    dispatch_date = ConvertTo12HourFormat(item.Dispatch_Time),
-                };
-                TATReport.Add(tt);
+                    var Saveproduction_list = _context.SaveProduction.Where(a => a.Production_Id.Trim() == item.Production_Id.Trim()).ToList();
+                    var packaging_list = _context.Packaging.Where(a => a.Production_Id.Trim() == item.Production_Id.Trim()).ToList();
+                    var dispatch_list = _context.Dispatch.Where(a => a.ProductionId.Trim() == item.Production_Id.Trim()).ToList();
+                    var proqty = _context.ProductionCapture.Where(a=>a.Production_Id.Trim() == item.Production_Id.Trim() && a.ProductName.Trim() == item.ProductName.Trim() && a.TotalQty > 0).FirstOrDefault();
+                    for (int i = 1; i <= item.TotalQty; i++)
+                    {
+                        var production = list.Where(a => a.Production_Id == item.Production_Id && a.OutletName.Trim() == item.OutletName.Trim() && a.ProductName.Trim() == item.ProductName.Trim() && a.TotalQty > 0).FirstOrDefault();
+                        var dispatch = dispatch_list.Where(a => a.ProductionId == item.Production_Id && a.OutletName.Trim() == item.OutletName.Trim() && a.ProductName.Trim() == item.ProductName.Trim() && a.Qty > 0).FirstOrDefault();
+                        var packaging = packaging_list.Where(a => a.Production_Id == item.Production_Id && a.Outlet_Name.Trim() == item.OutletName.Trim() && a.Product_Name.Trim() == item.ProductName.Trim() && a.Qty > 0).FirstOrDefault();
+                        var saveproduction = Saveproduction_list.Where(a => a.Production_Id == item.Production_Id && a.ProductName.Trim() == item.ProductName.Trim() && a.Qty > 0).FirstOrDefault();
+
+                        if(saveproduction != null)
+                        {
+                            totalnetwt = saveproduction.TotalNetWg + " " + saveproduction.TotalNetWg_Uom;
+                            saveproduction_time = ConvertTo12HourFormat(saveproduction.SaveProduction_Time);
+                            saveproduction.Qty = saveproduction.Qty - 1;
+                        }
+                        if(packaging != null)
+                        {
+                            Packaging_time = ConvertTo12HourFormat(packaging.Packaging_Time);
+                            transfer_time = ConvertTo12HourFormat(packaging.DispatchReady_Time);
+                            packaging.Qty = packaging.Qty - 1;
+                        }
+                        if(dispatch != null)
+                        {
+                            Dispatch_Time = ConvertTo12HourFormat(dispatch.Dispatch_Time);
+                            dispatch.Qty = dispatch.Qty - 1;
+                        }
+                        if(production != null)
+                        {
+                            production_time = ConvertTo12HourFormat(production.Production_Time);
+                            proqty.TotalQty = proqty.TotalQty - 1;
+                        }
+                        TATReport tt = new TATReport()
+                        {
+                            ProductionId = item.Production_Id,
+                            outlet = item.OutletName,
+                            productname = item.ProductName,
+                            totalnetwg = totalnetwt,
+                            order_date = item.Production_Date + " " + production_time,
+                            production_date = (saveproduction_time),
+                            packaging_date = (Packaging_time),
+                            transfer_date = (transfer_time),
+                            dispatch_date = (Dispatch_Time),
+                        };
+                        TATReport.Add(tt);
+                    }
+                }
             }
             return View(TATReport);
         }

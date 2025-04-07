@@ -668,7 +668,23 @@ namespace Ajit_Bakery.Controllers
                 })
                 .ToList();
 
-            return Json(new { success = true, data = producedProducts });
+            // Filter only products where planned quantity > produced quantity
+            var remainingProducts = plannedProducts
+                .Select(pp =>
+                {
+                    var producedQty = producedProducts.FirstOrDefault(sp => sp.ProductName == pp.ProductName)?.ProducedQty ?? 0;
+                    var remainingQty = /*pp.PlannedQty - */producedQty;
+
+                    return new
+                    {
+                        ProductName = pp.ProductName,
+                        RemainingQty = remainingQty > 0 ? remainingQty : 0  // Ensure it doesn't go negative
+                    };
+                })
+                .Where(p => p.RemainingQty > 0) // Only include products that still have remaining quantity
+                .ToList();
+
+            return Json(new { success = true, data = remainingProducts });
         }
 
 

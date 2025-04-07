@@ -173,9 +173,8 @@
                         $.each(response.data, function (index, cake) {
                             var row = `<tr>
                                 <td>${cake.productName}</td>
-                                        <td class="text-center">${cake.producedQty}</td>
-                               
-                            </tr>`;
+                                                <td class="text-center">${cake.remainingQty}</td>
+                                </tr>`;
                             tableBody.append(row);
                         });
 

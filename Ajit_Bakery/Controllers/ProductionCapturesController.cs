@@ -18,6 +18,8 @@ using DocumentFormat.OpenXml.Bibliography;
 using System.Security.Claims;
 using iText.Commons.Actions.Data;
 using AspNetCoreHero.ToastNotification.Abstractions;
+using DocumentFormat.OpenXml.VariantTypes;
+using Newtonsoft.Json;
 
 namespace Ajit_Bakery.Controllers
 {
@@ -99,10 +101,10 @@ namespace Ajit_Bakery.Controllers
             };
 
             lstProducts.Insert(0, defItem);
-
             return lstProducts;
         }
 
+        private static List<ProductionCapture> ProductionCapture_list = new List<ProductionCapture>();
 
         [HttpPost]
         public async Task<IActionResult> UploadExcel(IFormFile file)
@@ -375,6 +377,7 @@ namespace Ajit_Bakery.Controllers
 
         public async Task<IActionResult> Index()
         {
+            
             //if (TempData["NotyfMessage"] != null)
             //{
             //    string message = TempData["NotyfMessage"].ToString();
@@ -636,6 +639,7 @@ namespace Ajit_Bakery.Controllers
         {
             try
             {
+                ProductionCapture_list.Clear();
                 var currentuser = HttpContext.User;
                 string username = currentuser.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
 
@@ -654,6 +658,12 @@ namespace Ajit_Bakery.Controllers
                     Status = "Pending",
                     User = username ?? "User",
                 };
+                ProductionCapture_list.Add(production);
+
+                // Store data in Session (Convert List to JSON and Save)
+                HttpContext.Session.SetString("ProductionCaptureList", JsonConvert.SerializeObject(ProductionCapture_list));
+                // Retrieve count and pass it to View
+                ViewBag.ProductionCount = ProductionCapture_list.Count;
 
                 _context.ProductionCapture.Add(production);
                 _context.SaveChanges();

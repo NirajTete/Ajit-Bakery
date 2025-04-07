@@ -441,8 +441,10 @@ namespace Ajit_Bakery.Controllers
                     int mod = Convert.ToInt32(qnty % 4);
                     int count1 = 0;
 
-                    var DT = DateTime.Now.ToString("dd-MM-yyyy");
-                    var TM = DateTime.Now.ToString("hh:mm");
+                    var DT = saveProduction.SaveProduction_Date;
+                    //var DT = DateTime.Now.ToString("dd-MM-yyyy");
+                    var TM = saveProduction.SaveProduction_Time;
+                    //var TM = DateTime.Now.ToString("hh:mm");
 
                     if (def > 0)
                     {

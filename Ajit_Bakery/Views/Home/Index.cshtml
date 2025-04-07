@@ -1,20 +1,52 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+<style>
 
+
+</style>
 <!-- [ Main Content ] start -->
 <div class="row">
-    <div class="col-md-3 col-xl-3">
+    @* <div class="col-md-3 col-xl-3">
         <div class="card bg-grd-primary order-card">
             <div class="card-body">
                 <h6 class="text-white">Orders Received</h6>
                 <h2 class="text-end text-white">
                     <i class="feather icon-shopping-cart float-start"></i><span>@ViewBag.TotalOrders</span>
                 </h2>
-                @* <p class="m-b-0">This Month <span class="float-end">@ViewBag.TotalOrders</span></p> *@
+                <span class="badge blink-badge">@ViewBag.productionListgetBadge</span>
             </div>
         </div>
-    </div>
+    </div> *@
+        <div class="col-md-3 col-xl-3">
+        <div class="card bg-grd-primary order-card position-relative" onclick="callAction()">
+                <div class="card-body">
+                    <!-- Blinking Badge at the Left Corner -->
+                @* <span class="badge bg-success text-white fs-5 spinner-grow spinner-grow"> @ViewBag.productionListgetBadge</span> *@
+               @*  <div class="position-relative d-inline-block">
+                    <div class="spinner-grow text-success" style="width: 3rem; height: 3rem;" role="status"></div>
+                    <span class="position-absolute top-50 start-50 translate-middle text-white fw-bold">
+                        @ViewBag.productionListgetBadge
+                    </span>
+                </div> *@
+                @if (ViewBag.productionListgetBadge != null && ViewBag.productionListgetBadge.ToString() != "0")
+                {
+                    <div class="position-relative d-inline-block">
+                        <div class="spinner-grow text-success" style="width: 3rem; height: 3rem;" role="status"></div>
+                        <span class="position-absolute top-50 start-50 translate-middle text-white fw-bold">
+                            @ViewBag.productionListgetBadge
+                        </span>
+                    </div>
+                }
+
+                    <h6 class="text-white">Orders Received</h6>
+                    <h2 class="text-end text-white">
+                        <i class="feather icon-shopping-cart float-start"></i>
+                        <span>@ViewBag.TotalOrders</span>
+                    </h2>
+                </div>
+            </div>
+        </div>
 
     <div class="col-md-3 col-xl-3">
         <a href="@Url.Action("StatusFound", "Home")" style="text-decoration: none;">
@@ -226,6 +258,11 @@
     </div>
     <!-- Recent Orders end -->
 </div>
+
+<link href="~/css/site.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
 <!-- [ Main Content ] end -->
 @section Scripts {
     @{
@@ -276,3 +313,21 @@
     </script>
 
 }
+
+
+<script>
+    function callAction() {
+        $.ajax({
+            url: '@Url.Action("clearSession", "Home")', // Fixed the incorrect parameter order
+            type: 'GET',
+            success: function (response) {
+                // alert("Session cleared! Redirecting...");
+                window.location.href = '@Url.Action("Index", "Home")'; // Manually redirect after AJAX success
+            },
+            error: function () {
+                alert("Something went wrong!");
+            }
+        });
+    }
+
+</script>

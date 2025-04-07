@@ -46,19 +46,20 @@
         <!-- [Mobile Media Block end] -->
         <div class="ms-auto">
             <ul class="list-unstyled">
-                @* <li class="dropdown pc-h-item header-notification">
+                <li class="dropdown pc-h-item header-notification position-relative">
                     <a class="dropdown-toggle arrow-none me-3 text-decoration-none" data-bs-toggle="dropdown" href="#" role="button"
                        aria-haspopup="false" data-bs-auto-close="outside" aria-expanded="false">
                         <i class="fa fa-bell text-white"></i>
-                        <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">3</span>
+
+                        @if (ViewBag.productionListgetBadge != null && ViewBag.productionListgetBadge.ToString() != "0")
+                        {
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                @ViewBag.productionListgetBadge
+                            </span>
+                        }
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li class="dropdown-header">Notifications</li>
-                        <li><a class="dropdown-item" href="#">New order received</a></li>
-                        <li><a class="dropdown-item" href="#">Stock running low</a></li>
-                        <li><a class="dropdown-item text-center text-primary" href="#">View all</a></li>
-                    </ul>
-                </li> *@
+                </li>
+
                 <li class="dropdown pc-h-item header-user-profile">
                     <a class="dropdown-toggle arrow-none me-0 text-decoration-none" data-bs-toggle="dropdown" href="#" role="button"
                        aria-haspopup="false" data-bs-auto-close="outside" aria-expanded="false">

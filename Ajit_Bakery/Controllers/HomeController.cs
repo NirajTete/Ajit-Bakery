@@ -20,9 +20,20 @@ public class HomeController : Controller
         _context = context;
 
     }
+    public IActionResult clearSession()
+    {
+        HttpContext.Session.Remove("ProductionCaptureList");
+        HttpContext.Session.Clear();
+        return RedirectToAction(nameof(Index));
+    }
 
     public IActionResult Index()
     {
+        var jsonData = HttpContext.Session.GetString("ProductionCaptureList");
+        var productionListget = jsonData != null ? JsonConvert.DeserializeObject<List<ProductionCapture>>(jsonData) : new List<ProductionCapture>();
+
+        //return Json(new { count = productionList.Count });
+
         var currentMonth = DateTime.Now.Month;
         var currentYear = DateTime.Now.Year;
 
@@ -59,6 +70,7 @@ public class HomeController : Controller
 
         // Assign values to ViewBag
         ViewBag.PendingOrders = pendingProductionCount;
+        ViewBag.productionListgetBadge = productionListget.Count;
         ViewBag.TotalOrders = list1;
         ViewBag.CompletedDispatches = completedDispatchCount;
         ViewBag.CompletedProductions = completedProductionCount; // Added this
