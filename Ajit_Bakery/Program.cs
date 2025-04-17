@@ -19,6 +19,11 @@ var connectionString = builder.Configuration.GetConnectionString("ContextDBConne
 builder.Services.AddDbContext<DataDBContext>(options =>
 options.UseNpgsql(connectionString));
 
+//Register API Service 
+builder.Services.AddScoped<IApiService, ApiService>();
+builder.Services.AddHttpClient();
+//end
+
 //Login page 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(option =>

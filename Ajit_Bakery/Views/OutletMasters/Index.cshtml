@@ -10,9 +10,15 @@
         <div class="d-flex align-items-baseline">
             <a asp-action="Index" asp-controller="Home" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
             <h5 class="mx-auto text-white text-2xl font-semibold"> Outlet Master</h5>
-            <a asp-action="Create" class="btn btn-success btn-sm text-white">
+            <a asp-action="Create" class="btn btn-success btn-sm text-white ">
                 <i class="fas fa-plus-square"></i> Add
             </a>
+            <a onclick="WriteDataToTally()" id="WriteDataToTallyId" class="btn btn-primary text-white btn-sm">
+                <i class="fas fa-sync-alt"></i> Write To Tally
+            </a>
+            @* <a onclick="ReadDataToTally1()" class="btn btn-info text-white btn-sm mr-1">
+            <i class="fas fa-sync-alt"></i> Read From Tally
+            </a> *@
         </div>
     </div>
     <div class="card-body mt-4">
@@ -73,6 +79,68 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
+        function WriteDataToTally() {
+            $("#loadingIndicator").show();
+            // Retrieve the 'shortcut' value from the data attribute
+            const shortcut = "NA";
+            console.log(shortcut);
+            // // Disable the button and show a processing message
+            // button.disabled = true;
+            // button.innerHTML = "Processing...";
+            $.ajax({
+                url: "/OutletMasters/WriteDataToTally",
+                type: "POST",
+                data: { uom: shortcut }, // Pass the shortcut value
+                success: function (response) {
+                    // // Handle success
+                    // button.innerHTML = '<i class="fas fa-sync-alt"></i> Tally Update';
+                    // button.disabled = false;
+                    $("#loadingIndicator").hide();
+                    if (response.success) {
+                        Swal.fire("Success", response.message, "success");
+                    } else {
+                        Swal.fire("Error", response.message, "error");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Handle error
+                    // button.innerHTML = '<i class="fas fa-sync-alt"></i> Tally Update';
+                    // button.disabled = false;
+                    Swal.fire("Error", "An error occurred while updating Tally", "error");
+                }
+            });
+        }
+        // function ReadDataToTally1() {
+        //     $("#loadingIndicator").show();
+        //     // Retrieve the 'shortcut' value from the data attribute
+
+
+        //     $.ajax({
+        //         url: "/OutletMasters/ReadDataToTally1",
+        //         type: "POST",
+        //         // data: { uom: shortcut }, // Pass the shortcut value
+        //         success: function (response) {
+        //             $("#loadingIndicator").hide();
+
+        //             if (response.success) {
+        //                 // Swal.fire("Success", response.message, "success");
+        //                 Swal.fire({
+        //                     title: "Success",
+        //                     text: response.message,
+        //                     icon: "success"
+        //                 }).then(() => {
+        //                     location.reload(); // Reloads the current view
+        //                 });
+        //             } else {
+        //                 Swal.fire("Error", response.message, "error");
+        //             }
+        //         },
+        //         error: function (xhr, status, error) {
+
+        //             Swal.fire("Error", "An error occurred while updating Tally", "error");
+        //         }
+        //     });
+        // }
         $(document).ready(function () {
             $('#OutletMaster').DataTable({
                 dom: 'Bfrtip', // Add button controls

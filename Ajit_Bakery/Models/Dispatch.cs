@@ -40,5 +40,8 @@ namespace Ajit_Bakery.Models
         public double rate { get; set; }
         [NotMapped]
         public string categary { get; set; }
+        [NotMapped]
+        public string VoucherType { get; set; }
+        public string? INNO { get; set; }
     }
 }

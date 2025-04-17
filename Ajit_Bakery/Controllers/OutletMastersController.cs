@@ -9,17 +9,121 @@ using Ajit_Bakery.Data;
 using Ajit_Bakery.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Ajit_Bakery.Models.Tally_Models;
+using Ajit_Bakery.Services;
+using AspNetCoreHero.ToastNotification.Abstractions;
+using AspNetCoreHero.ToastNotification.Notyf;
 
 namespace Ajit_Bakery.Controllers
 {
     [Authorize]
     public class OutletMastersController : Controller
     {
+        public INotyfService _notyfyService { get; }
         private readonly DataDBContext _context;
-
-        public OutletMastersController(DataDBContext context)
+        private readonly IConfiguration _config;
+        private readonly IApiService _apiService;
+        public OutletMastersController(DataDBContext context, IConfiguration config, IApiService apiService,INotyfService notyfyService)
         {
             _context = context;
+            _config = config;
+            _apiService = apiService;
+            _notyfyService = notyfyService;
+        }
+
+        public async Task<IActionResult> WriteDataToTally()
+        {
+            try
+            {
+                var baseurls = _config["AppSettings:BaseUrl"];
+                var Cname = _config["AppSettings:CompanyName"];
+
+                var tallyStatusUrl = $"{baseurls}/GetStatus";
+                var companyUrl = $"{baseurls}/Company";
+
+                // Check if Tally is running
+                var tallyResponse = await _apiService.GetAsync<ApiResponse<List<string>>>(tallyStatusUrl, null);
+
+                // Check if Company is available
+                var companyResponse = await _apiService.GetAsync<ApiResponse<List<string>>>(companyUrl, null);
+
+                if (tallyResponse == null || !tallyResponse.Success)
+                {
+                    return Json(new { success = false, message = "Tally Server is not running" });
+                }
+
+                if (companyResponse == null || !companyResponse.Success)
+                {
+                    return Json(new { success = false, message = $"{Cname} Company is not Open" });
+                }
+
+                if (!companyResponse.Data.Contains(Cname))
+                {
+
+                    return Json(new { success = false, message = $"{Cname} Company is not Open" });
+                }
+            }
+            catch (Exception ex)
+            {
+                //_notyfyService.Warning(" Tally Server is not running!!.");
+                return RedirectToAction(nameof(Index));  // Ensure redirect even in case of an error
+            }
+
+            List<string> existingProductlist = new List<string>();
+            var list = _context.OutletMaster.ToList();
+            var baseurl = _config["AppSettings:BaseUrl"];
+            var url2 = $"{baseurl}/AllLedger";
+            //var result = await _apiService.GetAsync<ApiResponse<List<Ledger>>>(url2, null);
+            var url1 = $"{baseurl}/AllLedger/GetCustomer";
+            var existingProduct = await _apiService.GetAsync<ApiResponse<List<string>>>(url1, null);
+            existingProductlist.AddRange(existingProduct.Data);
+            int counter = 0;
+
+            list = list.Where(product => !existingProductlist.Contains(product.OutletName?.Trim().ToUpper())).ToList();
+
+            if (list.Count == 0)
+            {
+                return Json(new { success = false, message = "Already Synced to Tally Server!" });
+            }
+            foreach (var supplier_Master in list)
+            {
+                //AllLedger
+                try
+                {
+                    if (supplier_Master.OutletContactNo == "NA")
+                    {
+                        supplier_Master.OutletContactNo = "0000000000";
+                    }
+                    Ledger ledger = new Ledger()
+                    {
+                        name1 = supplier_Master.OutletName ?? "",
+                        name2 = supplier_Master.OutletCode ?? "",
+                        type = "Sundry Debtors" ?? "",
+                        GUID = "",
+                        phoneno = supplier_Master.OutletContactNo ?? "0000000000",
+                        address = supplier_Master.OutletAddress ?? "",
+                        city = "",
+                        state =/* supplier_Master.state ?? */ "",
+                        zipcode = /*supplier_Master.pincode ??*/ "",
+                        country = /*supplier_Master.Country ??*/ "",
+                        gst =  "",
+                        creditlimit = /*(supplier_Master.Creaditlimit).ToString() ??*/ "",
+                        contactpersonno = supplier_Master.OutletContactPerson ?? "",
+                        contactpersonemail = "",
+                        contactpersonname = supplier_Master.OutletContactPerson ?? "",
+                    };
+
+                    var uom_val = supplier_Master.OutletName.Trim();
+
+                    var data = await _apiService.PostAsync<ApiResponse<string>>(url2, ledger);
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+                //END
+            }
+            return Json(new { success = true, message = "Successfully Done !" });
         }
 
         public async Task<IActionResult> Index()
@@ -46,8 +150,48 @@ namespace Ajit_Bakery.Controllers
             return View(outletMaster);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            //TALLY ADDED
+            try
+            {
+                var baseurls = _config["AppSettings:BaseUrl"];
+                var Cname = _config["AppSettings:CompanyName"];
+
+                var tallyStatusUrl = $"{baseurls}/GetStatus";
+                var companyUrl = $"{baseurls}/Company";
+
+                // Check if Tally is running
+                var tallyResponse = await _apiService.GetAsync<ApiResponse<List<string>>>(tallyStatusUrl, null);
+
+                // Check if Company is available
+                var companyResponse = await _apiService.GetAsync<ApiResponse<List<string>>>(companyUrl, null);
+
+                if (tallyResponse == null || !tallyResponse.Success)
+                {
+                    _notyfyService.Error("Tally Server is not running!");
+                    return RedirectToAction(nameof(Index));  // Corrected return
+                }
+
+                if (companyResponse == null || !companyResponse.Success)
+                {
+                    _notyfyService.Warning("Tally is running, but the Company is not selected or available.");
+                    return RedirectToAction(nameof(Index));  // Corrected return
+                }
+
+                if (!companyResponse.Data.Contains(Cname))
+                {
+                    _notyfyService.Warning($"{Cname} Company is not Open.");
+                    return RedirectToAction(nameof(Index));  // Corrected return
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _notyfyService.Warning(" Tally Server is not running!!.");
+                return RedirectToAction(nameof(Index));  // Ensure redirect even in case of an error
+            }
+            //ENDED
             var code = "OUTLET";
             var getlast = _context.OutletMaster
                             .Where(a => a.OutletCode.StartsWith(code))
@@ -97,9 +241,45 @@ namespace Ajit_Bakery.Controllers
                 outletMaster.Createtime = DateTime.Now.ToString("HH:mm");
                 outletMaster.Modifiedtime = DateTime.Now.ToString("HH:mm");
                 outletMaster.User = username.ToString();
-
                 _context.Add(outletMaster);
                 await _context.SaveChangesAsync();
+
+                //TALLY ADDED
+                try
+                {
+                    Ledger ledger = new Ledger()
+                    {
+                        name1 = outletMaster.OutletName ?? "NA",
+                        name2 = outletMaster.OutletCode ?? "NA",
+                        type = "Sundry Debtors" ?? "NA",
+                        GUID = "",
+                        phoneno = outletMaster.OutletContactNo ?? "NA",
+                        address = outletMaster.OutletAddress ?? "NA",
+                        city =  "",
+                        state =  "",
+                        zipcode =  "",
+                        country =  "",
+                        gst =  "",
+                        creditlimit =  "",
+                        contactpersonno = outletMaster.OutletContactNo ?? "",
+                        contactpersonemail = "",
+                        contactpersonname = outletMaster.OutletContactPerson ?? "",
+                    };
+
+                    var uom_val = outletMaster.OutletName.Trim();
+                    var baseurl = _config["AppSettings:BaseUrl"];
+                    //var url = $"{baseurl}/UOM";
+                    var url = $"{baseurl}/AllLedger";
+                    var data = await _apiService.PostAsync<ApiResponse<string>>(url, ledger);
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+
+                //ENDEED
+
+                
                 return Json(new { success = true, message = "Created Successfully !" });
             }
             catch (Exception ex)

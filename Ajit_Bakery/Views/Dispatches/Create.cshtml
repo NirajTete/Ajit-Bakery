@@ -17,10 +17,15 @@
             <form asp-action="Create" id="TransferToDispatch">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="row">
-                    <div class="form-group col-sm-4">
+                    <div class="form-group col-sm-3 ">
+                        <label asp-for="VoucherType" class="control-label fw-bold small">Voucher Type</label>
+                        <select class="form-control" asp-for="VoucherType" id="EntryType" asp-items="@ViewBag.GetVoucherType"></select>
+                    </div>
+                    <div class="form-group col-sm-3">
                         <label asp-for="ProductionId" class="control-label fw-bold small"></label>
-                        <select asp-for="ProductionId" id="Production_Id" style="font-weight:600;font-size:16px;" required class="form-control text-uppercase"
+                        <select asp-for="ProductionId" id="Production_Id" required class="form-control text-uppercase"
                                 asp-items="@ViewBag.GetProduction_Id" onchange="OnProduction_IdChange()">
+                            @* style="font-weight:600;font-size:16px;" *@
                         </select>
                     </div>
                     <div class="form-group col-sm-4">
@@ -29,12 +34,13 @@
                         </select>
                     </div>
                     <div class="form-group  col-sm-2 ">
-                        <label class="control-label fw-bold small">Total Qty's</label>
+                        <label class="control-label fw-bold small"> Ready Qty's</label>
                         <input style="height:5vh; font-size: 20px; color: green; font-weight: 650;" id="qtypick" class="form-control" type="text" value="0" readonly />
                     </div>
                     <div class="col-sm-2">
                         <label class="control-label fw-bold small">&nbsp;</label>
-                        <button style="font-weight:600; font-size:16px;color:cornflowerblue" class="accordion-button collapsed " type="button" data-bs-toggle="collapse" data-bs-target="#TableDataId" aria-expanded="false" aria-controls="TableDataId">
+                        <button style="font-weight:600; font-size:16px;color:cornflowerblue" class="accordion-button collapsed " 
+                        type="button" data-bs-toggle="collapse" data-bs-target="#TableDataId" aria-expanded="false" aria-controls="TableDataId">
                             View Detailed
                         </button>
                     </div>
@@ -181,7 +187,7 @@
                         $tableBody.empty(); // Clear previous table data
 
                         $.each(response.tableData, function (index, item) {
-                            var pendingQty = item.pendingQty > 0 ? item.pendingQty : "---";
+                            var pendingQty = item.pendingQty > 0 ? item.pendingQty : "Dispatched";
                             var row = `<tr>
                                             <td class="text-center">${item.outletName}</td>
                                             <td class="text-center">${item.productName}</td>

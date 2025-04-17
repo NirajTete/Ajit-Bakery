@@ -66,7 +66,8 @@ namespace Ajit_Bakery.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var LIST = await _context.SaveProduction.Where(a => a.Qty > 0).OrderByDescending(a => a.Id).ToListAsync();
+            var date = DateTime.Now.ToString("dd-MM-yyyy");
+            var LIST = await _context.SaveProduction.Where(a => a.Qty > 0 && a.SaveProduction_Date.Trim() == date.Trim()).OrderByDescending(a => a.Id).ToListAsync();
             if (LIST.Count > 0)
             {
                 foreach (var item in LIST)
@@ -286,7 +287,12 @@ namespace Ajit_Bakery.Controllers
 
             lstProducts.Insert(0, defItem);
 
-            return Json(new { success = true, data = lstProducts, TableData = DialDetailViewModellist });
+            int completecount = _context.SaveProduction.Where(a=>a.Production_Id.Trim() == Production_Id.Trim()).ToList().Count();
+            int pendingcount = Math.Max(0, _context.ProductionCapture.Where(a=>a.Production_Id.Trim() == Production_Id.Trim()).ToList().Sum(pc => pc.TotalQty) - completecount);
+            ViewBag.completecount = completecount;
+            ViewBag.pendingcount = pendingcount;
+            DialDetailViewModellist = DialDetailViewModellist.Where(a => a.PendingQty > 0).ToList();
+            return Json(new { success = true, data = lstProducts, TableData = DialDetailViewModellist, completecount,pendingcount });
         }
 
 
@@ -669,7 +675,9 @@ namespace Ajit_Bakery.Controllers
                 wgvalue = saveProduction.TotalNetWg + " " + saveProduction.TotalNetWg_Uom,
                 wguom = saveProduction.TotalNetWg_Uom,
                 mrp = mrp?.MRP.ToString() ?? "NA",
-                productcode = mrp?.ProductCode ?? "NA"
+                productcode = mrp?.ProductCode ?? "NA",
+                Date="",
+                Time="",
             }));
 
             // ✅ GENERATE STICKER LOGIC
@@ -685,12 +693,14 @@ namespace Ajit_Bakery.Controllers
                 wgvalue = saveProduction.TotalNetWg + " " + saveProduction.TotalNetWg_Uom,
                 wguom = saveProduction.TotalNetWg_Uom,
                 mrp = mrp?.MRP.ToString() ?? "NA",
-                productcode = mrp?.ProductCode ?? "NA"
+                productcode = mrp?.ProductCode ?? "NA",
+                Date= saveProduction.SaveProduction_Date,
+                Time= saveProduction.SaveProduction_Time,
             }));
 
             string printerName1 = _config["AppSettings:loc1_printer"];
-            string prnFilePath = $"{_webHostEnvironment.WebRootPath}\\Sticker\\Cake20x10-300-DP-4.prn";
-            string valueFilePath = $"{_webHostEnvironment.WebRootPath}\\Sticker\\Cake20x10-300-DP-4VALUE.prn";
+            string prnFilePath = $"{_webHostEnvironment.WebRootPath}\\Sticker\\Cake20x10-300-DP-4-Dt.prn";
+            string valueFilePath = $"{_webHostEnvironment.WebRootPath}\\Sticker\\Cake20x10-300-DP-4-DtVALUE.prn";
 
             if (System.IO.File.Exists(valueFilePath))
             {
@@ -705,7 +715,10 @@ namespace Ajit_Bakery.Controllers
             for (int i = 0; i < def; i++)
             {
                 string fileContent = System.IO.File.ReadAllText(prnFilePath);
+                var DT = SaveProduction_list.Select(a=>a.Date).FirstOrDefault();
+                var TM = SaveProduction_list.Select(a => a.Time).FirstOrDefault();
 
+                //var TM = DateTime.Now.ToString("hh:mm");
                 // ✅ REPLACING STICKER VARIABLES IN FILE CONTENT
                 fileContent = fileContent
                     .Replace("<PRODUCT_NAME>", SaveProduction_list[count1].productname.Trim())//1
@@ -715,6 +728,8 @@ namespace Ajit_Bakery.Controllers
                     .Replace("<MRP>", saveProduction.mrpRs.ToString())
                     .Replace("<PRODUCT_NAME1>", SaveProduction_list[count1].productname1)
                     .Replace("<PRODUCT_NAME2>", SaveProduction_list[count1].productname2)
+                    .Replace("<DT>", DT)
+                                .Replace("<TM>", TM)
 
                     .Replace("<PRODUCT_NAME_1>", SaveProduction_list[count1 + 1].productname)//2
                     .Replace("<PRODUCT_CODE_1>", SaveProduction_list[count1 + 1].productcode)//2
@@ -723,6 +738,8 @@ namespace Ajit_Bakery.Controllers
                     .Replace("<MRP_1>", saveProduction.mrpRs.ToString())
                     .Replace("<PRODUCT_NAME1_1>", SaveProduction_list[count1 + 1].productname1)
                     .Replace("<PRODUCT_NAME2_1>", SaveProduction_list[count1 + 1].productname2)
+                    .Replace("<DT>", DT)
+                                .Replace("<TM>", TM)
 
                     .Replace("<PRODUCT_NAME_2>", SaveProduction_list[count1 + 2].productname)//3
                     .Replace("<PRODUCT_CODE_2>", SaveProduction_list[count1 + 2].productcode)//3
@@ -731,6 +748,8 @@ namespace Ajit_Bakery.Controllers
                     .Replace("<MRP_2>", saveProduction.mrpRs.ToString())
                     .Replace("<PRODUCT_NAME1_2>", SaveProduction_list[count1 + 2].productname1)
                     .Replace("<PRODUCT_NAME2_2>", SaveProduction_list[count1 + 2].productname2)
+                    .Replace("<DT>", DT)
+                                .Replace("<TM>", TM)
 
                     .Replace("<PRODUCT_NAME_3>", SaveProduction_list[count1 + 3].productname)//4
                     .Replace("<PRODUCT_CODE_3>", SaveProduction_list[count1 + 3].productcode)//4
@@ -738,7 +757,9 @@ namespace Ajit_Bakery.Controllers
                     .Replace("<WGVALUE_3>", SaveProduction_list[count1 + 3].wgvalue.ToString())
                     .Replace("<MRP_3>", saveProduction.mrpRs.ToString())
                     .Replace("<PRODUCT_NAME1_3>", SaveProduction_list[count1 + 3].productname1)
-                    .Replace("<PRODUCT_NAME2_3>", SaveProduction_list[count1 + 3].productname2);
+                    .Replace("<PRODUCT_NAME2_3>", SaveProduction_list[count1 + 3].productname2)
+                .Replace("<DT>", DT)
+                                .Replace("<TM>", TM);
 
                 // ✅ Writing modified content back to file
                 System.IO.File.WriteAllText(valueFilePath, fileContent);

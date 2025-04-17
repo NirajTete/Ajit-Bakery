@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Ajit_Bakery.Models
 {
@@ -13,5 +14,9 @@ namespace Ajit_Bakery.Models
         public string mrp { get; set; }
         public string wgvalue { get; set; }
         public string productcode { get; set; }
+        [NotMapped]
+        public string Date  { get; set; }
+        [NotMapped]
+        public string Time { get; set; }
     }
 }

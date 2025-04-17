@@ -34,17 +34,16 @@
                         <div class="d-flex justify-content-center gap-4">
                             <div class="text-center" style="width: 150px;">
                                 <label class="control-label fw-bold small text-center">Completed Production</label>
-                                <input id="completeCount" class="form-control text-white text-center" value="@ViewBag.completecount" style="background-color:rgb(25, 115, 73);" readonly />
+                                <input id="completeCount" class="form-control text-white text-center" @* value="@ViewBag.completecount" *@ style="background-color:rgb(25, 115, 73);" readonly />
                             </div>
                             <div class="text-center" style="width: 150px;">
                                 <label class="control-label fw-bold small text-center">Pending Production</label>
-                                <input id="pendingCount" class="form-control text-white text-center" value="@ViewBag.pendingcount" style="background-color:rgb(185, 43, 59);" readonly />
+                                <input id="pendingCount" class="form-control text-white text-center" @* value="@ViewBag.pendingcount" *@ style="background-color:rgb(185, 43, 59);" readonly />
                             </div>
                         </div>
 
 
                     </div>
-
                 </div>
                 <div class="accordion" id="tableAccordion">
                     <div class="accordion-item">
@@ -469,6 +468,10 @@
                         console.log("response : " + JSON.stringify(response));
                         console.log("response.data : " + JSON.stringify(response.data));
                         console.log("response.TableData : " + JSON.stringify(response.TableData));
+
+                        $("#completeCount").val(response.completecount);
+                        $("#pendingCount").val(response.pendingcount);
+
                         var $dropdown = $("#ProductName");  // Get the select element
                         $dropdown.empty();  // Clear previous options
 

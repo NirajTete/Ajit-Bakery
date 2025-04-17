@@ -9,8 +9,14 @@
         <div class="d-flex align-items-baseline">
             <a asp-action="Index" asp-controller="Home" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
             <h4 class="mx-auto text-white text-2xl font-semibold"> Product Master</h4>
-            <a asp-action="Create" class="btn btn-success btn-sm text-white">
+            <a asp-action="Create" class="btn btn-success btn-sm text-white x">
                 <i class="fas fa-plus-square"></i> Add
+            </a>
+            <a onclick="WriteDataToTally1()" id="WriteDataToTallyId" class="btn btn-primary text-white btn-sm ">
+                <i class="fas fa-sync-alt"></i> Write Product
+            </a>
+            <a onclick="WriteDataToTally(this)" id="WriteDataToTallyId" class="btn btn-primary text-white btn-sm mr-1">
+                <i class="fas fa-sync-alt"></i> Write Category
             </a>
         </div>
     </div>
@@ -75,7 +81,100 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        function WriteDataToTally1() {
+            $("#loadingIndicator").show();
 
+            $.ajax({
+                url: "/ProductMasters/WriteDataToTally",
+                // url: "/Product_Master/WriteDataToTally11",
+                type: "POST",
+                // data: { uom: shortcut }, // Pass the shortcut value
+                success: function (response) {
+                    $("#loadingIndicator").hide();
+                    // // Handle success
+                    // button.innerHTML = '<i class="fas fa-sync-alt"></i>';
+                    // // button.innerHTML = '<i class="fas fa-sync-alt"></i> Tally Update';
+                    // button.disabled = false;
+
+                    if (response.success) {
+                        Swal.fire("Success", response.message, "success");
+                    } else {
+                        Swal.fire("Error", response.message, "error");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // // Handle error
+                    // button.innerHTML = '<i class="fas fa-sync-alt"></i> Tally Update';
+                    // button.disabled = false;
+                    Swal.fire("Error", "An error occurred while updating Tally", "error");
+                }
+            });
+        }
+        function WriteDataToTally() {
+            $("#loadingIndicator").show();
+            const shortcut = "NA";
+            // const shortcut = button.getAttribute("data-shortcut");
+            console.log(shortcut);
+            // button.disabled = true;
+            // button.innerHTML = "Processing...";
+
+            $.ajax({
+                url: "/ProductMasters/WriteDataToTally_category",
+                type: "POST",
+                data: { uom: shortcut }, // Pass the shortcut value
+                success: function (response) {
+                    // // Handle success
+                    // button.innerHTML = '<i class="fas fa-sync-alt"></i> Tally Update';
+                    // button.disabled = false;
+                    $("#loadingIndicator").hide();
+                    if (response.success) {
+                        Swal.fire("Success", response.message, "success");
+                    } else {
+                        Swal.fire("Error", response.message, "error");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Handle error
+                    // button.innerHTML = '<i class="fas fa-sync-alt"></i> Tally Update';
+                    // button.disabled = false;
+                    Swal.fire("Error", "An error occurred while updating Tally", "error");
+                }
+            });
+        }
+
+        function ReadDataToTally1() {
+            $("#loadingIndicator").show();
+            // Retrieve the 'shortcut' value from the data attribute
+
+
+            $.ajax({
+                url: "/ProductMasters/ReadDataToTally1",
+                type: "POST",
+                // data: { uom: shortcut }, // Pass the shortcut value
+                success: function (response) {
+                    $("#loadingIndicator").hide();
+
+                    if (response.success) {
+                        // Swal.fire("Success", response.message, "success");
+                        Swal.fire({
+                            title: "Success",
+                            text: response.message,
+                            icon: "success"
+                        }).then(() => {
+                            location.reload(); // Reloads the current view
+                        });
+                    } else {
+                        Swal.fire("Error", response.message, "error");
+                    }
+                },
+                error: function (xhr, status, error) {
+
+                    Swal.fire("Error", "An error occurred while updating Tally", "error");
+                }
+            });
+        }
+    </script>
     <script>
         $(document).ready(function () {
             $('#ProductMaster').DataTable({

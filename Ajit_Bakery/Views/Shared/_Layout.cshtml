@@ -52,7 +52,12 @@
 </head>
 <!-- [Head] end -->
 
-<body data-pc-header="header-1" data-pc-preset="preset-1" data-pc-sidebar-theme="light" data-pc-sidebar-caption="true" data-pc-direction="ltr" data-pc-theme="light">
+<body data-pc-header="header-1" data-pc-preset="preset-1" data-pc-sidebar-theme="light" data-pc-sidebar-caption="true" 
+data-pc-direction="ltr" data-pc-theme="light">
+
+    <div id="loadingIndicator" class="loading-indicator">
+        <div class="spinner" role="status"></div>
+    </div>
 
     <!-- [ Pre-loader ] start -->
     <div class="loader-bg">
@@ -82,6 +87,12 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("loadingIndicator").style.display = "none";
+            document.getElementById("main-content").style.display = "block";
+        });
+
         var timeout;
 
         // ✅ Function to start the session timeout countdown
@@ -100,10 +111,10 @@
                         window.location.href = '@Url.Action("Login", "UserMasters")';
                     }
                 });
-            }, 1800000 ); // 120 minutes 
+            }, 1800000); // 120 minutes
         }
 
-       
+
 
         // ✅ Function to reset the session timeout when user interacts
         function resetTimer() {
@@ -115,7 +126,7 @@
             console.log("User:", '@userName');
 
             startTimer(); // Start session timeout on page load
-           
+
             // Reset timer on user activity
             document.onmousemove = resetTimer;
             document.onkeypress = resetTimer;
@@ -124,7 +135,7 @@
 
 
 
-   
+
 
     @* select 2 query *@
 

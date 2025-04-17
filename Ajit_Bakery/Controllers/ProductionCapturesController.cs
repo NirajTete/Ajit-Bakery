@@ -83,8 +83,9 @@ namespace Ajit_Bakery.Controllers
         }
         private List<SelectListItem> GetProductionIds()
         {
+            var date = DateTime.Now.ToString("dd-MM-yyyy");
             var lstProducts = _context.ProductionCapture
-                .Where(a => a.Status == "Pending")
+                .Where(a => a.Status == "Pending" && a.Production_Date.Trim() == date.Trim())
                 .AsNoTracking()
                 .Select(n => new SelectListItem
                 {
@@ -390,8 +391,9 @@ namespace Ajit_Bakery.Controllers
             //}
             List<ProductionCapture> productionCaptures = new List<ProductionCapture>();
 
+            var date = DateTime.Now.ToString("dd-MM-yyyy");
             //Fetch ordered data from database
-            var list = await _context.ProductionCapture.OrderByDescending(a => a.Id).ToListAsync();
+            var list = await _context.ProductionCapture.Where(a=> a.Production_Date.Trim() == date.Trim()).OrderByDescending(a => a.Id ).ToListAsync();
 
             //Get distinct outlet names dynamically from the data
             var allOutlets = list.Select(x => x.OutletName).Distinct().ToList();

@@ -320,6 +320,7 @@ namespace Ajit_Bakery.Controllers
 
             var list = _context.Packaging
                 .Where(a => a.DispatchReady_Flag == 1)
+                .OrderByDescending(a=>a.Id) // Order by Id to maintain the order of insertion
                 .AsEnumerable()  // Fetch data first, then perform grouping in memory
                 .GroupBy(a => new
                 {
@@ -509,7 +510,11 @@ namespace Ajit_Bakery.Controllers
                 //{
                 //    return Json(new { success = false, message = "You can't submit te partially qty against that " + outletname + " outlet !, Qty is "+ Packagings_List_data1 + ", and you have scan only "+ Packagings_List_data + " qty , Please scan all !"});
                 //}
-                var distinct_outlet = Packagings_List.OrderBy(a=>a.Outlet_Name.Trim()).Select(a => a.Outlet_Name.Trim()).Distinct().ToList();
+
+                var date = DateTime.Now.ToString("dd-MM-yyyy");
+                //var LIST = await _context.SaveProduction.Where(a => a.Qty > 0 && a.SaveProduction_Date.Trim() == date.Trim()).OrderByDescending(a => a.Id).ToListAsync();
+
+                var distinct_outlet = Packagings_List.Where(a=>a.Packaging_Date == date).OrderBy(a=>a.Outlet_Name.Trim()).Select(a => a.Outlet_Name.Trim() ).Distinct().ToList();
                 var DATE = DateTime.Now.ToString("dd-MM-yyyy");
                 var TIME = DateTime.Now.ToString("HH:mm");
                 foreach (var item in distinct_outlet)

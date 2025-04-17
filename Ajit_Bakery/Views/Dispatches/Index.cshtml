@@ -235,7 +235,7 @@
                         doc.text(`PARTY NAME: ${response.outletName}`, 15, 34);
 
                         // Table Data
-                        const columns = ["SR", "ITEM NAME", "QTY", "RATE", "UOM", "AMOUNT"];
+                        const columns = ["SR", "ITEM NAME", "QTY", "RATE", "TYPE", "AMOUNT"];
                         const rows = [];
 
                         response.tabledata.forEach((item, index) => {
@@ -305,13 +305,17 @@
                         doc.setFont("helvetica", "normal");
                         doc.text(` ${numberToWords(response.totalamount)} Only`, 70, finalY);
 
-                        // Footer
+                        // // Footer
                         finalY += 8;
                         doc.setLineWidth(0.3);
                         doc.line(10, finalY, 200, finalY); // Line Separator
 
-                        doc.text("FOR DESPATCH", 10, finalY + 6);
-                        doc.text("AUTHORISED SIGNATORY", 160, finalY + 6);
+                        // doc.text("FOR DESPATCH", 10, finalY + 6);
+                        // doc.text("AUTHORISED SIGNATORY", 160, finalY + 6);
+
+                        doc.text("FOR DESPATCH", 195, finalY + 5, { align: "right" });
+                        doc.text("AUTHORISED SIGNATORY", 200, finalY + 10, { align: "right" });
+
 
                         // Save PDF
                         doc.save("Delivery_Memo.pdf");

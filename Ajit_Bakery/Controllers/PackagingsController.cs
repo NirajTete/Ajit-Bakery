@@ -37,6 +37,9 @@ namespace Ajit_Bakery.Controllers
 
         public async Task<IActionResult> Index()
         {
+            var date = DateTime.Now.ToString("dd-MM-yyyy");
+            //var LIST = await _context.SaveProduction.Where(a => a.Qty > 0 && a.SaveProduction_Date.Trim() == date.Trim()).OrderByDescending(a => a.Id).ToListAsync();
+
             Packagings_List.Clear();
             SaveProduction_List.Clear();
             ProductionCapture_List.Clear();
@@ -50,6 +53,7 @@ namespace Ajit_Bakery.Controllers
 
             var list = _context.Packaging
                 //.Where(a => a.DispatchReady_Flag == 0)
+                .Where(a => a.Packaging_Date.Trim() == date.Trim())
                 .OrderByDescending(a => a.Id)
                 .AsEnumerable()  // Fetch data first, then perform grouping in memory
                 .GroupBy(a => new

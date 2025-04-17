@@ -11,6 +11,13 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 using Microsoft.AspNetCore.Authorization;
 using System.Net;
 using System.Security.Claims;
+using Ajit_Bakery.Models.Tally_Models;
+using Ajit_Bakery.Services;
+using AspNetCoreHero.ToastNotification.Abstractions;
+using iText.Html2pdf.Attach;
+using PdfSharp.Snippets;
+using System.Diagnostics.Metrics;
+using Ajit_Bakery.Models.Tally_Models;
 
 namespace Ajit_Bakery.Controllers
 {
@@ -18,10 +25,19 @@ namespace Ajit_Bakery.Controllers
     public class DispatchesController : Controller
     {
         private readonly DataDBContext _context;
-
-        public DispatchesController(DataDBContext context)
+        public INotyfService _notyfService { get; }
+        private readonly IConfiguration _configuration;
+        private IWebHostEnvironment _webHostEnvironment;
+        private readonly IApiService _apiService;
+        private readonly IConfiguration _config;
+        public DispatchesController(DataDBContext context, INotyfService notyfService, IWebHostEnvironment webHostEnvironment, IConfiguration configuration, IApiService apiService, IConfiguration config)
         {
             _context = context;
+            _notyfService = notyfService;
+            _webHostEnvironment = webHostEnvironment;
+            _configuration = configuration;
+            _apiService = apiService;
+            _config = config;
         }
 
         private static List<Packaging> Packagings_List = new List<Packaging>();
@@ -40,12 +56,25 @@ namespace Ajit_Bakery.Controllers
                     var savedata = _context.Packaging
                         .Where(a => a.Product_Name.Trim() == item.ProductName.Trim() && a.Production_Id.Trim() == Production_Id.Trim() && a.DispatchReady_Flag == 1 && a.Dispatch_Flag == 0 && a.Outlet_Name.Trim() == item.OutletName.Trim())
                         .Sum(a => a.Qty);
+                    var savedata1 = _context.Packaging
+                        .Where(a => a.Product_Name.Trim() == item.ProductName.Trim() && a.Production_Id.Trim() == Production_Id.Trim() && a.DispatchReady_Flag == 1 && a.Dispatch_Flag == 1 && a.Outlet_Name.Trim() == item.OutletName.Trim())
+                        .Sum(a => a.Qty);
+                    int PendingQty = 0;
 
-                    int DispatchReady = savedata;
+                    if (data == savedata1)
+                    {
+                        PendingQty = Math.Abs(data - savedata1);
+                    }
+                    else
+                    {
+                        PendingQty = Math.Abs(data - savedata);
+                    }
+                    int DispatchReady = Math.Abs(savedata);
+
+                    
                     //var found = _context.ProductMaster.Where(a => a.ProductName.Trim() == item.ProductName.Trim()).FirstOrDefault();
                     //if (found != null)
                     //{
-                        int PendingQty = Math.Abs(data - savedata);
                         DialDetailViewModel DialDetailViewModel = new DialDetailViewModel()
                         {
                             ProductName = item.ProductName,
@@ -250,9 +279,11 @@ namespace Ajit_Bakery.Controllers
         public async Task<IActionResult> Index()
         {
             Packagings_List.Clear();
-
+            var date = DateTime.Now.ToString("dd-MM-yyyy");
+            //var LIST = await _context.SaveProduction.Where(a => a.Qty > 0 && a.SaveProduction_Date.Trim() == date.Trim()).OrderByDescending(a => a.Id).ToListAsync();
             var list = _context.Dispatch
                 //.Where(a => a.DispatchReady_Flag == 1)
+                .Where(a => a.Dispatch_Date == date)
                 .AsEnumerable()  // Fetch data first, then perform grouping in memory
                 .GroupBy(a => new
                 {
@@ -305,12 +336,130 @@ namespace Ajit_Bakery.Controllers
 
             return View(dispatch);
         }
-
-        public IActionResult Create()
+        private async Task<(List<SelectListItem> VoucherTypes, List<SelectListItem> FreightTypes)> GetLedgerTypes()
         {
+            var baseurl = _config["AppSettings:BaseUrl"];
+            var url1 = $"{baseurl}/AllLedger";
+
+            var result = await _apiService.GetAsync<ApiResponse<List<Ledger>>>(url1, null);
+            var ledgers = result?.Data ?? new List<Ledger>();
+
+            var voucherTypeList = ledgers
+                .Where(a => a.type == "Sales Accounts")
+                .Select(a => new SelectListItem
+                {
+                    Text = a.name1.Trim(),
+                    Value = a.name1.Trim()
+                })
+                .Distinct()
+                .ToList();
+
+            var freightTypeList = ledgers
+                .Where(a => a.type == "Direct Incomes")
+                .Select(a => new SelectListItem
+                {
+                    Text = a.name1.Trim(),
+                    Value = a.name1.Trim()
+                })
+                .Distinct()
+                .ToList();
+
+            return (voucherTypeList, freightTypeList);
+        }
+
+        public async Task<IActionResult> Create()
+        {
+            //TALLY ADDED
+            try
+            {
+                var baseurls = _config["AppSettings:BaseUrl"];
+                var Cname = _config["AppSettings:CompanyName"];
+
+                var tallyStatusUrl = $"{baseurls}/GetStatus";
+                var companyUrl = $"{baseurls}/Company";
+
+                // Check if Tally is running
+                var tallyResponse = await _apiService.GetAsync<ApiResponse<List<string>>>(tallyStatusUrl, null);
+
+                // Check if Company is available
+                var companyResponse = await _apiService.GetAsync<ApiResponse<List<string>>>(companyUrl, null);
+
+                if (tallyResponse == null || !tallyResponse.Success)
+                {
+                    _notyfService.Error("Tally Server is not running!");
+                    return RedirectToAction(nameof(Index));  // Corrected return
+                }
+
+                if (companyResponse == null || !companyResponse.Success)
+                {
+                    _notyfService.Warning("Tally is running, but the Company is not selected or available.");
+                    return RedirectToAction(nameof(Index));  // Corrected return
+                }
+
+                if (!companyResponse.Data.Contains(Cname))
+                {
+                    _notyfService.Warning($"{Cname} Company is not Open.");
+                    return RedirectToAction(nameof(Index));  // Corrected return
+                }
+
+                var (voucherTypes, freightTypes) = await GetLedgerTypes();
+                ViewBag.GetVoucherType = voucherTypes;
+                ViewBag.GetFreightType = freightTypes;
+
+            }
+            catch (Exception ex)
+            {
+                _notyfService.Warning(" Tally Server is not running!!.");
+                return RedirectToAction(nameof(Index));  // Ensure redirect even in case of an error
+            }
+            //ENDED
             ViewBag.GetProduction_Id = GetProduction_Id();
-            //ViewBag.DCNO = GetDCNO();
             return View();
+        }
+        public string GetINNOSTR()
+        {
+            try
+            {
+                var currentYearMonth = DateTime.Now.ToString("yyMM"); // Example: "2412" for Dec 2024
+                string newBoxId;
+                int newCounter;
+                var lastBox = _context.DCIds.Where(a => a.ProductionId.Trim().StartsWith("IN-"))
+                    .OrderByDescending(b => b.id)
+                    .FirstOrDefault();
+                if (lastBox != null)
+                {
+                    string lastYearMonth = lastBox.ProductionId.Substring(3, 4); // Extract characters 4-7 ("YYMM")
+                    int lastCounter = int.Parse(lastBox.ProductionId.Substring(7)); // Extract counter part
+                    if (lastYearMonth == currentYearMonth)
+                    {
+                        newCounter = lastCounter + 1;
+                    }
+                    else
+                    {
+                        newCounter = 1;
+                    }
+                }
+                else
+                {
+                    newCounter = 1;
+                }
+                newBoxId = $"IN-{currentYearMonth}{newCounter:D2}"; // Format: STBYYMMCC
+                var maxId = _context.DCIds.Any() ? _context.DCIds.Max(e => e.id) + 1 : 1;
+                var newBoxEntry = new DCIds
+                {
+                    id = maxId,
+                    ProductionId = newBoxId,
+                    date = DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"),
+                };
+                _context.DCIds.Add(newBoxEntry);
+                _context.SaveChanges();
+
+                return newBoxId;
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
         }
         public string GetDCNOSTR()
         {
@@ -365,16 +514,84 @@ namespace Ajit_Bakery.Controllers
             var DAProduction_id = "";
             var DAOutletName = "";
 
-            var DATE = DateTime.Now.ToString("dd-MM-yyyy");
+            //var DATE = DateTime.Now.ToString("dd-MM-yyyy");
+            var DATE = "01-04-2025";
+            DateTime dcdate = DateTime.ParseExact(DATE, "dd-MM-yyyy", null);
+            string indate = dcdate.ToString("yyyy-MM-dd");
+
             var TIME = DateTime.Now.ToString("HH:mm");
+
+            //TALLY ENTRY-INVOICE 
+            var DCNO = GetDCNOSTR();
+            var INNO = GetINNOSTR();
+            var inward = dispatch;
+            var outletdetails = _context.OutletMaster.Where(a => a.OutletName.Trim() == dispatch.OutletName.Trim()).FirstOrDefault();
+            float BaseAmount = (float)(Packagings_List.Sum(a => a.sellingRs * a.Qty));
+            Invoice Invoice = new Invoice()
+            {
+                EntryType = inward.VoucherType ?? "",
+                refno = inward.ProductionId ?? "",
+                partyname = inward.OutletName ?? "",
+                contactno = outletdetails.OutletContactNo ?? "",
+                address = outletdetails.OutletAddress ?? "",
+                fright = 0,
+                Freight_type = "",
+                totalamount = BaseAmount,//
+                FreighAmount = 0,
+                BaseAmount = BaseAmount,
+                paymentterm = "",
+                termofdilivery = "",
+                remark = "",
+                gst_type = "",
+                cgst = 0,
+                sgst = 0,
+                FinalAmount = BaseAmount,
+                igst = 0,
+                gstno = "",
+                country = "",
+                state = "",
+                pincode = "",
+                VoucherType = inward.VoucherType ?? "NA",
+                InvoiceItemDetails = new List<InvoiceItemDetails>(),
+                dcno = DCNO ?? "NA",
+                invoiceno = INNO ?? "NA",
+                truckno = inward.VehicleNumber ?? "NA",
+                dispatchby = inward.VehicleDriverName ?? "NA",
+                destination = "",
+                agent = inward.VehicleOwn,
+                invDate = indate,
+                dcDate = indate,
+                orderDate = DATE,
+            };
+            foreach (var item in Packagings_List)
+            {
+                int gst = 0;
+                var HSN = "NA";
+                double amount = item.Qty * item.sellingRs;
+                InvoiceItemDetails SOorderItemDetails = new InvoiceItemDetails()
+                {
+                    productname = item.Product_Name ?? "NA",
+                    qty = Convert.ToInt32(item.Qty),
+                    uom = "Pcs",
+                    amount = (float)(amount),
+                    rate = (float)(item.sellingRs),
+                    cgst = "0",
+                    sgst = "0",
+                    igst = "0",
+                    hsn = HSN,
+                };
+                Invoice.InvoiceItemDetails.Add(SOorderItemDetails);
+            }
+            var baseurl = _configuration["AppSettings:BaseUrl"];
+            var url = $"{baseurl}/Vouchers/Save_Invoice";
+            var data = await _apiService.PostAsync<ApiResponse<string>>(url, Invoice);
+            //END
 
             if (Packagings_List.Count > 0)
             {
                 var currentuser1 = HttpContext.User;
                 string username = currentuser1.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
 
-
-                var DCNO = GetDCNOSTR();
                 //ADD TO DISPATCH TABLE 
                 foreach (var item in Packagings_List)
                 {
@@ -412,6 +629,7 @@ namespace Ajit_Bakery.Controllers
                         VehicleDriverName = dispatch.VehicleDriverName,
                         VehicleOwn = dispatch.VehicleOwn,
                         user = username.ToString(),
+                        INNO = INNO,
                     };
                     _context.Dispatch.Add(Dispatch);
                     _context.BoxMaster.Where(b => b.BoxNumber == item.Box_No).ExecuteUpdate(setters => setters.SetProperty(b => b.Use_Flag, 2));
@@ -424,6 +642,7 @@ namespace Ajit_Bakery.Controllers
                     _context.SaveChanges();
                 }
             }
+
             //UPDATE PRODUCTION_CAPTURE TABLE
             var find_production = _context.ProductionCapture.Where(a=>a.Production_Id.Trim() == DAProduction_id.Trim() && a.OutletName.Trim() == DAOutletName.Trim()).ToList();
             var find_dispatch = _context.Dispatch.Where(a => a.ProductionId.Trim() == DAProduction_id.Trim() && a.OutletName.Trim() == DAOutletName.Trim()).ToList();
@@ -445,6 +664,60 @@ namespace Ajit_Bakery.Controllers
             }
 
             return Json(new {success = true, message = "Successfully Done !"});
+        }
+
+
+        public IActionResult getdatatobind(string ProductionId, string DCNo, string BoxNo, string ReceiptNo, string OutletName)
+        {
+                List<Dispatch> dispatch = new List<Dispatch>();
+                double totalqty = 0;
+                double totalamount = 0;
+                string Datee = "";
+                string category = "";
+
+                var list = _context.Dispatch
+                    .Where(a => a.OutletName.Trim() == OutletName.Trim() &&
+                                a.ReceiptNo.Trim() == ReceiptNo.Trim() &&
+                                a.DCNo.Trim() == DCNo.Trim() &&
+                                a.ProductionId.Trim() == ProductionId.Trim())
+                    .ToList();
+
+                if (list.Any())
+                {
+                    Datee = list.First().Dispatch_Date;
+
+                    foreach (var item in list)
+                    {
+                        double sellingrate = _context.Packaging
+                            .Where(a => a.Production_Id.Trim() == item.ProductionId.Trim() &&
+                                        a.Reciept_Id.Trim() == item.ReceiptNo.Trim() &&
+                                        a.DCNo.Trim() == item.DCNo.Trim() &&
+                                        a.Product_Name.Trim() == item.ProductName.Trim()
+                                        && a.TotalNetWg == item.TotalNetWg)
+                            .Select(a => a.sellingRs)
+                            .FirstOrDefault();
+
+                        category = _context.ProductMaster
+                            .Where(a => a.ProductName.Trim() == item.ProductName.Trim())
+                            .Select(a => a.Type)
+                            .FirstOrDefault() ?? "NA";
+
+                        dispatch.Add(new Dispatch
+                        {
+                            ProductName = item.ProductName,
+                            Qty = item.Qty,
+                            rate = sellingrate,
+                            categary = category,
+                            amount = item.Qty * sellingrate
+                        });
+
+                        totalamount += item.Qty * sellingrate;
+                        totalqty += item.Qty;
+                    }
+                }
+
+                return Json(new { success = true, tabledata = dispatch, totalamount, totalqty, DCNo, OutletName, Datee, category });
+            
         }
 
         public async Task<IActionResult> Edit(int? id)
@@ -533,6 +806,8 @@ namespace Ajit_Bakery.Controllers
         {
           return (_context.Dispatch?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+
 
         public IActionResult GetDMData(string ProductionId, string DCNo, string BoxNo, string ReceiptNo, string OutletName)
         {
