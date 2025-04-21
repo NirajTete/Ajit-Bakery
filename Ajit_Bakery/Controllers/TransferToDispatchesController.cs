@@ -25,6 +25,7 @@ using PdfFont = iText.Kernel.Font.PdfFont;
 using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Ajit_Bakery.Controllers
 {
@@ -316,10 +317,10 @@ namespace Ajit_Bakery.Controllers
 
         public async Task<IActionResult> Index()
         {
+            var date = DateTime.Now.ToString("dd-MM-yyyy");
             Packagings_List.Clear();
-
             var list = _context.Packaging
-                .Where(a => a.DispatchReady_Flag == 1)
+                .Where(a => a.DispatchReady_Flag == 1 && a.Packaging_Date.Trim() == date.Trim())
                 .OrderByDescending(a=>a.Id) // Order by Id to maintain the order of insertion
                 .AsEnumerable()  // Fetch data first, then perform grouping in memory
                 .GroupBy(a => new
