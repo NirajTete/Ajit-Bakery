@@ -13,7 +13,7 @@ namespace Ajit_Bakery.Models
         public string UserName { get; set; }
         [Display(Name = "Email")]
         public string Email { get; set; }
-        [Display(Name = "Passward")]
+        [Display(Name = "Password")]
         public string UserPassward { get; set; }
         [Display(Name = "Code")]
         public string UserCode { get; set; }
