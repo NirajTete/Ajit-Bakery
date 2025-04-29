@@ -96,12 +96,15 @@
 
                 var formData = $(this).serialize(); // Serialize form data
                 console.log("formData : " + formData);
+                $("#loadingIndicator").show();
                 $.ajax({
                     type: "POST",
                     url: "@Url.Action("Create", "UserMasters")", // Replace with your controller name
                     data: formData,
                     success: function (response) {
+                        $("#loadingIndicator").hide();
                         if (response.success) {
+
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Success!',
@@ -121,6 +124,7 @@
                         }
                     },
                     error: function () {
+                        $("#loadingIndicator").hide();
                         Swal.fire({
                             icon: 'error',
                             title: 'Error!',

@@ -151,7 +151,7 @@
         $(document).ready(function () {
             $("#productForm").submit(function (event) {
                 event.preventDefault(); // Prevent default form submission
-
+                $("#loadingIndicator").show();
                 var formData = $(this).serialize(); // Serialize form data
                 console.log("formData : " + formData);
                 $.ajax({
@@ -160,6 +160,7 @@
                     data: formData,
                     success: function (response) {
                         if (response.success) {
+                            $("#loadingIndicator").hide();
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Success!',
@@ -179,6 +180,7 @@
                         }
                     },
                     error: function () {
+                        $("#loadingIndicator").hide();
                         Swal.fire({
                             icon: 'error',
                             title: 'Error!',

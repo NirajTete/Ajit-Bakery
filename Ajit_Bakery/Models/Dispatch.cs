@@ -42,6 +42,16 @@ namespace Ajit_Bakery.Models
         public string categary { get; set; }
         [NotMapped]
         public string VoucherType { get; set; }
+        [NotMapped]
+        public string LedgerType { get; set; }
         public string? INNO { get; set; }
+        [NotMapped]
+        public double UNIT { get; set; }
+        [NotMapped]
+        public string uom { get; set; }
+        [NotMapped]
+        public string value { get; set; }
+        [NotMapped]
+        public string ratee { get; set; }
     }
 }

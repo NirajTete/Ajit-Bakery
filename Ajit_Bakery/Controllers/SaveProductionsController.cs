@@ -152,27 +152,6 @@ namespace Ajit_Bakery.Controllers
             }
             return Json(new { success = true, data = "" });
         }
-        //public IActionResult GetOutlets(string Production_Id)
-        //{
-        //    var lstProducts = new List<SelectListItem>();
-
-        //    lstProducts = _context.ProductionCapture.Where(a => a.Status == "Pending" && a.Production_Id.Trim() == Production_Id.Trim()).AsNoTracking().Select(n =>
-        //    new SelectListItem
-        //    {
-        //        Value = n.ProductName,
-        //        Text = n.ProductName
-        //    }).Distinct().ToList();
-
-        //    var defItem = new SelectListItem()
-        //    {
-        //        Value = "",
-        //        Text = "----Select ProductName ----"
-        //    };
-
-        //    lstProducts.Insert(0, defItem);
-
-        //    return Json(new { success = true, data = lstProducts });
-        //}
 
         public IActionResult GetOutlets(string Production_Id)
         {
@@ -194,106 +173,202 @@ namespace Ajit_Bakery.Controllers
             };
 
             List<DialDetailViewModel> DialDetailViewModellist = new List<DialDetailViewModel>();
+            var date = DateTime.Now.ToString("dd-MM-yyyy");
 
-            var list = _context.ProductionCapture.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Status == "Pending").ToList();
-            if (list.Count > 0)
-            {
-                var productSummary = _context.SaveProduction
-                        .GroupBy(p => new { p.ProductName, p.Production_Id }) // Group by both ProductName & Production_Id
-                        .Select(g => new
-                        {
-                            Product_Name = g.Key.ProductName, // Accessing ProductName
-                            Production_Id = g.Key.Production_Id, // Accessing Production_Id
-                            Total_Quantity = g.Sum(p => p.Qty),  // Sum of Quantity
-                            Total_Count = g.Count()  // Number of records per product
-                        })
-                        .ToList();
+            var list = _context.ProductionCapture
+                .Where(a => a.Production_Id.Trim() == Production_Id.Trim() &&
+                            a.Status == "Pending" &&
+                            a.Production_Date.Trim() == date.Trim())
+                .ToList();
 
-                List<SaveProduction> listtt = new List<SaveProduction>();
-                foreach (var item in productSummary)
+            var groupedList = list
+                .GroupBy(x => x.ProductName)
+                .Select(g => new
                 {
-                    SaveProduction sc = new SaveProduction()
-                    {
-                        ProductName = item.Product_Name,
-                        Production_Id = item.Production_Id,
-                        Qty = item.Total_Quantity,
-                    };
-                    listtt.Add(sc);
-                }
-
-                foreach (var item in list)
-                {
-                    var data = _context.ProductionCapture
-                        .Where(a => a.ProductName.Trim() == item.ProductName.Trim() && a.Production_Id.Trim() == Production_Id.Trim() && a.OutletName.Trim() == item.OutletName.Trim())
-                        .Sum(a => a.TotalQty);
-
-                    var found = _context.ProductMaster.Where(a => a.ProductName.Trim() == item.ProductName.Trim()).FirstOrDefault();
-                    if (found != null)
-                    {
-                        var value = 0;
-                        var savededata1 = listtt
-                            .Where(a => a.ProductName.Trim() == item.ProductName.Trim() && a.Production_Id.Trim() == Production_Id.Trim())
-                            .FirstOrDefault();
-                        if (savededata1 != null)
-                        {
-                            value = savededata1.Qty;
-                            int minValue = Math.Min(savededata1.Qty, data);
-                            savededata1.Qty = Math.Abs(savededata1.Qty - minValue);
-                        }
-                        int PendingQty = Math.Abs(data - value);
-                        double mrp = found.MRP;
-                        double Selling = found.Selling;
-                        double MRP_Rs = found.MRP_Rs;
-                        double Selling_Rs = found.Selling_Rs;
-                        DialDetailViewModel DialDetailViewModel = new DialDetailViewModel()
-                        {
-                            ProductName = item.ProductName,
-                            TotalQty = item.TotalQty,
-                            OutletName = item.OutletName,
-                            MRP = mrp,
-                            Selling = Selling,
-                            MRP_Rs = MRP_Rs,
-                            Selling_Rs = Selling_Rs,
-                            PendingQty = PendingQty,
-                            BasicUnit = (found.Unitqty).ToString() + " " + found.Uom,
-                        };
-                        DialDetailViewModellist.Add(DialDetailViewModel);
-                        //if (savededata1 != null)
-                        //{
-                        //    savededata1.Qty = Math.Abs(savededata1.Qty - data);
-                        //}
-
-                    }
-                }
-            }
-
-
-            // Filter products where the difference is NOT zero
-            lstProducts = lstProducts
-                .Where(item =>
-                {
-                    var value = item.Value.Trim();
-                    var data = _context.ProductionCapture
-                        .Where(a => a.ProductName == value && a.Production_Id.Trim() == Production_Id.Trim())
-                        .Sum(a => a.TotalQty);
-
-                    var savedata = _context.SaveProduction
-                        .Where(a => a.ProductName == value && a.Production_Id.Trim() == Production_Id.Trim())
-                        .Sum(a => a.Qty);
-
-                    return Math.Abs(data - savedata) != 0; // Keep items where difference is NOT zero
+                    ProductName = g.Key,
+                    TotalQty = g.Sum(x => x.TotalQty)
                 })
                 .ToList();
 
-            lstProducts.Insert(0, defItem);
+            var productSummary = _context.SaveProduction
+                .Where(a => a.SaveProduction_Date.Trim() == date.Trim() &&
+                            a.Production_Id.Trim() == Production_Id.Trim())
+                .ToList();
 
-            int completecount = _context.SaveProduction.Where(a=>a.Production_Id.Trim() == Production_Id.Trim()).ToList().Count();
-            int pendingcount = Math.Max(0, _context.ProductionCapture.Where(a=>a.Production_Id.Trim() == Production_Id.Trim()).ToList().Sum(pc => pc.TotalQty) - completecount);
+            var groupedCount = productSummary
+                .GroupBy(x => x.ProductName)
+                .Select(g => new
+                {
+                    ProductName = g.Key,
+                    TotalCount = g.Count()
+                })
+                .ToList();
+
+            foreach (var item in groupedList)
+            {
+                var found = _context.ProductMaster
+                    .FirstOrDefault(a => a.ProductName.Trim() == item.ProductName.Trim());
+
+                if (found != null)
+                {
+                    double mrp = found.MRP;
+                    double selling = found.Selling;
+                    double mrpRs = found.MRP_Rs;
+                    double sellingRs = found.Selling_Rs;
+
+                    int saveCount = groupedCount
+                        .Where(a => a.ProductName.Trim() == item.ProductName.Trim())
+                        .Select(a => a.TotalCount)
+                        .FirstOrDefault();
+
+                    int pendingQty = item.TotalQty - saveCount;
+
+                    DialDetailViewModel detail = new DialDetailViewModel
+                    {
+                        ProductName = item.ProductName,
+                        TotalQty = item.TotalQty,
+                        MRP = mrp,
+                        Selling = selling,
+                        MRP_Rs = mrpRs,
+                        Selling_Rs = sellingRs,
+                        PendingQty = pendingQty,
+                        BasicUnit = found.Unitqty.ToString() + " " + found.Uom
+                    };
+
+                    DialDetailViewModellist.Add(detail);
+                }
+            }
+
+            int completecount = _context.SaveProduction.Where(a => a.Production_Id.Trim() == Production_Id.Trim()).ToList().Count();
+            int pendingcount = Math.Max(0, _context.ProductionCapture.Where(a => a.Production_Id.Trim() == Production_Id.Trim()).ToList().Sum(pc => pc.TotalQty) - completecount);
             ViewBag.completecount = completecount;
             ViewBag.pendingcount = pendingcount;
-            DialDetailViewModellist = DialDetailViewModellist.Where(a => a.PendingQty > 0).ToList();
-            return Json(new { success = true, data = lstProducts, TableData = DialDetailViewModellist, completecount,pendingcount });
+            //DialDetailViewModellist = DialDetailViewModellist.Where(a => a.PendingQty > 0).ToList();
+            return Json(new { success = true, data = lstProducts, TableData = DialDetailViewModellist, completecount, pendingcount });
         }
+
+
+        //public IActionResult GetOutlets(string Production_Id)
+        //{
+        //    var lstProducts = _context.ProductionCapture
+        //        .Where(a => a.Status == "Pending" && a.Production_Id.Trim() == Production_Id.Trim())
+        //        .AsNoTracking()
+        //        .Select(n => new SelectListItem
+        //        {
+        //            Value = n.ProductName,
+        //            Text = n.ProductName
+        //        })
+        //        .Distinct()
+        //        .ToList();
+
+        //    var defItem = new SelectListItem()
+        //    {
+        //        Value = "",
+        //        Text = "----Select ProductName ----"
+        //    };
+
+        //    List<DialDetailViewModel> DialDetailViewModellist = new List<DialDetailViewModel>();
+        //    var date = DateTime.Now.ToString("dd-MM-yyyy");
+        //    var list = _context.ProductionCapture.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Status == "Pending" && a.Production_Date.Trim() == date.Trim()).ToList();
+        //    if (list.Count > 0)
+        //    {
+        //        var productSummary = _context.SaveProduction
+        //            .Where(a=>a.SaveProduction_Date.Trim() == date.Trim() && a.Production_Id.Trim() == Production_Id.Trim())
+        //                .GroupBy(p => new { p.ProductName, p.Production_Id }) // Group by both ProductName & Production_Id
+        //                .Select(g => new
+        //                {
+        //                    Product_Name = g.Key.ProductName, // Accessing ProductName
+        //                    Production_Id = g.Key.Production_Id, // Accessing Production_Id
+        //                    Total_Quantity = g.Sum(p => p.Qty),  // Sum of Quantity
+        //                    Total_Count = g.Count()  // Number of records per product
+        //                })
+        //                .ToList();
+
+        //        List<SaveProduction> listtt = new List<SaveProduction>();
+        //        foreach (var item in productSummary)
+        //        {
+        //            SaveProduction sc = new SaveProduction()
+        //            {
+        //                ProductName = item.Product_Name,
+        //                Production_Id = item.Production_Id,
+        //                Qty = item.Total_Quantity,
+        //            };
+        //            listtt.Add(sc);
+        //        }
+
+        //        foreach (var item in list)
+        //        {
+        //            var data = _context.ProductionCapture
+        //                .Where(a => a.ProductName.Trim() == item.ProductName.Trim() && a.Production_Id.Trim() == Production_Id.Trim() && a.OutletName.Trim() == item.OutletName.Trim() && a.Production_Date.Trim() == date.Trim())
+        //                .Sum(a => a.TotalQty);
+
+        //            var found = _context.ProductMaster.Where(a => a.ProductName.Trim() == item.ProductName.Trim()).FirstOrDefault();
+        //            if (found != null)
+        //            {
+        //                var value = 0;
+        //                var savededata1 = listtt
+        //                    .Where(a => a.ProductName.Trim() == item.ProductName.Trim() && a.Production_Id.Trim() == Production_Id.Trim())
+        //                    .FirstOrDefault();
+        //                if (savededata1 != null)
+        //                {
+        //                    value = savededata1.Qty;
+        //                    int minValue = Math.Min(savededata1.Qty, data);
+        //                    savededata1.Qty = Math.Abs(savededata1.Qty - minValue);
+        //                }
+        //                int PendingQty = Math.Abs(data - value);
+        //                double mrp = found.MRP;
+        //                double Selling = found.Selling;
+        //                double MRP_Rs = found.MRP_Rs;
+        //                double Selling_Rs = found.Selling_Rs;
+        //                DialDetailViewModel DialDetailViewModel = new DialDetailViewModel()
+        //                {
+        //                    ProductName = item.ProductName,
+        //                    TotalQty = item.TotalQty,
+        //                    OutletName = item.OutletName,
+        //                    MRP = mrp,
+        //                    Selling = Selling,
+        //                    MRP_Rs = MRP_Rs,
+        //                    Selling_Rs = Selling_Rs,
+        //                    PendingQty = PendingQty,
+        //                    BasicUnit = (found.Unitqty).ToString() + " " + found.Uom,
+        //                };
+        //                DialDetailViewModellist.Add(DialDetailViewModel);
+        //                //if (savededata1 != null)
+        //                //{
+        //                //    savededata1.Qty = Math.Abs(savededata1.Qty - data);
+        //                //}
+
+        //            }
+        //        }
+        //    }
+
+
+        //    // Filter products where the difference is NOT zero
+        //    lstProducts = lstProducts
+        //        .Where(item =>
+        //        {
+        //            var value = item.Value.Trim();
+        //            var data = _context.ProductionCapture
+        //                .Where(a => a.ProductName == value && a.Production_Id.Trim() == Production_Id.Trim())
+        //                .Sum(a => a.TotalQty);
+
+        //            var savedata = _context.SaveProduction
+        //                .Where(a => a.ProductName == value && a.Production_Id.Trim() == Production_Id.Trim())
+        //                .Sum(a => a.Qty);
+
+        //            return Math.Abs(data - savedata) != 0; // Keep items where difference is NOT zero
+        //        })
+        //        .ToList();
+
+        //    lstProducts.Insert(0, defItem);
+
+        //    int completecount = _context.SaveProduction.Where(a=>a.Production_Id.Trim() == Production_Id.Trim()).ToList().Count();
+        //    int pendingcount = Math.Max(0, _context.ProductionCapture.Where(a=>a.Production_Id.Trim() == Production_Id.Trim()).ToList().Sum(pc => pc.TotalQty) - completecount);
+        //    ViewBag.completecount = completecount;
+        //    ViewBag.pendingcount = pendingcount;
+        //    //DialDetailViewModellist = DialDetailViewModellist.Where(a => a.PendingQty > 0).ToList();
+        //    return Json(new { success = true, data = lstProducts, TableData = DialDetailViewModellist, completecount,pendingcount });
+        //}
 
 
         public IActionResult CalculateTotalNetWeight(string Production_Id, string productName, double TotalNetWg)

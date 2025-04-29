@@ -18,6 +18,9 @@ using Microsoft.ReportingServices.ReportProcessing.ReportObjectModel;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using iTextSharp.text.pdf.qrcode;
+using System.Net.Sockets;
+using System.Text;
+using System.Net;
 //using AspNetCore.Reporting.ReportExecutionService;
 
 namespace Ajit_Bakery.Controllers
@@ -27,12 +30,13 @@ namespace Ajit_Bakery.Controllers
     {
         private readonly DataDBContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
-
-        public PackagingsController(DataDBContext context, IWebHostEnvironment webHostEnvironment)
+        private readonly IConfiguration _config;
+        public PackagingsController(DataDBContext context, IWebHostEnvironment webHostEnvironment, IConfiguration config)
         {
             _context = context;
             _webHostEnvironment = webHostEnvironment;
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            _config = config;
         }
 
         public async Task<IActionResult> Index()
@@ -52,7 +56,6 @@ namespace Ajit_Bakery.Controllers
             Packagings_List.Clear();
 
             var list = _context.Packaging
-                //.Where(a => a.DispatchReady_Flag == 0)
                 .Where(a => a.Packaging_Date.Trim() == date.Trim())
                 .OrderByDescending(a => a.Id)
                 .AsEnumerable()  // Fetch data first, then perform grouping in memory
@@ -247,40 +250,24 @@ namespace Ajit_Bakery.Controllers
 
             return Json(new { success = true, data = lstProducts });
         }*/
-     
         public IActionResult GetOutlets(string Production_Id)
         {
             var lstProducts = new List<SelectListItem>();
 
             if (!string.IsNullOrEmpty(Production_Id))
             {
-                // Fetch all outlets where production exists
-                var productionOutlets = _context.ProductionCapture
-                    .Where(pc => pc.Production_Id.Trim() == Production_Id.Trim())
-                    .Select(pc => pc.OutletName.Trim())
+                var productNamesInSaveProduction = _context.SaveProduction
+                    .Select(sp => sp.ProductName)
+                    .Distinct();
+
+                var outlets = _context.ProductionCapture
+                    .Where(pc => productNamesInSaveProduction.Contains(pc.ProductName))
+                    .Select(pc => pc.OutletName)
                     .Distinct()
                     .ToList();
 
-                // Fetch only those outlets where:
-                // - The production exists in `ProductionCapture`
-                // - The product is saved in `SaveProduction`
-                // - `Packaging_Flag == 0` (indicating it's not yet packed)
-                var validOutlets = productionOutlets
-                    .Where(outlet => _context.SaveProduction
-                        .Any(sp => sp.Production_Id.Trim() == Production_Id.Trim() &&
-                                   sp.Packaging_Flag == 0 &&
-                                   _context.ProductionCapture.Any(pc =>
-                                        pc.Production_Id.Trim() == Production_Id.Trim() &&
-                                        pc.OutletName.Trim() == outlet &&
-                                        sp.ProductName.Trim() == pc.ProductName.Trim()
-                                   )
-                        )
-                    )
-                    .Distinct()
-                    .ToList();
 
-                // Convert to dropdown list
-                lstProducts = validOutlets
+                lstProducts = outlets
                     .Select(outlet => new SelectListItem
                     {
                         Value = outlet,
@@ -294,18 +281,9 @@ namespace Ajit_Bakery.Controllers
                     Value = "",
                     Text = "----Select Outlet----"
                 });
-
-                // Debugging
-                Console.WriteLine($"Valid Outlets Count: {validOutlets.Count}");
-                foreach (var outlet in validOutlets)
-                {
-                    Console.WriteLine($"Outlet: {outlet}");
-                }
             }
-
             return Json(new { success = true, data = lstProducts });
         }
-
         private List<SelectListItem> GetBoxNos()
         {
             var lstProducts = _context.BoxMaster
@@ -622,7 +600,6 @@ namespace Ajit_Bakery.Controllers
             return _context.Packaging.Any(e => e.Id == id);
         }
 
-
         //[HttpGet]
         //public IActionResult GetCakeList(string outletName)
         //{
@@ -652,9 +629,9 @@ namespace Ajit_Bakery.Controllers
             {
                 return Json(new { success = false, message = "Invalid outlet!" });
             }
-
+            var date = DateTime.Now.ToString("dd-MM-yyyy");
             var plannedProducts = _context.ProductionCapture
-                .Where(pc => pc.OutletName.Trim() == outletName.Trim())
+                .Where(pc => pc.OutletName.Trim() == outletName.Trim() && pc.Production_Date.Trim() == date.Trim())
                 .GroupBy(pc => new { pc.ProductName, pc.OutletName })
                 .Select(g => new
                 {
@@ -663,35 +640,44 @@ namespace Ajit_Bakery.Controllers
                 })
                 .ToList();
 
-            var producedProducts = _context.SaveProduction
+            //var producedProducts = _context.SaveProduction
+            //                    .Where(sp => sp.SaveProduction_Date.Trim() == date.Trim())
+            //    .GroupBy(sp => sp.ProductName.Trim())
+            //    .Select(g => new
+            //    {
+            //        ProductName = g.Key,
+            //        ProducedQty = g.Sum(sp => sp.Qty) // Total produced quantity
+            //    })
+            //    .ToList();
+
+            // Filter only products where planned quantity > produced quantity
+            //var remainingProducts = plannedProducts
+            //    .Select(pp =>
+            //    {
+            //        var producedQty = producedProducts.FirstOrDefault(sp => sp.ProductName == pp.ProductName)?.ProducedQty ?? 0;
+            //        var remainingQty = /*pp.PlannedQty - */producedQty;
+
+            //        return new
+            //        {
+            //            ProductName = pp.ProductName,
+            //            RemainingQty = remainingQty > 0 ? remainingQty : 0  // Ensure it doesn't go negative
+            //        };
+            //    })
+            //    .Where(p => p.RemainingQty > 0) // Only include products that still have remaining quantity
+            //    .ToList();
+
+            var remainingProducts = _context.SaveProduction
+                                .Where(sp => sp.SaveProduction_Date.Trim() == date.Trim() && sp.Box_No.Trim() == null)
                 .GroupBy(sp => sp.ProductName.Trim())
                 .Select(g => new
                 {
                     ProductName = g.Key,
-                    ProducedQty = g.Sum(sp => sp.Qty) // Total produced quantity
+                    RemainingQty = g.Sum(sp => sp.Qty) // Total produced quantity
                 })
-                .ToList();
-
-            // Filter only products where planned quantity > produced quantity
-            var remainingProducts = plannedProducts
-                .Select(pp =>
-                {
-                    var producedQty = producedProducts.FirstOrDefault(sp => sp.ProductName == pp.ProductName)?.ProducedQty ?? 0;
-                    var remainingQty = /*pp.PlannedQty - */producedQty;
-
-                    return new
-                    {
-                        ProductName = pp.ProductName,
-                        RemainingQty = remainingQty > 0 ? remainingQty : 0  // Ensure it doesn't go negative
-                    };
-                })
-                .Where(p => p.RemainingQty > 0) // Only include products that still have remaining quantity
                 .ToList();
 
             return Json(new { success = true, data = remainingProducts });
         }
-
-
         public async Task<IActionResult> PackagingReceipt(string selectedDate = null)
         {
             DateTime today = DateTime.Now.Date;
@@ -710,8 +696,6 @@ namespace Ajit_Bakery.Controllers
 
             return View(packaging);
         }
-
-
 
         /* public async Task<IActionResult> Reprint(string receiptId)
          {
@@ -831,6 +815,32 @@ namespace Ajit_Bakery.Controllers
                 // Re-generate PDF for selected receipts
                 string pdfUrl = GeneratePackagingSlip(packagingList);
 
+                //Send to lan ip
+                string printstk1 = null;
+                string printprn1 = "";
+                string printerName1 = _config["AppSettings:loc2_printer"];
+                string prnFilePath = string.Empty;
+                try
+                {
+                    var printerIp1 = IPAddress.Parse(printerName1);
+                    var printerPort1 = 9100;
+                    var client1 = new TcpClient();
+                    client1.Connect(printerIp1, printerPort1);
+
+                    byte[] byteArray1 = Encoding.ASCII.GetBytes(pdfUrl);
+                    var stream1 = client1.GetStream();
+                    stream1.Write(byteArray1, 0, byteArray1.Length);
+                    stream1.Flush();
+
+                    client1.Close();
+                    Thread.Sleep(300);
+                }
+                catch (Exception ex)
+                {
+                }
+                //end
+
+
                 return Json(new { success = true, pdfUrl });
             }
             catch (Exception ex)
@@ -838,7 +848,6 @@ namespace Ajit_Bakery.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
-
         private string GeneratePackagingSlip(List<Packaging> packagingList)
         {
             string DATE = DateTime.Now.ToString("dd-MM-yyyy");

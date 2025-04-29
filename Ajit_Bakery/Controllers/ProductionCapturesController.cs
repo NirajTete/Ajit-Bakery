@@ -85,7 +85,7 @@ namespace Ajit_Bakery.Controllers
         {
             var date = DateTime.Now.ToString("dd-MM-yyyy");
             var lstProducts = _context.ProductionCapture
-                .Where(a => a.Status == "Pending" && a.Production_Date.Trim() == date.Trim())
+                .Where(a => a.Production_Date.Trim() == date.Trim())
                 .AsNoTracking()
                 .Select(n => new SelectListItem
                 {
@@ -393,7 +393,7 @@ namespace Ajit_Bakery.Controllers
 
             var date = DateTime.Now.ToString("dd-MM-yyyy");
             //Fetch ordered data from database
-            var list = await _context.ProductionCapture.Where(a=> a.Production_Date.Trim() == date.Trim()).OrderByDescending(a => a.Id ).ToListAsync();
+            var list = await _context.ProductionCapture.Where(a => a.Production_Date.Trim() == date.Trim()).OrderByDescending(a => a.Id ).ToListAsync();
 
             //Get distinct outlet names dynamically from the data
             var allOutlets = list.Select(x => x.OutletName).Distinct().ToList();
@@ -745,5 +745,61 @@ namespace Ajit_Bakery.Controllers
         {
             return _context.ProductionCapture.Any(e => e.Id == id);
         }
+
+        [HttpPost]
+        public IActionResult UpdateProduction([FromBody] List<ProductionUpdateModel> updatedData)
+        {
+            foreach (var item in updatedData)
+            {
+                // Find the record and update the quantity
+                var record = _context.ProductionCapture
+                    .FirstOrDefault(x => x.Production_Id == item.ProductId && x.ProductName == item.ProductName && x.OutletName == item.Outlet);
+
+                if (record != null)
+                {
+                    record.Status = "Pending";
+                    record.TotalQty = Convert.ToInt32(item.NewQty);
+                    _context.ProductionCapture.Update(record);
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    //ADDON
+                    var currentuser = HttpContext.User;
+                    string username = currentuser.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
+
+                    var maxid = _context.ProductionCapture.Any() ? _context.ProductionCapture.Max(e => e.Id) + 0 : 0;
+                    maxid = maxid + 1;
+                    ProductionCapture production = new ProductionCapture
+                    {
+                        Id = maxid,
+                        Production_Id = item.ProductId,
+                        ProductName = item.ProductName,
+                        Unit = "GMS",
+                        OutletName = item.Outlet, // Match column index with outlet name
+                        TotalQty = Convert.ToInt32(item.NewQty),
+                        Production_Date = DateTime.Now.ToString("dd-MM-yyyy"),
+                        Production_Time = DateTime.Now.ToString("HH:mm"),
+                        Status = "Pending",
+                        User = username ?? "User",
+                    };
+                    //ProductionCapture_list.Add(production);
+                    _context.ProductionCapture.Add(production);
+                    _context.SaveChanges();
+                    //ENDED
+                }
+            }
+
+            return Json(new { status = "success" });
+        }
+        public class ProductionUpdateModel
+        {
+            public string ProductId { get; set; }
+            public string ProductName { get; set; }
+            public string Outlet { get; set; }
+            public decimal OldQty { get; set; }
+            public decimal NewQty { get; set; }
+        }
+
     }
 }

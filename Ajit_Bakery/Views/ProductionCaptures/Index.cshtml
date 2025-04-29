@@ -112,7 +112,8 @@
                             <th class="text-center">@outlet</th> <!-- Dynamically added outlet columns -->  
                         }
                         <th class="text-center noExport">Status</th>
-                        <th class="text-center">Date</th>
+                        <th style="width:150px;" class="text-center">Date</th>
+                        <th class="text-center">Action</th>
                     </tr>
                 </thead>
                 <tbody class="small text-center">
@@ -129,10 +130,16 @@
                                 @(isFirstOccurrence ? item.Production_Id : "")
                             </td>
                             <td>@item.ProductName</td>
-                            <td class="text-center">@item.TotalQty</td>
+                            <td class="text-center table-success">@item.TotalQty</td>
+                           @*  @foreach (var outlet in outlets)
+                            {
+                                <td class="text-center  table-warning">
+                                    @(item.OutletData.ContainsKey(outlet) ? item.OutletData[outlet].ToString() : "")
+                                </td>
+                            } *@
                             @foreach (var outlet in outlets)
                             {
-                                <td class="text-center">
+                                <td class="text-center table-warning outlet-cell" data-outlet="@outlet">
                                     @(item.OutletData.ContainsKey(outlet) ? item.OutletData[outlet].ToString() : "")
                                 </td>
                             }
@@ -146,7 +153,12 @@
                                     <span class="badge bg-success fs-15 text-dark">@(item.Status)</span>
                                 }
                             </td>
-                            <td class="text-center">@item.Production_Date</td>
+                            <td class="text-center" >@item.Production_Date</td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-primary edit-btn">Edit</button>
+                                <button type="button" class="btn btn-sm btn-success save-btn d-none">Save</button>
+                            </td>
+
                         </tr>
 
                         prevProductionId = item.Production_Id;
@@ -231,6 +243,129 @@
         }
     </script>
  *@
+    <script>
+        $(document).ready(function () {
+            // Edit button click
+            $('.edit-btn').click(function () {
+                var row = $(this).closest('tr');
+                row.find('.outlet-cell').each(function () {
+                    var currentValue = $(this).text().trim();
+                    var value = currentValue === "" ? 0 : parseFloat(currentValue);
+                    $(this).html(
+                        '<input type="number"  style="width:100px;"  class="form-control form-control-sm outlet-input" value="' + value + '" min="' + value + '" />'
+                    );
+                });
+                $(this).addClass('d-none');
+                row.find('.save-btn').removeClass('d-none');
+            });
+
+            // Save button click
+            // $('.save-btn').click(function () {
+            //     var row = $(this).closest('tr');
+            //     var isValid = true;
+
+            //     row.find('.outlet-cell').each(function () {
+            //         var input = $(this).find('.outlet-input');
+            //         var originalMin = parseFloat(input.attr('min'));
+            //         var enteredVal = parseFloat(input.val());
+
+            //         if (enteredVal < originalMin) {
+            //             alert('Value cannot be less than ' + originalMin);
+            //             isValid = false;
+            //             return false; // break each()
+            //         }
+            //     });
+
+            //     if (!isValid) return;
+
+            //     // Save valid values
+            //     row.find('.outlet-cell').each(function () {
+            //         var input = $(this).find('.outlet-input');
+            //         var value = input.val();
+            //         $(this).html(value);
+            //     });
+
+            //     $(this).addClass('d-none');
+            //     row.find('.edit-btn').removeClass('d-none');
+
+            //     // Optional: Collect data and send via AJAX
+            // });
+        });
+        $('.save-btn').click(function () {
+            var row = $(this).closest('tr');
+            var updatedData = [];
+
+            row.find('.outlet-cell').each(function () {
+                var input = $(this).find('.outlet-input');
+                var outletName = $(this).data('outlet');
+                var oldValue = parseFloat(input.attr('min'));
+                var newValue = parseFloat(input.val());
+
+                if (newValue !== oldValue) {
+                    updatedData.push({
+                        ProductId: row.find('td:first').text().trim(), // Assuming first td is Production_Id
+                        ProductName: row.find('td:eq(1)').text().trim(), // 2nd column ProductName
+                        Outlet: outletName,
+                        OldQty: oldValue,
+                        NewQty: newValue
+                    });
+                }
+            });
+
+            if (updatedData.length > 0) {
+                // Call AJAX
+                $.ajax({
+                    url: '/ProductionCaptures/UpdateProduction',
+                    type: 'POST',
+                    data: JSON.stringify(updatedData),
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (response) {
+                        // Swal.fire('Success', 'Production quantities updated!', 'success');
+                        Swal.fire('Success', 'Production quantities updated!', 'success')
+                            .then(() => {
+                                location.reload(); // Reload the page after user closes the success alert
+                            });
+                    },
+                    error: function (xhr) {
+                        Swal.fire('Error', 'Failed to update!', 'error');
+                    }
+                });
+            } else {
+                Swal.fire('Info', 'No changes detected!', 'info');
+            }
+        });
+
+    </script>
+
+    <script>
+        // $(document).ready(function () {
+        //     // Edit button click
+        //     $('.edit-btn').click(function () {
+        //         var row = $(this).closest('tr');
+        //         row.find('.outlet-cell').each(function () {
+        //             var text = $(this).text().trim();
+        //             $(this).html('<input style="width:100px;" type="number" class="form-control form-control-sm outlet-input" value="' + text + '" />');
+        //         });
+        //         $(this).addClass('d-none');
+        //         row.find('.save-btn').removeClass('d-none');
+        //     });
+
+        //     // Save button click
+        //     $('.save-btn').click(function () {
+        //         var row = $(this).closest('tr');
+        //         row.find('.outlet-cell').each(function () {
+        //             var input = $(this).find('.outlet-input');
+        //             var value = input.val();
+        //             $(this).html(value);
+        //         });
+        //         $(this).addClass('d-none');
+        //         row.find('.edit-btn').removeClass('d-none');
+
+        //         // Optional: collect and send updated values via AJAX
+        //         // var updatedData = ...
+        //     });
+        // });
+    </script>
 
     <script>
         $(document).ready(function () {

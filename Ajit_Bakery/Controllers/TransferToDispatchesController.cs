@@ -318,9 +318,10 @@ namespace Ajit_Bakery.Controllers
         public async Task<IActionResult> Index()
         {
             var date = DateTime.Now.ToString("dd-MM-yyyy");
+          
             Packagings_List.Clear();
             var list = _context.Packaging
-                .Where(a => a.DispatchReady_Flag == 1 && a.Packaging_Date.Trim() == date.Trim())
+                .Where(a => a.DispatchReady_Flag == 1 && a.Packaging_Date.Trim() == date.Trim())/*a.Packaging_Date.Trim() == date.Trim()*/
                 .OrderByDescending(a=>a.Id) // Order by Id to maintain the order of insertion
                 .AsEnumerable()  // Fetch data first, then perform grouping in memory
                 .GroupBy(a => new
@@ -423,7 +424,8 @@ namespace Ajit_Bakery.Controllers
         {
             var lstProducts = new List<SelectListItem>();
             var currentdate = DateTime.Now.ToString("dd-MM-yyyy");
-            lstProducts = _context.ProductionCapture.Where(a => a.Status == "Pending" && a.Production_Date.Trim() == currentdate.Trim()).AsNoTracking().Select(n =>
+            var data = _context.ProductionCapture.Where(a => a.Status.Trim() == "Pending" /*&& a.Production_Date.Trim() == currentdate.Trim()*/).ToList();
+            lstProducts = _context.ProductionCapture.Where(a => a.Status.Trim() == "Pending" /*&& a.Production_Date.Trim() == currentdate.Trim()*/).AsNoTracking().Select(n =>
             new SelectListItem
             {
                 Value = n.Production_Id,

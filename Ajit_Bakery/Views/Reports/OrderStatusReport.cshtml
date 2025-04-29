@@ -14,27 +14,105 @@
     <div class="card-header bg-dark text-white py-2">
         <div class="d-flex align-items-baseline">
             <a asp-action="Index" asp-controller="Home" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
-            <h4 class="mx-auto text-white text-2xl font-semibold"> Order Status Report </h4>
-          
+            <h4 class="mx-auto text-white text-2xl font-semibold"> Production Plan </h4>
+            <a asp-action="Create" class="btn btn-success btn-sm text-white m-1">
+                <i class="fas fa-plus-square"></i> Upload Excel
+            </a>
+            <a asp-action="CreateManually" class="btn btn-success btn-sm text-white  m-1">
+                <i class="fas fa-plus-square"></i> Manually Add
+            </a>
         </div>
     </div>
     <div class="card-body mt-4">
         <div class="table table-responsive">
-            
+            @*  <table id="ProductionCapture" class="table table-striped table-bordered" style="width:100%">
+            <thead class="thead-light">
+            <tr class="text-center small">
+            <th class="text-center">Production Odr.Id.</th>
+            <th class="text-center">Date</th>
+            <th class="text-center">Product Name</th>
+            <th class="text-center">Total Production Qty</th>
+            @foreach (var outlet in outlets)
+            {
+            <th class="text-center">@outlet</th> <!-- Dynamically added outlet columns -->
+            }
+            </tr>
+            </thead>
+            <tbody class="small text-center">
+            @foreach (var item in Model)
+            {
+            <tr>
+            <td class="text-center">@item.Production_Id</td>
+            <td class="text-center">@item.Production_Date</td>
+            <td>@item.ProductName</td>
+            <td class="text-center">@item.TotalQty</td>
+            @foreach (var outlet in outlets)
+            {
+            <td class="text-center">
+            @(item.OutletData.ContainsKey(outlet) ? item.OutletData[outlet].ToString() : "")
+            </td> <!-- Dynamically added outlet quantities -->
+            }
+            </tr>
+            }
+            </tbody>
+            </table>  *@
+
+            @*   <table id="ProductionCapture" class="table table-striped table-bordered" style="width:100%">
+            <thead class="thead-light">
+            <tr class="text-center small">
+            <th class="text-center">Production Odr. Id.</th>
+            <th class="text-center">Product Name</th>
+            <th class="text-center">Total Production Qty</th>
+            @foreach (var outlet in outlets)
+            {
+            <th class="text-center">@outlet</th> <!-- Dynamically added outlet columns -->
+            }
+            <th class="text-center">Date</th>
+
+            </tr>
+            </thead>
+            <tbody class="small text-center">
+            @{
+            string? prevProductionId = null;
+            }
+
+            @foreach (var item in Model)
+            {
+            bool isFirstOccurrence = prevProductionId != item.Production_Id;
+            <tr>
+            <td class="text-center production-id">
+            @(isFirstOccurrence ? item.Production_Id.ToString() : "")
+            </td>
+            <td>@item.ProductName</td>
+            <td class="text-center">@item.TotalQty</td>
+            @foreach (var outlet in outlets)
+            {
+            <td class="text-center">
+            @(item.OutletData.ContainsKey(outlet) ? item.OutletData[outlet].ToString() : "")
+            </td>
+            }
+            <td class="text-center">@item.Production_Date</td>
+
+            </tr>
+
+            prevProductionId = item.Production_Id;
+            }
+            </tbody>
+            </table>
+            *@
 
             <table id="ProductionCapture" class="table table-striped table-bordered" style="width:100%">
                 <thead class="thead-light">
                     <tr class="text-center small">
-                        <th class="text-center">Production Date</th>
                         <th class="text-center">Production Odr. Id.</th>
-                        <th class="text-center">Item Name</th>
+                        <th class="text-center">Product Name</th>
                         <th class="text-center">Total Production Qty <b>(@ViewBag.totat_Qty)</b></th>
                         @foreach (var outlet in outlets)
                         {
                             <th class="text-center">@outlet</th> <!-- Dynamically added outlet columns -->
                         }
-                        <th class="text-center noExport">Status Found</th>
-                        
+                        <th class="text-center noExport">Status</th>
+                        <th class="text-center">Date</th>
                     </tr>
                 </thead>
                 <tbody class="small text-center">
@@ -47,15 +125,14 @@
                         bool isFirstOccurrence = prevProductionId != item.Production_Id;
 
                         <tr>
-                            <td class="text-center">@item.Production_Date</td>
                             <td style="font-weight:600;color:rebeccapurple" class="text-center">
                                 @(isFirstOccurrence ? item.Production_Id : "")
                             </td>
                             <td>@item.ProductName</td>
-                            <td class="text-center">@item.TotalQty</td>
+                            <td class="text-center table-success">@item.TotalQty</td>
                             @foreach (var outlet in outlets)
                             {
-                                <td class="text-center">
+                                <td class="text-center  table-warning">
                                     @(item.OutletData.ContainsKey(outlet) ? item.OutletData[outlet].ToString() : "")
                                 </td>
                             }
@@ -69,7 +146,7 @@
                                     <span class="badge bg-success fs-15 text-dark">@(item.Status)</span>
                                 }
                             </td>
-                            
+                            <td class="text-center">@item.Production_Date</td>
                         </tr>
 
                         prevProductionId = item.Production_Id;

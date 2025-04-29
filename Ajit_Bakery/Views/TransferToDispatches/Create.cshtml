@@ -111,15 +111,17 @@
                         if (result.isConfirmed) {
                             let formData = $(this).serialize(); // Serialize form data
                             console.log("formData : " + formData);
-                            $('#spinner').show();
+                            // $('#spinner').show();
+                            $("#loadingIndicator").show();
                             $.ajax({
                                 type: "POST",
                                 url: "@Url.Action("Create", "TransferToDispatches")",
                                 data: formData,
                                 success: function (response) {
+                                    $("#loadingIndicator").hide();
                                     console.log("response : " + response);
                                     if (response.success) {
-                                        $('#spinner').hide();
+                                        // $('#spinner').hide();
                                         Swal.fire({
                                             icon: 'success',
                                             title: 'Success!',
@@ -130,7 +132,7 @@
                                         });
                                     }
                                     else{
-                                        $('#spinner').hide();
+                                        // $('#spinner').hide();
                                         Swal.fire({
                                             icon: 'warning',
                                             title: 'Warning!',
@@ -144,7 +146,8 @@
                                     $("#TransferToDispatch")[0].reset(); // Reset form
                                 },
                                 error: function () {
-                                    $('#spinner').hide();
+                                    $("#loadingIndicator").hide();
+                                    // $('#spinner').hide();
                                     Swal.fire({
                                         icon: 'error',
                                         title: 'Error!',
@@ -174,12 +177,13 @@
 
                         console.log("boxno:", boxno);
                         console.log("receiptno:", receiptno);
-
+                        $("#loadingIndicator").show();
                         $.ajax({
                             url: '/TransferToDispatches/PickedData',
                             type: 'POST',
                             data: { boxno: boxno, receiptno: receiptno },
                             success: function (response) {
+                                $("#loadingIndicator").hide();
                                 console.log("Response:", response);
                             // {
                             // "production_Id": "PID250361",
@@ -222,6 +226,7 @@
                                 }
                             },
                             error: function (error) {
+                                $("#loadingIndicator").hide();
                                 console.error('Error:', error);
                                 Swal.fire({ icon: 'error', title: 'Error', text: 'Error: ' + error });
                             }

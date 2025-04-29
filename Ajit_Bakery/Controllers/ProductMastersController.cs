@@ -172,6 +172,7 @@ namespace Ajit_Bakery.Controllers
             {
                 foreach (var product in list)
                 {
+                    //var UNIT = product.Unitqty * 1000;
                     if (product != null)
                     {
                         int cgst = 0, sgst = 0, igst = 0;
@@ -181,7 +182,7 @@ namespace Ajit_Bakery.Controllers
                             name = product.ProductCode?.Trim(),
                             alias = product.ProductName?.Trim(),
                             GUID = "",
-                            unit = "Pcs",
+                            unit = "KGS",
                             //unit = product.Uom?.Trim(),
                             category = product.Category.Trim(),
                             openingrate = 0,
@@ -529,7 +530,7 @@ namespace Ajit_Bakery.Controllers
                                     alias = product.ProductName.Trim(),
                                     GUID = "",
                                     //unit = product.Uom.Trim(),
-                                    unit = "Pcs",
+                                    unit = "KGS",
                                     category = product.Category.Trim(),
                                     openingrate = 0,
                                     openingqnty = bal.Trim(),
@@ -558,7 +559,7 @@ namespace Ajit_Bakery.Controllers
                                 alias = product.ProductName.Trim(),
                                 GUID = "",
                                 //unit = product.Uom.Trim(),
-                                unit = "Pcs",
+                                unit = "KGS",
                                 category = product.Category.Trim(),
                                 openingrate = 0,
                                 openingqnty = bal.Trim(),

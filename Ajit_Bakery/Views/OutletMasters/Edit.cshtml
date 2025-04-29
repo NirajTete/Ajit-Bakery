@@ -76,7 +76,7 @@
         $(document).ready(function () {
             $("#productForm").submit(function (event) {
                 event.preventDefault(); // Prevent default form submission
-
+                $("#loadingIndicator").show();
                 var formData = $(this).serialize(); // Serialize form data
                 console.log("formData : " + formData);
                 $.ajax({
@@ -84,6 +84,7 @@
                     url: "@Url.Action("Edit", "OutletMasters")", // Replace with your controller name
                     data: formData,
                     success: function (response) {
+                        $("#loadingIndicator").hide();
                         if (response.success) {
                             Swal.fire({
                                 icon: 'success',
@@ -104,6 +105,7 @@
                         }
                     },
                     error: function () {
+                        $("#loadingIndicator").hide();
                         Swal.fire({
                             icon: 'error',
                             title: 'Error!',

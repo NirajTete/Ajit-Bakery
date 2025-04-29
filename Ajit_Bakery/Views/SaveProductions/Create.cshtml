@@ -9,8 +9,8 @@
         <div class="d-flex align-items-baseline">
             <a asp-action="Index" asp-controller="SaveProductions" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
             <h4 class="mx-auto text-white text-2xl font-semibold"> Save Production </h4>
-           @*  <a asp-action="Create" class="btn btn-success btn-sm text-white">
-                <i class="fas fa-plus-square"></i> Save Production
+            @*  <a asp-action="Create" class="btn btn-success btn-sm text-white">
+            <i class="fas fa-plus-square"></i> Save Production
             </a> *@
         </div>
     </div>
@@ -47,7 +47,7 @@
                 </div>
                 <div class="accordion" id="tableAccordion">
                     <div class="accordion-item">
-                        <h6 class="accordion-header p-2" id="headingOne">
+                        <h6 class="accordion-header p-2" id="headingOne" style="font-weight:600">
                             Production Detailes
                         </h6>
                         <div id="TableDataId" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#tableAccordion">
@@ -56,7 +56,6 @@
                                 <table id="tableData" class="table table-bordered">
                                     <thead class="thead-dark">
                                         <tr>
-                                            <th>Outlet Name</th>
                                             <th>Product Name</th>
                                             <th>Range</th>
                                             <th>Total Qty</th>
@@ -75,22 +74,22 @@
                 </div>
 
                 @*                 <div class="row p-3" style="display:none" id="TableDataId">
-                    <table id="tableData" class="table table-bordered mt-3">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th>Outlet Name</th>
-                                <th>Product Name</th>
-                                <th>Range</th>
-                                <th>Total Qty</th>
-                                <th>Pending Qty</th>
-                                <th>MRP</th>
-                                <th>Selling</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                <table id="tableData" class="table table-bordered mt-3">
+                <thead class="thead-dark">
+                <tr>
+                <th>Outlet Name</th>
+                <th>Product Name</th>
+                <th>Range</th>
+                <th>Total Qty</th>
+                <th>Pending Qty</th>
+                <th>MRP</th>
+                <th>Selling</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+                </table>
                 </div>
- *@                <div class="row mt-2">
+                *@                <div class="row mt-2">
                     <div class="form-group col-sm-6">
                         <label asp-for="ProductName" class="control-label fw-bold small fw-bold small"></label>
                         <select asp-for="ProductName" style="font-weight:600; font-size:18px;" class="form-control text-uppercase" id="ProductName" required>
@@ -102,8 +101,8 @@
                         </select>
 
                         @*    <select asp-for="DialCode" id="DialCode" required class="form-control text-uppercase" onchange="GetDialCodes()" style="font-size:18px;color: green; font-weight: 650;text-transform: uppercase">
-                            @* <option>KGS</option> *@
-                        @* <option>GMS</option> 
+                        @* <option>KGS</option> *@
+                        @* <option>GMS</option>
                         </select> *@
 
                     </div>
@@ -132,11 +131,11 @@
                     </div>
                     <div class="form-group col-sm-4">
                         <label class="control-label fw-bold small">&nbsp;</label> <!-- Empty label for spacing -->
-                        <button type="button" class="btn btn-info form-control " onclick="displayNetwt()">Get Wt</button>
+                        <button type="button" class="btn btn-info form-control " onclick="displayNetwt()" style="font-weight:600">Get Wt</button>
                     </div>
                 </div>
                 @* <div class="row">
-                    <button class="btn btn-info btn-sm col-sm-2" onclick="displayNetwt()">Get Net</button>
+                <button class="btn btn-info btn-sm col-sm-2" onclick="displayNetwt()">Get Net</button>
                 </div> *@ @*style="display:none" id="Netwt"*@
                 <div class="row" style="display:none" id="Partproduct">
                     <div class="form-group col-sm-1" style="display:none">
@@ -236,7 +235,7 @@
     }
     <script>
         function roundDownToNearest25(value) {
-            console.log("value :"+ value);
+            console.log("value :" + value);
             if (!isNaN(value)) {
                 var newvalue = Math.floor(value / 25) * 25
                 console.log("newvalue : " + newvalue);
@@ -291,7 +290,7 @@
                             return;
                         }
                     }
-                    else{
+                    else {
                         Swal.fire({
                             icon: 'warning',
                             title: 'Warning!',
@@ -381,7 +380,7 @@
                 }
             });
         }
-        function displayNetwt(){
+        function displayNetwt() {
             event.preventDefault();
             $("#Partproduct").show();
         }
@@ -414,7 +413,7 @@
                             $("#TotalNetWg_Uom").val("");
 
                             // Example: Update fields based on response
-                            if(response.data == 0){
+                            if (response.data == 0) {
                                 Swal.fire({
                                     icon: "warning",
                                     title: "Production Already Completed",
@@ -425,7 +424,7 @@
                                 $("#count").val("");
                                 $("#ProductName").val("");
                             }
-                            else{
+                            else {
                                 // $("#count").val(response.data);
                                 $("#count").val(1);
                                 // 🔹 Populate the DialCode Dropdown
@@ -439,12 +438,12 @@
                                 //     dialDropdown.append('<option value="' + value + '">' + value + '</option>');
                                 // });
 
-                              $('#DialCode').empty(); // Clears the contents of the element with the ID 'loadTxt'
-                              $('#DialCode').append('<option value="">Select Dial</option>');
-                              $.each(response.dialCodes, function (index, item) { // Iterates over each item in the 'response' array
-                                  console.log(item);
-                                  $('#DialCode').append($('<option>').text(item).val(item)); // Appends an <option> element to the element with the ID 'loadTxt', setting its text and value attributes based on the properties of the 'item' object
-                              });
+                                $('#DialCode').empty(); // Clears the contents of the element with the ID 'loadTxt'
+                                $('#DialCode').append('<option value="">Select Dial</option>');
+                                $.each(response.dialCodes, function (index, item) { // Iterates over each item in the 'response' array
+                                    console.log(item);
+                                    $('#DialCode').append($('<option>').text(item).val(item)); // Appends an <option> element to the element with the ID 'loadTxt', setting its text and value attributes based on the properties of the 'item' object
+                                });
                             }
                         } else {
                             alert("Product details not found.");
@@ -495,14 +494,13 @@
 
                         $.each(response.tableData, function (index, item) {
                             var row = `<tr>
-                            <td>${item.outletName}</td>
-                            <td>${item.productName}</td>
-                            <td>${item.basicUnit}</td>
-                            <td>${item.totalQty}</td>
-                            <td>${item.pendingQty}</td>
-                            <td>${item.mrp.toFixed(2)}</td>
-                            <td>${item.selling.toFixed(2)}</td>
-                        </tr>`;
+                                    <td>${item.productName}</td>
+                                    <td>${item.basicUnit}</td>
+                                            <td class="text-center table-success">${item.totalQty}</td>
+                                            <td class="text-center table-warning">${item.pendingQty}</td>
+                                    <td>${item.mrp.toFixed(2)}</td>
+                                    <td>${item.selling.toFixed(2)}</td>
+                                </tr>`;
                             $tableBody.append(row);
                         });
 
@@ -600,14 +598,16 @@
                     let formData = $(this).serialize() + "&generatesticker=" + generateStickerValue;
 
                     console.log("formData : " + formData);
-                    $('#spinner').show();
+                    // $('#spinner').show();
+                    $("#loadingIndicator").show();
 
                     $.ajax({
                         type: "POST",
                         url: "@Url.Action("Create", "SaveProductions")", // Replace with actual URL
                         data: formData,
                         success: function (response) {
-                            $('#spinner').hide();
+                            // $('#spinner').hide();
+                            $("#loadingIndicator").hide();
                             if (response.success) {
                                 Swal.fire({
                                     icon: 'success',
@@ -627,7 +627,8 @@
                             }
                         },
                         error: function () {
-                            $('#spinner').hide();
+                            $("#loadingIndicator").hide();
+                            // $('#spinner').hide();
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error!',
@@ -647,10 +648,10 @@
             let totalNetWeight = (productGrossWg - dialTierWg) / 1000;
 
             // Set the result in TotalNetWg
-            document.getElementById("TotalNetWg").value = totalNetWeight.toFixed(3) ; // 3 decimal places
+            document.getElementById("TotalNetWg").value = totalNetWeight.toFixed(3); // 3 decimal places
             document.getElementById("TotalNetWg_Uom").value = "KGS"; // 3 decimal places
         }
-        function OnDialWgChange(){
+        function OnDialWgChange() {
             var DialTierWg = $("#DialTierWg").val();
             var DialTierWg_Uom = $("#DialTierWg_Uom").val();
 
@@ -676,7 +677,7 @@
             console.log(DialTierWg_Uom);
             $("#DialTierWgValue").val(DialTierWg + " " + DialTierWg_Uom);
         }
-        function Refresh(){
+        function Refresh() {
             OnUomChange();
             calculateTotalNetWeight();
             var uom = $("#ProductGrossWg_Uom").val();
@@ -800,4 +801,3 @@
         }
     </script>
 }
-
