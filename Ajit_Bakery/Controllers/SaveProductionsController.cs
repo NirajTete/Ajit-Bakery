@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 using DocumentFormat.OpenXml.ExtendedProperties;
 using DocumentFormat.OpenXml.Office.CustomUI;
 using System.Security.Claims;
+using Ajit_Bakery.Services;
 
 namespace Ajit_Bakery.Controllers
 {
@@ -26,12 +27,14 @@ namespace Ajit_Bakery.Controllers
         private readonly DataDBContext _context;
         private IWebHostEnvironment _webHostEnvironment;
         private readonly IConfiguration _config;
+        private readonly WeighingScaleService _scaleService;
 
-        public SaveProductionsController(DataDBContext context, IWebHostEnvironment webHostEnvironment, IConfiguration config)
+        public SaveProductionsController(DataDBContext context, IWebHostEnvironment webHostEnvironment, IConfiguration config, WeighingScaleService scaleService)
         {
             _context = context;
             _config = config;
             _webHostEnvironment = webHostEnvironment;
+            _scaleService = scaleService;
         }
 
         public IActionResult checkvalue(string Production_Id, string productName, double TotalNetWg, int DialTierWg, double ProductGrossWg)
@@ -791,6 +794,13 @@ namespace Ajit_Bakery.Controllers
             await Task.CompletedTask;
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> GetWeight()
+        {
+            string weight = await _scaleService.ReadWeightAsync();
+            return Json(new { weight });
+        }
 
     }
 
