@@ -1,0 +1,17 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+   "ConnectionStrings": {
+     "ContextDBConnection": "Server=localhost;Port=5432;Database=AjitBakery;User ID=postgres;Password=system;"
+  },
+  "AppSettings": {
+    "loc1_printer": "192.168.1.196",
+    "BaseUrl": "http://192.168.1.48:4203/api",
+    "CompanyName": "Ajit_Bakery"
+  }
+}

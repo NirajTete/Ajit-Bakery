@@ -103,6 +103,7 @@
                     }
                 },
                 error: function (xhr, status, error) {
+                    $("#loadingIndicator").hide();
                     // Handle error
                     // button.innerHTML = '<i class="fas fa-sync-alt"></i> Tally Update';
                     // button.disabled = false;

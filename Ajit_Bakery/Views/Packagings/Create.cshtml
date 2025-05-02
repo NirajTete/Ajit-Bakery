@@ -290,12 +290,14 @@
                     if (result.isConfirmed) {
                         let formData = $(this).serialize(); // Serialize form data
                         console.log("formData : " + formData);
-                        $('#spinner').show();
+                        // $('#spinner').show();
+                        $("#loadingIndicator").show();
                         $.ajax({
                             type: "POST",
                             url: "@Url.Action("Create", "Packagings")",
                             data: formData,
                             success: function (response) {
+                                $("#loadingIndicator").hide();
                                 if (response.status == "success") {
                                     window.open(response.pdfUrl, '_blank');
                                     //window.location.href = response.redirectToUrl;
@@ -314,6 +316,7 @@
                                     });
                                 }
                                 else if (response.status == "error") {
+                                    // $("#loadingIndicator").hide();
                                     $('#spinner').hide();
                                     Swal.fire({
                                         icon: 'error',
@@ -325,6 +328,7 @@
                                 $("#Packaging")[0].reset(); // Reset form
                             },
                             error: function () {
+                                $("#loadingIndicator").hide();
                                 $('#spinner').hide();
                                 Swal.fire({
                                     icon: 'error',
@@ -341,11 +345,13 @@
         function OnOutletChange() {
             var Production_Id = $("#Production_Id").val();
             var Outlet_Name = $("#Outlet_Name").val();
+            $("#loadingIndicator").show();
             $.ajax({
                 type: "POST",
                 url: "@Url.Action("GetOutlet_NameData", "Packagings")", // Replace with your controller
                 data: { Production_Id: Production_Id, Outlet_Name: Outlet_Name },
                 success: function (response) {
+                    $("#loadingIndicator").hide();
                     console.log("Response Data: ", response);
                     if (response.success) {
                         console.log("Response Data: ", response);
@@ -364,6 +370,7 @@
                     }
                 },
                 error: function () {
+                    $("#loadingIndicator").hide();
                     Swal.fire({
                         icon: 'error',
                         title: 'Error!',
@@ -375,11 +382,13 @@
         }
         function OnProduction_IdChange() {
             var Production_Id = $("#Production_Id").val();
+            $("#loadingIndicator").show();
             $.ajax({
                 type: "POST",
                 url: "@Url.Action("GetOutlets", "Packagings")", // Replace with your controller
                 data: { Production_Id: Production_Id },
                 success: function (response) {
+                    $("#loadingIndicator").hide();
                     if (response.success) {
                         console.log("response.data : " + JSON.stringify(response.data));
                         var $dropdown = $("#Outlet_Name");  // Get the select element
@@ -406,6 +415,7 @@
                     }
                 },
                 error: function () {
+                    $("#loadingIndicator").hide();
                     Swal.fire({
                         icon: 'error',
                         title: 'Error!',
@@ -457,6 +467,7 @@
                         console.log("MRP:", mrp);
 
                         // ✅ Only allow processing if Box_No starts with "STB"
+                        $("#loadingIndicator").show();
                         $.ajax({
                             url: '/Packagings/PickedData',
                             type: 'POST',
@@ -470,6 +481,7 @@
                                 outletName: outletName
                             },
                             success: function (response) {
+                                $("#loadingIndicator").hide();
                                 console.log("Response:", response);
                                 console.log("Response:", JSON.stringify(response));
                                 if (response.success) {
@@ -511,6 +523,7 @@
                                 // OnOutletChange();
                             },
                             error: function (error) {
+                                $("#loadingIndicator").hide();
                                 console.error('Error:', error);
                                 Swal.fire({ icon: 'error', title: 'Error', text: 'Error: ' + error });
                             }

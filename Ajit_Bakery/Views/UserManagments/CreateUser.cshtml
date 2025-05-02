@@ -107,12 +107,14 @@
 
         function dropdownChanged1() {
             var value1 = document.getElementById("uomname").value.trim();
+            $("#loadingIndicator").show();
             $.ajax({
                 url: '/uom/uomnameCheck',
                 type: 'GET',
                 data: { selectedValue: value1 },
                 success: function (data) {
                     console.log("data: ", data);
+                    $("#loadingIndicator").hide();
                     if (data.success) {
                         console.log(" done");
                         // Update the textbox value with the generated supplier code
@@ -136,6 +138,7 @@
                     }
                 },
                 error: function (xhr, status, error) {
+                    $("#loadingIndicator").hide();
                     // Handle the error response
                     console.log("An error occurred while executing the action: ", error);
                 }
@@ -143,11 +146,13 @@
         }
         function dropdownChanged2() {
             var value1 = document.getElementById("uomcode").value.trim();
+            $("#loadingIndicator").show();
             $.ajax({
                 url: '/uom/uomcodeCheck',
                 type: 'GET',
                 data: { selectedValue: value1 },
                 success: function (data) {
+                    $("#loadingIndicator").hide();
                     console.log("data: ", data);
                     if (data.success) {
                         console.log("data : " + data);
@@ -165,6 +170,7 @@
                     }
                 },
                 error: function (xhr, status, error) {
+                    $("#loadingIndicator").hide();
                     // Handle the error response
                     console.log("An error occurred while executing the action: ", error);
                 }

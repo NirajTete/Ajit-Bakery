@@ -54,6 +54,8 @@ namespace Ajit_Bakery.Models.Tally_Models
         public string hsn { get; set; }
         public string uom { get; set; }
         public int qty { get; set; }
+        [NotMapped]
+        public double UNIT { get; set; }
      
     }
 }

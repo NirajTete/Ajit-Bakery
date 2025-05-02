@@ -17,9 +17,13 @@
             <form asp-action="Create" id="TransferToDispatch">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="row">
-                    <div class="form-group col-sm-3 ">
+                    <div class="form-group col-sm-2 ">
                         <label asp-for="VoucherType" class="control-label fw-bold small">Voucher Type</label>
                         <select class="form-control" asp-for="VoucherType" id="EntryType" asp-items="@ViewBag.GetVoucherType"></select>
+                    </div>
+                    <div class="form-group col-sm-2 ">
+                        <label asp-for="LedgerType" class="control-label fw-bold small">Ledger Type</label>
+                        <select class="form-control" asp-for="LedgerType" id="LedgerType" asp-items="@ViewBag.GetLedgerType"></select>
                     </div>
                     <div class="form-group col-sm-3">
                         <label asp-for="ProductionId" class="control-label fw-bold small"></label>
@@ -28,7 +32,7 @@
                             @* style="font-weight:600;font-size:16px;" *@
                         </select>
                     </div>
-                    <div class="form-group col-sm-4">
+                    <div class="form-group col-sm-3">
                         <label asp-for="OutletName" class="control-label fw-bold small">Outlet Name</label>
                         <select asp-for="OutletName" id="OutletName" style="font-weight:600;font-size:16px;" class="form-control text-uppercase" onchange="OnDCNO_Change()">
                         </select>
@@ -59,7 +63,7 @@
                                             <th class="text-center">Product Name</th>
                                             <th class="text-center">Ord. Qty</th>
                                             <th class="text-center">Dispatch Ready Qty</th>
-                                            <th class="text-center">Pending Qty</th>
+                                            @* <th class="text-center">Pending Qty</th> *@
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -174,11 +178,13 @@
     <script>
         function OnProduction_IdChange() {
             var Production_Id = $("#Production_Id").val();
+            $("#loadingIndicator").show();
             $.ajax({
                 type: "POST",
                 url: "@Url.Action("GetOutlets", "Dispatches")", // Replace with your controller
                 data: { Production_Id: Production_Id },
                 success: function (response) {
+                    $("#loadingIndicator").hide();
                     if (response.success) {
                         console.log("response : " + JSON.stringify(response));
                         console.log("response.TableData : " + JSON.stringify(response.TableData));
@@ -193,10 +199,11 @@
                                             <td class="text-center">${item.productName}</td>
                                             <td style="color:blue;font-weight:600;font-size:16px;" class="text-center">${item.totalQty}</td>
                                             <td style="color:green;font-weight:600;font-size:16px;" class="text-center">${item.dispatchReady}</td>
-                                            <td style="color:red;font-weight:600;font-size:16px;" class="text-center">${pendingQty}</td>
+                                            
                                       </tr>`;
                             $tableBody.append(row);
                         });
+                        //<td style="color:red;font-weight:600;font-size:16px;" class="text-center">${pendingQty}</td>
 
                          $("#tableData").DataTable({
                             destroy: true,  // Ensure it reinitializes properly
@@ -224,6 +231,7 @@
                     }
                 },
                 error: function () {
+                    $("#loadingIndicator").hide();
                     Swal.fire({
                         icon: 'error',
                         title: 'Error!',
@@ -337,15 +345,17 @@
                     if (result.isConfirmed) {
                         let formData = $(this).serialize(); // Serialize form data
                         console.log("formData : " + formData);
-                        $('#spinner').show();
+                        // $('#spinner').show();
+                        $("#loadingIndicator").show();
                         $.ajax({
                             type: "POST",
                             url: "@Url.Action("Create", "Dispatches")",
                             data: formData,
                             success: function (response) {
+                                $("#loadingIndicator").hide();
                                 console.log("response : " + response);
                                 if (response.success) {
-                                    $('#spinner').hide();
+                                    // $('#spinner').hide();
                                     Swal.fire({
                                         icon: 'success',
                                         title: 'Success!',
@@ -356,7 +366,8 @@
                                     });
                                 }
                                 else {
-                                    $('#spinner').hide();
+                                    // $('#spinner').hide();
+                                    $("#loadingIndicator").hide();
                                     Swal.fire({
                                         icon: 'warning',
                                         title: 'Warning!',
@@ -367,7 +378,8 @@
                                 $("#TransferToDispatch")[0].reset(); // Reset form
                             },
                             error: function () {
-                                $('#spinner').hide();
+                                // $('#spinner').hide();
+                                $("#loadingIndicator").hide();
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Error!',

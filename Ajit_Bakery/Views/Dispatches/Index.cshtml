@@ -202,12 +202,15 @@
 
         // Function to Convert Numbers to Words
 
-        function GenerateDCPdf(ProductionId, DCNo, BoxNo, ReceiptNo, OutletName) {
+        function GenerateDCPdf(ProductionId, DCNo, BoxNo, ReceiptNo, OutletName) 
+        {
+            $("#loadingIndicator").show();
             $.ajax({
                 type: "POST",
                 url: "@Url.Action("GetDMData", "Dispatches")",
                 data: { ProductionId, DCNo, BoxNo, ReceiptNo, OutletName },
                 success: function (response) {
+                    $("#loadingIndicator").hide();
                     console.log("response : " + JSON.stringify(response));
 
                     if (response.success) {
@@ -242,15 +245,16 @@
                             rows.push([
                                 (index + 1).toString(), // Serial No.
                                 item.productName || "-", // Product Name
-                                item.qty || 0, // Quantity
-                                item.rate ? item.rate.toFixed(2) : "0.00", // Rate
+                                item.value || "0.00", // Quantity
+                                item.ratee || "0.00", // Rate
+                                // item.rate ? item.rate.toFixed(2) : "0.00", // Rate
                                 item.categary ? item.categary : "NA", // UOM
                                 item.amount ? item.amount.toFixed(2) : "0.00" // Amount
                             ]);
                         });
 
                         // Add Total Row
-                        rows.push(["", "Total", response.totalqty || 0, "", "", response.totalamount ? response.totalamount.toFixed(2) : "0.00"]);
+                        rows.push(["", "Total", response.totalqtyy || 0, "", "", response.totalamount ? response.totalamount.toFixed(2) : "0.00"]);
 
                         // Generate Table
                         doc.autoTable({
@@ -275,10 +279,10 @@
                             columnStyles: {
                                 0: { halign: "center", cellWidth: 20 }, // SR
                                 1: { halign: "center", cellWidth: 60 }, // ITEM NAME
-                                2: { halign: "center", cellWidth: 20 }, // QTY
+                                2: { halign: "center", cellWidth: 30 }, // QTY
                                 3: { halign: "center", cellWidth: 30 }, // RATE
-                                4: { halign: "center", cellWidth: 20 }, // UOM
-                                5: { halign: "center", cellWidth: 30 } // AMOUNT
+                                4: { halign: "center", cellWidth: 15 }, // UOM
+                                5: { halign: "center", cellWidth: 25 } // AMOUNT
                             }
                         });
 
@@ -328,6 +332,7 @@
                     }
                 },
                 error: function () {
+                    $("#loadingIndicator").hide();
                     Swal.fire({
                         icon: 'error',
                         title: 'Error!',

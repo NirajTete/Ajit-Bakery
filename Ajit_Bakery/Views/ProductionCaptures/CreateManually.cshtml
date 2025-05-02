@@ -123,14 +123,16 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         let formData = $(this).serialize();
-                        $('#spinner').show();
+                        // $('#spinner').show();
+                        $("#loadingIndicator").show();
 
                         $.ajax({
                             type: "POST",
                             url: "@Url.Action("CreateManually", "ProductionCaptures")",
                             data: formData,
                             success: function (response) {
-                                $('#spinner').hide();
+                                // $('#spinner').hide();
+                                $("#loadingIndicator").hide();
                                 if (response.success) {
                                     Swal.fire({
                                         icon: 'success',
@@ -151,7 +153,8 @@
                                 $("#CreateManually")[0].reset();
                             },
                             error: function () {
-                                $('#spinner').hide();
+                                // $('#spinner').hide();
+                                $("#loadingIndicator").hide();
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Error!',

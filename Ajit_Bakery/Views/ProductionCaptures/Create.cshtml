@@ -56,6 +56,7 @@
             console.log("call");
             var formData = new FormData(this);
             var Production_Id = $("#Production_Id").val();
+            $("#loadingIndicator").show();
             $.ajax({
                 url: '/ProductionCaptures/UploadExcel', // Replace with your actual controller and action
                 type: 'POST',
@@ -63,6 +64,7 @@
                 contentType: false, // Needed for file upload
                 processData: false, // Needed for file upload
                 success: function (response) {
+                    $("#loadingIndicator").hide();
                     console.log("Responce Get : " + response.success);
                     if (response.success) {
                         Swal.fire({
@@ -85,6 +87,7 @@
                     }
                 },
                 error: function (xhr, status, error) {
+                    $("#loadingIndicator").hide();
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
