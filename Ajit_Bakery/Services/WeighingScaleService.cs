@@ -14,7 +14,10 @@ namespace Ajit_Bakery.Services
             {
                 using var client = new TcpClient();
                 await client.ConnectAsync(ip, port);
-
+                if (!client.Connected)
+                {
+                    return "Error: Unable to connect to the scale.";
+                }
                 using var stream = client.GetStream();
                 byte[] buffer = new byte[1024];
                 int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
