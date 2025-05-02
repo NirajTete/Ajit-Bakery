@@ -609,13 +609,13 @@ namespace Ajit_Bakery.Controllers
             var currentdate = DateTime.Now.ToString("dd-MM-yyyy");
             var checkiffound = _context.ProductionCapture.OrderByDescending(a=>a.Id).Select(a => a.Production_Date).FirstOrDefault();
             var proid = _context.ProductionCapture.OrderByDescending(a => a.Id).Select(a => a.Production_Id).FirstOrDefault();
-            if(checkiffound != null)
-            {
-                if (currentdate.Trim() == checkiffound.Trim())
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-            }
+            //if(checkiffound != null)
+            //{
+            //    if (currentdate.Trim() == checkiffound.Trim())
+            //    {
+            //        return RedirectToAction(nameof(Index));
+            //    }
+            //}
             
             ViewBag.ProductionId = GetProductionId1();
             

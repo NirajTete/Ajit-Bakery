@@ -21,6 +21,7 @@ using iTextSharp.text.pdf.qrcode;
 using System.Net.Sockets;
 using System.Text;
 using System.Net;
+using Microsoft.CodeAnalysis.Elfie.Extensions;
 //using AspNetCore.Reporting.ReportExecutionService;
 
 namespace Ajit_Bakery.Controllers
@@ -202,12 +203,12 @@ namespace Ajit_Bakery.Controllers
         public IActionResult GetOutlet_NameData(string Production_Id, string Outlet_Name)
         {
 
+            var date = DateTime.Now.ToString("dd-MM-yyyy");
+            var Packagingdata = _context.Packaging.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Outlet_Name.Trim() == Outlet_Name.Trim() && a.Packaging_Date.Trim() == date.Trim()).ToList().Sum(a => a.Qty);
+            var Packagingdata1 = Packagings_List.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Outlet_Name.Trim() == Outlet_Name.Trim() && a.Packaging_Date.Trim() == date.Trim()).ToList().Sum(a => a.Qty);
 
-            var Packagingdata = _context.Packaging.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Outlet_Name.Trim() == Outlet_Name.Trim()).ToList().Sum(a => a.Qty);
-            var Packagingdata1 = Packagings_List.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Outlet_Name.Trim() == Outlet_Name.Trim()).ToList().Sum(a => a.Qty);
-
-            var ProductionCapturedata = _context.ProductionCapture.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Status.Trim() == "Pending" && a.OutletName.Trim() == Outlet_Name.Trim()).ToList().Sum(a => a.TotalQty);
-            var ProductionCapturedata1 = ProductionCapture_List.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Status.Trim() == "Pending" && a.OutletName.Trim() == Outlet_Name.Trim()).ToList().Sum(a => a.TotalQty);
+            var ProductionCapturedata = _context.ProductionCapture.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Status.Trim() == "Pending" && a.OutletName.Trim() == Outlet_Name.Trim() && a.Production_Date.Trim() == date.Trim()).ToList().Sum(a => a.TotalQty);
+            var ProductionCapturedata1 = ProductionCapture_List.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Status.Trim() == "Pending" && a.OutletName.Trim() == Outlet_Name.Trim() && a.Production_Date.Trim()  == date.Trim()).ToList().Sum(a => a.TotalQty);
 
             var qtyremainig = ProductionCapturedata + ProductionCapturedata1;
             var qtypick = Packagingdata + Packagingdata1;
@@ -225,7 +226,7 @@ namespace Ajit_Bakery.Controllers
                 }
                 return Json(new { success = true, qtypick = qtypick, qtyremainig = valuefound });
             }
-            return Json(new { success = false, message = "You have already picked all qty against " + Outlet_Name + "  outlet !" });
+            return Json(new { success = false, message = "No remaining Qty found against " + Outlet_Name + "  outlet !" });
         }
 
         /* public IActionResult GetOutlets(string Production_Id)
