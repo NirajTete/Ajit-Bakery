@@ -133,19 +133,20 @@
 
                     <!-- Button to freeze the live weight -->
                     <div class="form-group col-sm-4">
-                        <label class="control-label fw-bold small">&nbsp;</label> <!-- Empty label for spacing -->
-                        <button type="button" class="btn btn-info form-control " onclick="displayNetwt()" style="font-weight:600">Get Wt</button>
+                        <label class="control-label fw-bold small">&nbsp;</label>
+                        <button type="button" class="btn btn-info form-control" onclick="freezeWeight()">Get Wt</button>
                     </div>
                 </div>
                 @* <div class="row">
                 <button class="btn btn-info btn-sm col-sm-2" onclick="displayNetwt()">Get Net</button>
                 </div> *@ @*style="display:none" id="Netwt"*@
-                <div class="row" style="display:none" id="Partproduct">
+                <div class="row"  id="Partproduct">
                     <div class="form-group col-sm-1" style="display:none">
                         <label class="control-label fw-bold small">Qty</label>
                         <input class="form-control" id="count" value="1" style="height:5vh; font-size: 20px; color: green; font-weight: 650;" required readonly />
                     </div>
 
+                    <!-- Input to show weight -->
                     <div class="form-group col-sm-3">
                         <label asp-for="ProductGrossWg" class="control-label fw-bold small"></label>
                         <input asp-for="ProductGrossWg" id="ProductGrossWg" style="height:5vh; font-size: 18px; color: green; font-weight: 650;" class="form-control" required onchange="Refresh()" />
@@ -255,7 +256,7 @@
                         document.getElementById("ProductGrossWg").value = data.weight;
                     })
                     .catch(err => console.error('Error fetching weight:', err));
-            }, 10000);
+            }, 1000);
         }
 
         function freezeWeight() {
@@ -263,6 +264,9 @@
                 clearInterval(weightInterval); // Stop updating weight
                 weightInterval = null;
             }
+
+            Refresh()
+
         }
     </script>
 
@@ -413,10 +417,7 @@
                 }
             });
         }
-        function displayNetwt() {
-            event.preventDefault();
-            $("#Partproduct").show();
-        }
+       
 
         $("#ProductName").change(function () {
             var productName = $(this).val(); // Get selected product name
@@ -711,6 +712,9 @@
             $("#DialTierWgValue").val(DialTierWg + " " + DialTierWg_Uom);
         }
         function Refresh() {
+
+            alert("Hii");
+
             OnUomChange();
             calculateTotalNetWeight();
             var uom = $("#ProductGrossWg_Uom").val();
