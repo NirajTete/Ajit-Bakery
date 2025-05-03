@@ -3,13 +3,20 @@ using System.Text;
 
 namespace Ajit_Bakery.Services
 {
-    public class WeighingScaleService
-    {
-        private readonly string ip = "192.168.1.198"; // Replace with your converter's IP
-        private readonly int port = 23; // Replace with your converter's port
 
+
+    public class WeighingScaleService    {
+        
+        private readonly IConfiguration _config;
+        public WeighingScaleService(IConfiguration config)
+        {
+            _config = config;
+        }
         public async Task<string> ReadWeightAsync()
         {
+            string ip = _config["AppSettings:weight"];
+            int port = Convert.ToInt32(_config["AppSettings:port"]);
+
             try
             {
                 using var client = new TcpClient();
