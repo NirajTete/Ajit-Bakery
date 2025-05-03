@@ -21,6 +21,8 @@ options.UseNpgsql(connectionString));
 
 //Register API Service 
 builder.Services.AddScoped<IApiService, ApiService>();
+builder.Services.AddScoped<WeighingScaleService>();
+
 builder.Services.AddHttpClient();
 //end
 

@@ -574,7 +574,7 @@
             </Style>
           </Image>
         </ReportItems>
-        <Height>2.28521in</Height>
+        <Height>2.19146in</Height>
         <Style>
           <Border>
             <Style>None</Style>
@@ -584,7 +584,7 @@
       <Width>2.84375in</Width>
       <Page>
         <PageHeader>
-          <Height>1.32292cm</Height>
+          <Height>1.0848cm</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
@@ -609,7 +609,6 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox1</rd:DefaultName>
-              <Top>0.07639in</Top>
               <Left>0.50114in</Left>
               <Height>0.25in</Height>
               <Width>1.91666in</Width>
@@ -640,8 +639,8 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox2</rd:DefaultName>
-              <Top>0.32639in</Top>
-              <Left>0.41284in</Left>
+              <Top>0.23889in</Top>
+              <Left>0.42534in</Left>
               <Height>0.17708in</Height>
               <Width>0.90104in</Width>
               <ZIndex>1</ZIndex>
@@ -672,8 +671,8 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox2</rd:DefaultName>
-              <Top>0.32639in</Top>
-              <Left>1.31805in</Left>
+              <Top>0.23889in</Top>
+              <Left>1.33055in</Left>
               <Height>0.17708in</Height>
               <Width>1.17534in</Width>
               <ZIndex>2</ZIndex>
@@ -694,7 +693,7 @@
             </Border>
           </Style>
         </PageHeader>
-        <PageHeight>15cm</PageHeight>
+        <PageHeight>10cm</PageHeight>
         <PageWidth>8cm</PageWidth>
         <LeftMargin>0.2cm</LeftMargin>
         <RightMargin>0.2cm</RightMargin>

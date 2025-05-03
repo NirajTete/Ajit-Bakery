@@ -129,6 +129,9 @@
                         <label asp-for="DialTierWgValue" class="control-label fw-bold small"></label>
                         <input asp-for="DialTierWgValue" id="DialTierWgValue" required readonly class="form-control" style="height:5vh; font-size: 18px; color:blueviolet; font-weight: 650;" />
                     </div>
+
+
+                    <!-- Button to freeze the live weight -->
                     <div class="form-group col-sm-4">
                         <label class="control-label fw-bold small">&nbsp;</label> <!-- Empty label for spacing -->
                         <button type="button" class="btn btn-info form-control " onclick="displayNetwt()" style="font-weight:600">Get Wt</button>
@@ -142,10 +145,12 @@
                         <label class="control-label fw-bold small">Qty</label>
                         <input class="form-control" id="count" value="1" style="height:5vh; font-size: 20px; color: green; font-weight: 650;" required readonly />
                     </div>
+
                     <div class="form-group col-sm-3">
                         <label asp-for="ProductGrossWg" class="control-label fw-bold small"></label>
                         <input asp-for="ProductGrossWg" id="ProductGrossWg" style="height:5vh; font-size: 18px; color: green; font-weight: 650;" class="form-control" required onchange="Refresh()" />
                     </div>
+
                     <div class="form-group col-sm-3">
                         <label asp-for="ProductGrossWg_Uom" class="control-label fw-bold small"></label>
                         <select asp-for="ProductGrossWg_Uom" id="ProductGrossWg_Uom" required class="form-control text-uppercase" style="font-size:18px;color: green; font-weight: 650;text-transform: uppercase" onchange="OnUomChange()">
@@ -233,6 +238,34 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        let weightInterval = null;
+
+        // Start live weight reading on page load
+        document.addEventListener("DOMContentLoaded", () => {
+            startWeightLiveFeed();
+        });
+
+        function startWeightLiveFeed() {
+            weightInterval = setInterval(() => {
+                fetch('/SaveProductions/GetWeight')
+                    .then(res => res.json())
+                    .then(data => {
+                        document.getElementById("ProductGrossWg").value = data.weight;
+                    })
+                    .catch(err => console.error('Error fetching weight:', err));
+            }, 10000);
+        }
+
+        function freezeWeight() {
+            if (weightInterval) {
+                clearInterval(weightInterval); // Stop updating weight
+                weightInterval = null;
+            }
+        }
+    </script>
+
     <script>
         function roundDownToNearest25(value) {
             console.log("value :" + value);
