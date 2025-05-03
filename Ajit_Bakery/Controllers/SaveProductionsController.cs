@@ -866,6 +866,10 @@ namespace Ajit_Bakery.Controllers
             await Task.CompletedTask;
         }
 
+        public IActionResult GetWt()
+        {
+            return Json(new {success = true, message = "Weight Get !" });
+        }
 
     }
 

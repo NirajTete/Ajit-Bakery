@@ -383,6 +383,27 @@
         function displayNetwt() {
             event.preventDefault();
             $("#Partproduct").show();
+
+            // //CALL AJAX
+            // $.ajax({
+            //     url: "/SaveProductions/GetWt",  // Update with your actual API/Action URL
+            //     type: "GET",
+            //     data: { productName: productName, Production_Id: Production_Id },
+            //     dataType: "json",
+            //     success: function (response) {
+            //         console.log("Response:", response);
+
+            //         if (response.success) {
+
+            //         } else {
+                        
+            //         }
+            //     },
+            //     error: function () {
+            //         alert("Error fetching product details.");
+            //     }
+            // });
+            // //ENDED
         }
 
         $("#ProductName").change(function () {
