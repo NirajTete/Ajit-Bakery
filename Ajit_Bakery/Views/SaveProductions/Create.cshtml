@@ -131,25 +131,31 @@
                     </div>
 
 
-                    <!-- Button to freeze the live weight -->
+                    <!-- Button to fetch and freeze the current weight -->
                     <div class="form-group col-sm-4">
                         <label class="control-label fw-bold small">&nbsp;</label>
-                        <button type="button" class="btn btn-info form-control" onclick="freezeWeight()">Get Wt</button>
+                        <button type="button" class="btn btn-info form-control" onclick="getCurrentWeight()">Get Wt</button>
                     </div>
                 </div>
+
+
                 @* <div class="row">
                 <button class="btn btn-info btn-sm col-sm-2" onclick="displayNetwt()">Get Net</button>
                 </div> *@ @*style="display:none" id="Netwt"*@
-                <div class="row"  id="Partproduct">
+
+
+                <div class="row" id="Partproduct">
                     <div class="form-group col-sm-1" style="display:none">
                         <label class="control-label fw-bold small">Qty</label>
                         <input class="form-control" id="count" value="1" style="height:5vh; font-size: 20px; color: green; font-weight: 650;" required readonly />
                     </div>
 
-                    <!-- Input to show weight -->
+                    <!-- Input to show the frozen weight -->
                     <div class="form-group col-sm-3">
                         <label asp-for="ProductGrossWg" class="control-label fw-bold small"></label>
-                        <input asp-for="ProductGrossWg" id="ProductGrossWg" style="height:5vh; font-size: 18px; color: green; font-weight: 650;" class="form-control" required onchange="Refresh()" />
+                        <input asp-for="ProductGrossWg" id="ProductGrossWg"
+                               style="height:5vh; font-size: 18px; color: green; font-weight: 650;"
+                               class="form-control" required onchange="Refresh()" />
                     </div>
 
                     <div class="form-group col-sm-3">
@@ -240,7 +246,7 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
-    <script>
+    @*  <script>
         let weightInterval = null;
 
         // Start live weight reading on page load
@@ -267,6 +273,25 @@
 
             Refresh()
 
+        }
+    </script> *@
+
+    <script>
+        function getCurrentWeight() {
+            fetch('/SaveProductions/GetWeight')
+                .then(res => res.json())
+                .then(data => {
+                    const input = document.getElementById("ProductGrossWg");
+                    input.value = data.weight;
+
+                    // Manually trigger the onchange event
+                    const event = new Event('change', { bubbles: true });
+                    input.dispatchEvent(event);
+                })
+                .catch(err => {
+                    console.error('Error fetching weight:', err);
+                    alert("Failed to read weight. Please check the connection.");
+                });
         }
     </script>
 
@@ -417,7 +442,7 @@
                 }
             });
         }
-       
+
 
         $("#ProductName").change(function () {
             var productName = $(this).val(); // Get selected product name
