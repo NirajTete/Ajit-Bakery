@@ -21,8 +21,6 @@ using AspNetCoreHero.ToastNotification.Abstractions;
 using DocumentFormat.OpenXml.VariantTypes;
 using Newtonsoft.Json;
 
-
-
 namespace Ajit_Bakery.Controllers
 {
     [Authorize]
@@ -140,7 +138,7 @@ namespace Ajit_Bakery.Controllers
                         List<string> outletNames = new List<string>();
                         for (int col = 3; col < colCount; col++) // Outlet names start from column index 3
                         {
-                            outletNames.Add(worksheet.Cells[2, col].Text.Trim()); // Read outlet names
+                            outletNames.Add(worksheet.Cells[1, col].Text.Trim()); // Read outlet names
                         }
 
                         //check outlet exist or not 
@@ -158,7 +156,7 @@ namespace Ajit_Bakery.Controllers
                         //end
 
                         // Read data from the third row onwards
-                        for (int row = 3; row <= rowCount; row++)
+                        for (int row = 2; row <= rowCount; row++)
                         {
                             string productName = worksheet.Cells[row, 1].Text.Trim();
                             string unit = worksheet.Cells[row, 2].Text.Trim();

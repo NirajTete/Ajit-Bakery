@@ -9,8 +9,10 @@ namespace Ajit_Bakery.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Display(Name = "Sr.No.")]
         public int Id { get; set; }
-        [Display(Name = "User Name")]
+        [Display(Name = "Login Id")]
         public string UserName { get; set; }
+        [Display(Name = "User Name")]
+        public string? UserId { get; set; }
         [Display(Name = "Email")]
         public string Email { get; set; }
         [Display(Name = "Password")]
