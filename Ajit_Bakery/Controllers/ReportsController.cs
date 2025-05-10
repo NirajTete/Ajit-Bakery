@@ -5,6 +5,8 @@ using DocumentFormat.OpenXml.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Utilities;
+using System.Globalization;
 
 namespace Ajit_Bakery.Controllers
 {
@@ -202,8 +204,42 @@ namespace Ajit_Bakery.Controllers
                     }
                 }
             }
+            TATReport = TATReport.OrderByDescending(a => a.ProductionId.Trim()).ToList();
+
+            //        TATReport = TATReport
+            //.OrderByDescending(a => GetNearestTime(a) ?? DateTime.MinValue)
+            //.ToList();
+
+            //        TATReport = TATReport.OrderByDescending(a => a.production_date.Trim()).ToList();
+
             return View(TATReport);
         }
+        private DateTime? GetNearestTime(TATReport report)
+        {
+            var timeStrings = new List<string>
+            {
+                report.dispatch_date,
+                report.transfer_date,
+                report.packaging_date,
+                report.production_date
+            };
+
+            foreach (var time in timeStrings)
+            {
+                if (!string.IsNullOrWhiteSpace(time) && time != "-")
+                {
+                    if (DateTime.TryParseExact(time, "hh:mm tt", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedTime))
+                    {
+                        // Combine with today's date so sorting works by full DateTime
+                        return DateTime.Today.Add(parsedTime.TimeOfDay);
+                    }
+                }
+            }
+
+            return null;
+        }
+
+
         private string ConvertTo12HourFormat(string time24)
         {
             if (DateTime.TryParseExact(time24, "HH:mm", null, System.Globalization.DateTimeStyles.None, out DateTime dateTime))

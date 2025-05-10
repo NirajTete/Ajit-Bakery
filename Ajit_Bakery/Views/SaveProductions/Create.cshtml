@@ -21,7 +21,7 @@
                 <div class="row">
                     <div class="form-group col-sm-4">
                         <label asp-for="Production_Id" class="control-label fw-bold small">Production Id</label>
-                        <select asp-for="Production_Id" id="Production_Id" style="font-size:18px" ; required class="form-control text-uppercase" asp-items="@ViewBag.GetProduction_Id" onchange="OnProduction_IdChange()">
+                        <select asp-for="Production_Id" id="Production_Id" style="font-size:18px"  required class="form-control text-uppercase" asp-items="@ViewBag.GetProduction_Id" onchange="OnProduction_IdChange()">
                         </select>
                     </div>
                     <div class="col-sm-2">
@@ -155,7 +155,7 @@
                         <label asp-for="ProductGrossWg" class="control-label fw-bold small"></label>
                         <input asp-for="ProductGrossWg" id="ProductGrossWg"
                                style="height:5vh; font-size: 18px; color: green; font-weight: 650;"
-                               class="form-control" required readonly onchange="Refresh()" />
+                               class="form-control" required  onchange="Refresh()" />
                     </div>
 
                     <div class="form-group col-sm-3">
@@ -545,32 +545,66 @@
                         });
 
 
-                        //bind table data
+                        // //bind table data
+                        // // **Bind Table Data**
+                        // $("#TableDataId").show();
+                        // var $tableBody = $("#tableData tbody");
+                        // $tableBody.empty(); // Clear previous table data
+
+                        // $.each(response.tableData, function (index, item) {
+                        //     var row = `<tr>
+                        //             <td>${item.productName}</td>
+                        //             <td>${item.basicUnit}</td>
+                        //                     <td class="text-center table-success">${item.totalQty}</td>
+                        //                     <td class="text-center table-warning">${item.pendingQty}</td>
+                        //             <td>${item.mrp.toFixed(2)}</td>
+                        //             <td>${item.selling.toFixed(2)}</td>
+                        //         </tr>`;
+                        //     $tableBody.append(row);
+                        // });
+
+                        // $("#tableData").DataTable({
+                        //     destroy: true,  // Ensure it reinitializes properly
+                        //     paging: true,   // Enable pagination
+                        //     searching: true, // Enable search
+                        //     ordering: false, // Disable sorting
+                        //     lengthChange: false, // Disable "Show X entries" dropdown
+                        //     pageLength: 10
+                        // });
                         // **Bind Table Data**
                         $("#TableDataId").show();
-                        var $tableBody = $("#tableData tbody");
+
+                        var $table = $("#tableData");
+
+                        // Destroy existing DataTable instance before clearing data
+                        if ($.fn.DataTable.isDataTable($table)) {
+                            $table.DataTable().clear().destroy();
+                        }
+
+                        var $tableBody = $table.find("tbody");
                         $tableBody.empty(); // Clear previous table data
 
                         $.each(response.tableData, function (index, item) {
                             var row = `<tr>
-                                    <td>${item.productName}</td>
-                                    <td>${item.basicUnit}</td>
-                                            <td class="text-center table-success">${item.totalQty}</td>
-                                            <td class="text-center table-warning">${item.pendingQty}</td>
-                                    <td>${item.mrp.toFixed(2)}</td>
-                                    <td>${item.selling.toFixed(2)}</td>
-                                </tr>`;
+                <td>${item.productName}</td>
+                <td>${item.basicUnit}</td>
+                <td class="text-center table-success">${item.totalQty}</td>
+                <td class="text-center table-warning">${item.pendingQty}</td>
+                <td>${item.mrp.toFixed(2)}</td>
+                <td>${item.selling.toFixed(2)}</td>
+            </tr>`;
                             $tableBody.append(row);
                         });
 
-                        $("#tableData").DataTable({
-                            destroy: true,  // Ensure it reinitializes properly
-                            paging: true,   // Enable pagination
-                            searching: true, // Enable search
-                            ordering: false, // Disable sorting
-                            lengthChange: false, // Disable "Show X entries" dropdown
+                        // Reinitialize DataTable
+                        $table.DataTable({
+                            paging: true,
+                            searching: true,
+                            ordering: false,
+                            lengthChange: false,
                             pageLength: 10
                         });
+
 
                         // document.querySelectorAll("#SaveProduction input").forEach(input => {
                         //     if (input.type === "text" || input.type === "number") {
@@ -587,6 +621,10 @@
 
                         // document.getElementById("DialCode").disabled = false;
                         $("#DialCode").val("");
+
+                        console.log("GetDialCodes call...");
+                        $('#ProductName').change();
+
                         //ended
                         // <td>${item.selling_Rs.toFixed(2)}</td>
                         // <td>${item.mrP_Rs.toFixed(2)}</td>
@@ -597,6 +635,9 @@
                             title: 'Warning!',
                             text: response.message
                         });
+                        $("#Production_Id").val("");
+                        $("#completeCount").val(0);
+                        $("#pendingCount").val(0);
                         return;
                     }
                 },

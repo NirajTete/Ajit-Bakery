@@ -158,6 +158,9 @@ namespace Ajit_Bakery.Controllers
 
         public IActionResult GetOutlets(string Production_Id)
         {
+            List<DialDetailViewModel> DialDetailViewModellist = new List<DialDetailViewModel>();
+            var date = DateTime.Now.ToString("dd-MM-yyyy");
+
             var lstProducts = _context.ProductionCapture
                 .Where(a => a.Status == "Pending" && a.Production_Id.Trim() == Production_Id.Trim())
                 .AsNoTracking()
@@ -168,16 +171,27 @@ namespace Ajit_Bakery.Controllers
                 })
                 .Distinct()
                 .ToList();
-
-            var defItem = new SelectListItem()
+            var productioncount = _context.SaveProduction.Where(a=>a.SaveProduction_Date.Trim() == date.Trim() && a.Production_Id.Trim() == Production_Id.Trim()).ToList();
+            if(lstProducts.Count != productioncount.Count)
             {
-                Value = "",
-                Text = "----Select ProductName ----"
-            };
-
-            List<DialDetailViewModel> DialDetailViewModellist = new List<DialDetailViewModel>();
-            var date = DateTime.Now.ToString("dd-MM-yyyy");
-
+                var defItem = new SelectListItem()
+                {
+                    Value = "",
+                    Text = "----Select ProductName ----"
+                };
+                lstProducts.Insert(0, defItem);
+            }
+            else
+            {
+                lstProducts.Clear();
+                var defItem = new SelectListItem()
+                {
+                    Value = "",
+                    Text = "----Select ProductName ----"
+                };
+                lstProducts.Insert(0, defItem);
+            }
+            
             var list = _context.ProductionCapture
                 .Where(a => a.Production_Id.Trim() == Production_Id.Trim() &&
                             a.Status == "Pending" &&
@@ -855,7 +869,7 @@ namespace Ajit_Bakery.Controllers
                     stream.Write(byteArray, 0, byteArray.Length);
                     stream.Flush();
                     client.Close();
-                    Thread.Sleep(3000);
+                    Thread.Sleep(300);
                 }
                 catch (Exception ex)
                 {
