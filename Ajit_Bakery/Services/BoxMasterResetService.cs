@@ -8,8 +8,8 @@ namespace Ajit_Bakery.Services
     {
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly ILogger<BoxMasterResetService> _logger;
-        //private readonly TimeSpan _interval = TimeSpan.FromHours(2); // 2-hour interval
-        private readonly TimeSpan _interval = TimeSpan.FromSeconds(10); // 2-hour interval
+        private readonly TimeSpan _interval = TimeSpan.FromHours(2); // 2-hour interval
+        //private readonly TimeSpan _interval = TimeSpan.FromSeconds(10); // 2-hour interval
 
         public BoxMasterResetService(IServiceScopeFactory scopeFactory, ILogger<BoxMasterResetService> logger)
         {

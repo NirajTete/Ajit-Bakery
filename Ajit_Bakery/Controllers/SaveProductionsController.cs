@@ -855,7 +855,7 @@ namespace Ajit_Bakery.Controllers
                     stream.Write(byteArray, 0, byteArray.Length);
                     stream.Flush();
                     client.Close();
-                    Thread.Sleep(300);
+                    Thread.Sleep(3000);
                 }
                 catch (Exception ex)
                 {

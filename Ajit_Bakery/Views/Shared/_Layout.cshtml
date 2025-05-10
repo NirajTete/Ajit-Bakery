@@ -52,8 +52,8 @@
 </head>
 <!-- [Head] end -->
 
-<body data-pc-header="header-1" data-pc-preset="preset-1" data-pc-sidebar-theme="light" data-pc-sidebar-caption="true" 
-data-pc-direction="ltr" data-pc-theme="light">
+<body data-pc-header="header-1" data-pc-preset="preset-1" data-pc-sidebar-theme="light" data-pc-sidebar-caption="true"
+      data-pc-direction="ltr" data-pc-theme="light">
 
     <div id="loadingIndicator" class="loading-indicator">
         <div class="spinner" role="status"></div>
@@ -66,21 +66,20 @@ data-pc-direction="ltr" data-pc-theme="light">
         </div>
     </div>
     <!-- [ Pre-loader ] End -->
+    <div>
+        <partial name="_Sidebar" />
+        <partial name="_Header" />
 
-    <partial name="_Sidebar" />
-    <partial name="_Header" />
-    @*@Html.Partial("_Sidebar")
-    @Html.Partial("_Header") *@
-
-
-    <!-- [ Main Content ] start -->
-    <div class="pc-container">
-        <div class="pc-content">
-            @RenderBody()
+        <!-- [ Main Content ] start -->
+        <div class="pc-container">
+            <div class="pc-content">
+                @RenderBody()
+            </div>
         </div>
+        <!-- [ Main Content ] end -->
     </div>
-    <!-- [ Main Content ] end -->
-  
+
+
 
     <partial name="_Footer" />
 
