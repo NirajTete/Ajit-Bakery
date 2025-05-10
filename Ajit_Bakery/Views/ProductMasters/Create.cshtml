@@ -134,8 +134,8 @@
             var MRP = parseFloat($("#MRP").val()) || 0;
             var Selling = parseFloat($("#Selling").val()) || 0;
 
-            var Selling_Rs = Selling / Unitqty;
-            var MRP_Rs = MRP / Unitqty;
+            var Selling_Rs = Selling / 1000;
+            var MRP_Rs = MRP / 1000;
 
             $("#Selling_Rs").val(Selling_Rs.toFixed(2)); // Round to 2 decimal places
             $("#MRP_Rs").val(MRP_Rs.toFixed(2));

@@ -78,9 +78,12 @@
                         return;
                     } else {
                         Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
+                            icon: 'warning',
+                            title: 'Warning',
                             text: response.message
+                       }).then(function () {
+                            $('#fileInput').val('');
+                            window.location.href = '/ProductionCaptures/Index'; // Adjust the URL as needed
                         });
                         $('#fileInput').val(''); // Reset the file input field
                         return;
@@ -197,4 +200,3 @@
     </script>
 }
 
-    

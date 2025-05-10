@@ -23,38 +23,38 @@ LBLCOND 3,2
 OPTIMIZE "BATCH" ON
 PP8,95:AN7
 BARSET "DATAMATRIX",1,1,3,66,0,7
-PB "AB00049#Rasmalai - 1#1425#1425"
+PB "AB00003#Black Forest  - .25#250#200"
 PP83,116:NASC 8
 FT "CG Triumvirate Condensed Bold",6,0,99
-PT "Rasmalai - "
+PT "Black Fores"
 PP83,92:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "1"
+PT "t  - .25"
 PP83,68:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "1425 GMS"
+PT "250 GMS"
 PP83,44:FT "CG Triumvirate Condensed Bold",6,0,99
 PT "MRP:Rs."
 PP167,46:FT "CG Triumvirate Condensed Bold",7,0,99
-PT "1425"
+PT "200"
 PP278,114:FT "CG Triumvirate Condensed Bold",9,0,99
-PT "09-05-2025"
+PT "10-05-2025"
 PP344,66:FT "CG Triumvirate Condensed Bold",9,0,99
-PT "22:21"
+PT "15:45"
 PP551,95:BARSET "DATAMATRIX",1,1,3,66,0,7
-PB "AB00049#Rasmalai - 1#1425#1425"
+PB "AB00003#Black Forest  - .25#250#200"
 PP626,116:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "Rasmalai - "
+PT "Black Fores"
 PP626,92:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "Rasmalai - "
+PT "Black Fores"
 PP626,68:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "1425 GMS"
+PT "250 GMS"
 PP626,44:FT "CG Triumvirate Condensed Bold",6,0,99
 PT "MRP:Rs."
 PP710,46:FT "CG Triumvirate Condensed Bold",7,0,99
-PT "1425"
+PT "200"
 PP819,114:FT "CG Triumvirate Condensed Bold",9,0,99
-PT "09-05-2025"
+PT "10-05-2025"
 PP887,66:FT "CG Triumvirate Condensed Bold",9,0,99
-PT "22:21"
+PT "15:45"
 LAYOUT RUN ""
 PF
 PRINT KEY OFF

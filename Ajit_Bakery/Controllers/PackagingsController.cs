@@ -97,6 +97,7 @@ namespace Ajit_Bakery.Controllers
         private static List<SaveProduction> SaveProduction_List = new List<SaveProduction>();
         private static List<ProductionCapture> ProductionCapture_List = new List<ProductionCapture>();
 
+
         public IActionResult PickedData(string productcode, string productname, double wg, double mrp, string Production_Id, string Box_No, string outletName)
         {
             List<SaveProduction> check = new List<SaveProduction>();
@@ -184,6 +185,163 @@ namespace Ajit_Bakery.Controllers
             return Json(new { success = false, message = "Save Production Data not found  !" });
 
         }
+
+        //Added logic to restrict user for box
+        /*  public IActionResult PickedData(string productcode, string productname, double wg, double mrp, string Production_Id, string Box_No, string outletName)
+          {
+              // ✅ STEP 0: Verify product exists in SaveProduction with Qty > 0
+              var availableItems = _context.SaveProduction
+                  .Where(a => a.Production_Id.Trim() == Production_Id.Trim() &&
+                              a.Qty > 0 &&
+                              a.ProductName.Trim() == productname.Trim())
+                  .ToList();
+
+              if (!availableItems.Any())
+              {
+                  return Json(new { success = false, message = "Save Production Data not found!" });
+              }
+
+              // ✅ STEP 1: Check required qty from ProductionCapture (Pending status for outlet & product)
+              var outletQty = _context.ProductionCapture
+                  .Where(a => a.Status.Trim() == "Pending" &&
+                              a.OutletName.Trim() == outletName.Trim() &&
+                              a.ProductName.Trim() == productname.Trim())
+                  .Sum(a => a.TotalQty);
+
+              if (outletQty == 0)
+              {
+                  return Json(new { success = false, message = $"Please scan correct product for outlet {outletName}" });
+              }
+
+              // ✅ STEP 2: Calculate already packed quantity (from DB + in-memory list)
+              var packedQtyDb = _context.Packaging
+                  .Where(a => a.Production_Id.Trim() == Production_Id.Trim() &&
+                              a.Product_Name.Trim() == productname.Trim() &&
+                              a.Outlet_Name.Trim() == outletName.Trim())
+                  .Sum(a => a.Qty);
+
+              var packedQtyMem = Packagings_List
+                  .Where(a => a.Production_Id.Trim() == Production_Id.Trim() &&
+                              a.Product_Name.Trim() == productname.Trim() &&
+                              a.Outlet_Name.Trim() == outletName.Trim())
+                  .Sum(a => a.Qty);
+
+              if ((packedQtyDb + packedQtyMem) >= outletQty)
+              {
+                  return Json(new { success = false, message = $"All quantities for outlet '{outletName}' already scanned for Production ID {Production_Id}" });
+              }
+
+              // ✅ STEP 3: Get DialCode from matching SaveProduction item based on weight
+              var dialCode = availableItems
+                  .Where(x => x.TotalNetWg == wg)
+                  .Select(x => x.DialCode)
+                  .FirstOrDefault();
+
+              if (string.IsNullOrWhiteSpace(dialCode))
+              {
+                  return Json(new { success = false, message = $"Dial code not found for product '{productname}'" });
+              }
+
+              // ✅ STEP 4: Get DialArea from DialMaster
+              var dialAreaStr = _context.DialMaster
+                  .Where(x => x.DialCode == dialCode)
+                  .Select(x => x.DialArea)
+                  .FirstOrDefault();
+
+              if (!double.TryParse(dialAreaStr, out double dialArea) || dialArea == 0)
+              {
+                  return Json(new { success = false, message = $"Dial area not found or invalid for DialCode '{dialCode}'" });
+              }
+
+              // ✅ STEP 5: Get BoxArea from BoxMaster
+              var boxAreaStr = _context.BoxMaster
+                  .Where(x => x.BoxNumber == Box_No)
+                  .Select(x => x.BoxArea)
+                  .FirstOrDefault();
+
+              if (!double.TryParse(boxAreaStr, out double boxArea) || boxArea == 0)
+              {
+                  return Json(new { success = false, message = $"Box area not found or invalid for Box No. '{Box_No}'" });
+              }
+
+              // ✅ STEP 6: Calculate already used area in the box (DB + memory)
+              var usedAreaDb = (from p in _context.Packaging
+                                join s in _context.SaveProduction on p.Production_Id equals s.Production_Id
+                                join d in _context.DialMaster on s.DialCode equals d.DialCode
+                                where p.Box_No == Box_No
+                                select d.DialArea)
+                                .ToList()
+                                .Sum(a => double.TryParse(a, out var val) ? val : 0);
+
+              var usedAreaMem = (from p in Packagings_List
+                                 join s in _context.SaveProduction on p.Production_Id equals s.Production_Id
+                                 join d in _context.DialMaster on s.DialCode equals d.DialCode
+                                 where p.Box_No == Box_No
+                                 select d.DialArea)
+                                 .ToList()
+                                 .Sum(a => double.TryParse(a, out var val) ? val : 0);
+
+              var totalUsedArea = usedAreaDb + usedAreaMem;
+
+              // ✅ STEP 7: Validate if new item fits in box area
+              if ((totalUsedArea + dialArea) > boxArea)
+              {
+                  return Json(new
+                  {
+                      success = false,
+                      message = $"Box '{Box_No}' is full! Used: {totalUsedArea}, New: {dialArea}, Capacity: {boxArea}"
+                  });
+              }
+
+              // ✅ STEP 8: Find the item to be packed (not already packed, and matching weight)
+              var itemToPack = availableItems
+                  .Where(x => x.TotalNetWg == wg &&
+                              x.Packaging_Flag == 0 &&
+                              !SaveProduction_List.Any(p => p.Id == x.Id && p.ProductName == x.ProductName))
+                  .FirstOrDefault();
+
+              if (itemToPack == null)
+              {
+                  return Json(new { success = false, message = "Already scanned or no valid item found!" });
+              }
+
+              // ✅ STEP 9: Update SaveProduction in memory and add Packaging
+              itemToPack.Packaging_Flag = 1;
+              itemToPack.Box_No = Box_No;
+              itemToPack.Packaging_Date = DateTime.Now.ToString("dd-MM-yyyy");
+              SaveProduction_List.Add(itemToPack);
+
+              Packagings_List.Add(new Packaging
+              {
+                  Product_Name = productname,
+                  Production_Dt = itemToPack.SaveProduction_Date,
+                  Production_Tm = itemToPack.SaveProduction_Time,
+                  Production_Id = Production_Id,
+                  Box_No = Box_No,
+                  Outlet_Name = outletName,
+                  Qty = 1,
+                  TotalNetWg = wg,
+                  TotalNetWg_Uom = itemToPack.TotalNetWg_Uom,
+                  Exp_Dt = itemToPack.Exp_Date,
+                  sellingRs = itemToPack.sellingRs,
+                  mrpRs = itemToPack.mrpRs
+              });
+
+              // ✅ STEP 10: Return updated status with qty packed and remaining
+              var totalPacked = packedQtyDb + packedQtyMem + 1;
+              var totalToPack = outletQty;
+
+              return Json(new
+              {
+                  success = true,
+                  data = itemToPack,
+                  qtypick = totalPacked,
+                  qtyremainig = Math.Abs(totalToPack - totalPacked)
+              });
+          }*/
+
+
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -208,7 +366,7 @@ namespace Ajit_Bakery.Controllers
             var Packagingdata1 = Packagings_List.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Outlet_Name.Trim() == Outlet_Name.Trim() && a.Packaging_Date.Trim() == date.Trim()).ToList().Sum(a => a.Qty);
 
             var ProductionCapturedata = _context.ProductionCapture.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Status.Trim() == "Pending" && a.OutletName.Trim() == Outlet_Name.Trim() && a.Production_Date.Trim() == date.Trim()).ToList().Sum(a => a.TotalQty);
-            var ProductionCapturedata1 = ProductionCapture_List.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Status.Trim() == "Pending" && a.OutletName.Trim() == Outlet_Name.Trim() && a.Production_Date.Trim()  == date.Trim()).ToList().Sum(a => a.TotalQty);
+            var ProductionCapturedata1 = ProductionCapture_List.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Status.Trim() == "Pending" && a.OutletName.Trim() == Outlet_Name.Trim() && a.Production_Date.Trim() == date.Trim()).ToList().Sum(a => a.TotalQty);
 
             var qtyremainig = ProductionCapturedata + ProductionCapturedata1;
             var qtypick = Packagingdata + Packagingdata1;
@@ -381,7 +539,7 @@ namespace Ajit_Bakery.Controllers
         {
             try
             {
-                if(SaveProduction_List.Count == 0)
+                if (SaveProduction_List.Count == 0)
                 {
                     return Json(new { status = "error", msg = "Please do scan the stickers first then submit !" });
                 }
@@ -433,7 +591,7 @@ namespace Ajit_Bakery.Controllers
                 var OUTLET = Packagings_List.Select(a => a.Outlet_Name.Trim()).FirstOrDefault(); ;
 
                 // Generate QR Code
-                string qrcode = Packagings_List.Select(a => a.Box_No.Trim()).FirstOrDefault() + "$"+ GetReciptId;
+                string qrcode = Packagings_List.Select(a => a.Box_No.Trim()).FirstOrDefault() + "$" + GetReciptId;
                 //string qrcode = Packagings_List.Select(a => a.Box_No.Trim()).FirstOrDefault();
                 string image;
                 using (MemoryStream ms = new MemoryStream())
@@ -494,7 +652,7 @@ namespace Ajit_Bakery.Controllers
                 {
                     //if (System.IO.File.GetCreationTime(pdfFile) < DateTime.Now.AddHours(-24))
                     //{
-                        System.IO.File.Delete(pdfFile);
+                    System.IO.File.Delete(pdfFile);
                     //}
                 }
 

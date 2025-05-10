@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -107,6 +107,7 @@ namespace Ajit_Bakery.Controllers
 
         private static List<ProductionCapture> ProductionCapture_list = new List<ProductionCapture>();
 
+
         [HttpPost]
         public async Task<IActionResult> UploadExcel(IFormFile file)
         {
@@ -117,35 +118,32 @@ namespace Ajit_Bakery.Controllers
 
             try
             {
-                ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // Set license
-                var Production_Id = GetProductionId(); // Generate a Production ID
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                var Production_Id = GetProductionId();
 
                 using (var stream = new MemoryStream())
                 {
                     await file.CopyToAsync(stream);
-                    ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // 🔹 Fix for EPPlus License Issue
 
                     using (var package = new ExcelPackage(stream))
                     {
-                        ExcelWorksheet worksheet = package.Workbook.Worksheets[0]; // Read first sheet
+                        ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
                         int rowCount = worksheet.Dimension.Rows;
                         int colCount = worksheet.Dimension.Columns;
 
                         List<ProductionCapture> productionList = new List<ProductionCapture>();
-                        var maxid = _context.ProductionCapture.Any() ? _context.ProductionCapture.Max(e => e.Id) + 0 : 0;
+                        var maxid = _context.ProductionCapture.Any() ? _context.ProductionCapture.Max(e => e.Id) : 0;
 
-                        // Extract outlet names from the second row
+                        // ✅ Extract outlet names from header row
                         List<string> outletNames = new List<string>();
-                        for (int col = 3; col < colCount; col++) // Outlet names start from column index 3
+                        for (int col = 3; col < colCount; col++)
                         {
-                            outletNames.Add(worksheet.Cells[1, col].Text.Trim()); // Read outlet names
+                            outletNames.Add(worksheet.Cells[1, col].Text.Trim());
                         }
 
-                        //check outlet exist or not 
-                        var found = _context.OutletMaster.Select(a => a.OutletName.Trim()).ToList();
-
-                        // Find outlets that are missing
-                        var missingOutlets = outletNames.Where(name => !found.Contains(name)).ToList();
+                        // ✅ Validate outlet names
+                        var foundOutlets = _context.OutletMaster.Select(a => a.OutletName.Trim()).ToList();
+                        var missingOutlets = outletNames.Where(name => !foundOutlets.Contains(name)).ToList();
 
                         if (missingOutlets.Any())
                         {
@@ -153,29 +151,41 @@ namespace Ajit_Bakery.Controllers
                             return Json(new { success = false, message = $"The following outlets do not exist in the Outlet Master: {missingOutletNames}" });
                         }
 
-                        //end
+                        // ✅ Get all valid products from ProductMaster
+                        var validProductNames = _context.ProductMaster.Select(p => p.ProductName.Trim()).ToHashSet();
 
-                        // Read data from the third row onwards
-                        for (int row = 2; row <= rowCount; row++)
+                        // ✅ Keep track of skipped products
+                        var skippedProducts = new HashSet<string>();
+
+                        for (int row = 3; row <= rowCount; row++)
                         {
                             string productName = worksheet.Cells[row, 1].Text.Trim();
                             string unit = worksheet.Cells[row, 2].Text.Trim();
-                            int totalQty = Convert.ToInt32(worksheet.Cells[row, colCount].Text.Trim()); // Last column is total qty
-                            // Iterate through outlets and add records where quantity > 0
+
+                            if (!validProductNames.Contains(productName))
+                            {
+                                skippedProducts.Add(productName); // Track and skip invalid product
+                                continue;
+                            }
+
+                            int totalQty = Convert.ToInt32(worksheet.Cells[row, colCount].Text.Trim());
+
                             for (int col = 3; col < colCount; col++)
                             {
                                 if (int.TryParse(worksheet.Cells[row, col].Text.Trim(), out int quantity) && quantity > 0)
                                 {
                                     var currentuser = HttpContext.User;
                                     string username = currentuser.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
-                                    maxid = maxid + 1;
+
+                                    maxid++;
+
                                     ProductionCapture production = new ProductionCapture
                                     {
                                         Id = maxid,
                                         Production_Id = Production_Id,
                                         ProductName = productName,
                                         Unit = unit,
-                                        OutletName = outletNames[col - 3], // Match column index with outlet name
+                                        OutletName = outletNames[col - 3],
                                         TotalQty = quantity,
                                         Production_Date = DateTime.Now.ToString("dd-MM-yyyy"),
                                         Production_Time = DateTime.Now.ToString("HH:mm"),
@@ -188,19 +198,124 @@ namespace Ajit_Bakery.Controllers
                             }
                         }
 
-                        // Save to database
+                        // ✅ Save valid data
                         _context.ProductionCapture.AddRange(productionList);
                         await _context.SaveChangesAsync();
+
+                        // ✅ Prepare response
+                        string message = "Data uploaded successfully!";
+                        if (skippedProducts.Any())
+                        {
+                            message += $" Skipped products: {string.Join(", ", skippedProducts)}";
+                            return Json(new { success = false, message });
+
+                        }
+
+                        return Json(new { success = true, message });
                     }
                 }
-
-                return Json(new { success = true, message = "Data uploaded successfully!" });
             }
             catch (Exception ex)
             {
                 return Json(new { success = false, message = "Error processing file: " + ex.Message });
             }
         }
+
+
+        /* [HttpPost]
+         public async Task<IActionResult> UploadExcel(IFormFile file)
+         {
+             if (file == null || file.Length == 0)
+             {
+                 return Json(new { success = false, message = "No file uploaded!" });
+             }
+
+             try
+             {
+                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // Set license
+                 var Production_Id = GetProductionId(); // Generate a Production ID
+
+                 using (var stream = new MemoryStream())
+                 {
+                     await file.CopyToAsync(stream);
+                     ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // 🔹 Fix for EPPlus License Issue
+
+                     using (var package = new ExcelPackage(stream))
+                     {
+                         ExcelWorksheet worksheet = package.Workbook.Worksheets[0]; // Read first sheet
+                         int rowCount = worksheet.Dimension.Rows;
+                         int colCount = worksheet.Dimension.Columns;
+
+                         List<ProductionCapture> productionList = new List<ProductionCapture>();
+                         var maxid = _context.ProductionCapture.Any() ? _context.ProductionCapture.Max(e => e.Id) + 0 : 0;
+
+                         // Extract outlet names from the second row
+                         List<string> outletNames = new List<string>();
+                         for (int col = 3; col < colCount; col++) // Outlet names start from column index 3
+                         {
+                             outletNames.Add(worksheet.Cells[1, col].Text.Trim()); // Read outlet names
+                         }
+
+                         //check outlet exist or not 
+                         var found = _context.OutletMaster.Select(a => a.OutletName.Trim()).ToList();
+
+                         // Find outlets that are missing
+                         var missingOutlets = outletNames.Where(name => !found.Contains(name)).ToList();
+
+                         if (missingOutlets.Any())
+                         {
+                             string missingOutletNames = string.Join(", ", missingOutlets);
+                             return Json(new { success = false, message = $"The following outlets do not exist in the Outlet Master: {missingOutletNames}" });
+                         }
+
+                         //end
+
+                         // Read data from the third row onwards
+                         for (int row = 3; row <= rowCount; row++)
+                         {
+                             string productName = worksheet.Cells[row, 1].Text.Trim();
+                             string unit = worksheet.Cells[row, 2].Text.Trim();
+                             int totalQty = Convert.ToInt32(worksheet.Cells[row, colCount].Text.Trim()); // Last column is total qty
+                             // Iterate through outlets and add records where quantity > 0
+                             for (int col = 3; col < colCount; col++)
+                             {
+                                 if (int.TryParse(worksheet.Cells[row, col].Text.Trim(), out int quantity) && quantity > 0)
+                                 {
+                                     var currentuser = HttpContext.User;
+                                     string username = currentuser.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
+                                     maxid = maxid + 1;
+                                     ProductionCapture production = new ProductionCapture
+                                     {
+                                         Id = maxid,
+                                         Production_Id = Production_Id,
+                                         ProductName = productName,
+                                         Unit = unit,
+                                         OutletName = outletNames[col - 3], // Match column index with outlet name
+                                         TotalQty = quantity,
+                                         Production_Date = DateTime.Now.ToString("dd-MM-yyyy"),
+                                         Production_Time = DateTime.Now.ToString("HH:mm"),
+                                         Status = "Pending",
+                                         User = username,
+                                     };
+
+                                     productionList.Add(production);
+                                 }
+                             }
+                         }
+
+                         // Save to database
+                         _context.ProductionCapture.AddRange(productionList);
+                         await _context.SaveChangesAsync();
+                     }
+                 }
+
+                 return Json(new { success = true, message = "Data uploaded successfully!" });
+             }
+             catch (Exception ex)
+             {
+                 return Json(new { success = false, message = "Error processing file: " + ex.Message });
+             }
+         }*/
 
 
         /* public IActionResult ExportExcel()
@@ -227,71 +342,65 @@ namespace Ajit_Bakery.Controllers
             try
             {
                 var products = _context.ProductMaster.Select(p => new { p.ProductName, p.Uom }).Distinct().ToList();
-
                 var outlets = _context.OutletMaster.Select(p => p.OutletName).Distinct().Where(o => !string.IsNullOrEmpty(o)).ToList();
 
-                // **Set EPPlus License**
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
                 using (var package = new ExcelPackage())
                 {
                     ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Production Template");
 
-                    int totalColumns = outlets.Count + 3; // 2 columns for product & unit + outlet columns + total column
+                    int totalColumns = outlets.Count + 3; // 2 fixed columns + outlet columns + total
 
-                    // **Set title in the first row (Merged & Centered)**
-                    worksheet.Cells[1, 1, 1, totalColumns].Merge = true;
-                    worksheet.Cells[1, 1].Value = "DAILY ORDER SHEET";
-                    worksheet.Cells[1, 1].Style.Font.Size = 14;
-                    worksheet.Cells[1, 1].Style.Font.Bold = true;
-                    worksheet.Cells[1, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-
-                    // **Set column headers in the second row**
-                    worksheet.Cells[2, 1].Value = "PRODUCT";
-                    worksheet.Cells[2, 2].Value = "UNIT";
+                    // ✅ Row 1: Column Headers
+                    worksheet.Cells[1, 1].Value = "PRODUCT";
+                    worksheet.Cells[1, 2].Value = "UNIT";
 
                     int colIndex = 3;
                     foreach (var outlet in outlets)
                     {
-                        worksheet.Cells[2, colIndex].Value = outlet;
+                        worksheet.Cells[1, colIndex].Value = outlet;
                         colIndex++;
                     }
 
-                    worksheet.Cells[2, colIndex].Value = "TOTAL"; // Last column for total
+                    worksheet.Cells[1, colIndex].Value = "TOTAL";
 
-                    // **Style header row (Bold, Centered, Light Gray Background)**
-                    using (var range = worksheet.Cells[2, 1, 2, totalColumns])
+                    // ✅ Style the header row
+                    using (var range = worksheet.Cells[1, 1, 1, totalColumns])
                     {
                         range.Style.Font.Bold = true;
                         range.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
                         range.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                        range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray); // Light gray header
-                        range.Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin); // Border for headers
+                        range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                        range.Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
                     }
 
-                    // Fill product names and UOM starting from row 3
+                    // ✅ Row 2: Title (merged and centered below headers)
+                    worksheet.Cells[2, 1, 2, totalColumns].Merge = true;
+                    worksheet.Cells[2, 1].Value = "Category";                   
+                    //worksheet.Cells[2, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
+                    // ✅ Data rows start from row 3
                     int rowIndex = 3;
                     foreach (var product in products)
                     {
-                        worksheet.Cells[rowIndex, 1].Value = product.ProductName; // Product Name (Left-aligned)
-                        worksheet.Cells[rowIndex, 2].Value = product.Uom; // Unit
+                        worksheet.Cells[rowIndex, 1].Value = product.ProductName;
+                        worksheet.Cells[rowIndex, 2].Value = product.Uom;
 
-                        // Center align everything except product name
                         using (var range = worksheet.Cells[rowIndex, 2, rowIndex, totalColumns])
                         {
                             range.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
                         }
 
-                        // Insert formula in Total column to auto sum the row values
-                        string startColumn = "C"; // First outlet column
-                        string endColumn = GetExcelColumnName(totalColumns - 1); // Last outlet column before total
+                        string startColumn = "C";
+                        string endColumn = GetExcelColumnName(totalColumns - 1);
                         worksheet.Cells[rowIndex, totalColumns].Formula = $"SUM({startColumn}{rowIndex}:{endColumn}{rowIndex})";
 
                         rowIndex++;
                     }
 
-                    // **Apply borders to all filled cells**
-                    using (var borderRange = worksheet.Cells[2, 1, rowIndex - 1, totalColumns])
+                    // ✅ Apply borders to all content (headers + data)
+                    using (var borderRange = worksheet.Cells[1, 1, rowIndex - 1, totalColumns])
                     {
                         borderRange.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
                         borderRange.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
@@ -299,10 +408,20 @@ namespace Ajit_Bakery.Controllers
                         borderRange.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
                     }
 
-                    // Auto-fit columns
-                    worksheet.Cells.AutoFitColumns();
+                    //worksheet.Cells.AutoFitColumns();
 
-                    // Convert Excel package to byte array
+                    // Set manual width for fixed columns
+                    worksheet.Column(1).Width = 30; // Product
+                    worksheet.Column(2).Width = 12; // Unit
+
+                    // Set manual width for outlet columns (columns 3 to colIndex - 1)
+                    for (int col = 3; col < colIndex; col++)
+                    {
+                        worksheet.Column(col).Width = 25; // Adjust width as needed
+                    }
+
+                    worksheet.Column(totalColumns).Width = 15; // Total column
+
                     var fileBytes = package.GetAsByteArray();
 
                     return File(fileBytes,
@@ -315,6 +434,7 @@ namespace Ajit_Bakery.Controllers
                 return BadRequest("Error generating file: " + ex.Message);
             }
         }
+
 
         // Function to get Excel column name based on index (1 = A, 2 = B, ...)
         private string GetExcelColumnName(int columnNumber)
