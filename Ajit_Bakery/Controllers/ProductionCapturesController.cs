@@ -107,7 +107,7 @@ namespace Ajit_Bakery.Controllers
 
         private static List<ProductionCapture> ProductionCapture_list = new List<ProductionCapture>();
 
-
+        //Accept both xls and xlsx
         [HttpPost]
         public async Task<IActionResult> UploadExcel(IFormFile file)
         {
@@ -118,102 +118,140 @@ namespace Ajit_Bakery.Controllers
 
             try
             {
-                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                var extension = Path.GetExtension(file.FileName).ToLower();
                 var Production_Id = GetProductionId();
+                var productionList = new List<ProductionCapture>();
+                var maxid = _context.ProductionCapture.Any() ? _context.ProductionCapture.Max(e => e.Id) : 0;
 
-                using (var stream = new MemoryStream())
+                using var stream = new MemoryStream();
+                await file.CopyToAsync(stream);
+                stream.Position = 0;
+
+                List<string> outletNames = new List<string>();
+                HashSet<string> skippedProducts = new HashSet<string>();
+                var foundOutlets = _context.OutletMaster.Select(a => a.OutletName.Trim()).ToList();
+                var validProductNames = _context.ProductMaster.Select(p => p.ProductName.Trim()).ToList();
+
+                if (extension == ".xlsx")
                 {
-                    await file.CopyToAsync(stream);
+                    ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                    using var package = new ExcelPackage(stream);
+                    var worksheet = package.Workbook.Worksheets[0];
+                    int rowCount = worksheet.Dimension.Rows;
+                    int colCount = worksheet.Dimension.Columns;
 
-                    using (var package = new ExcelPackage(stream))
+                    for (int col = 3; col < colCount; col++)
+                        outletNames.Add(worksheet.Cells[1, col].Text.Trim());
+
+                    var missingOutlets = outletNames.Where(name => !foundOutlets.Contains(name.Trim())).ToList();
+                    if (missingOutlets.Any())
+                        return Json(new { success = false, message = $"The following outlets do not exist in the Outlet Master: {string.Join(", ", missingOutlets)}" });
+
+                    for (int row = 3; row <= rowCount; row++)
                     {
-                        ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
-                        int rowCount = worksheet.Dimension.Rows;
-                        int colCount = worksheet.Dimension.Columns;
+                        string productName = worksheet.Cells[row, 1].Text.Trim();
+                        string unit = worksheet.Cells[row, 2].Text.Trim();
 
-                        List<ProductionCapture> productionList = new List<ProductionCapture>();
-                        var maxid = _context.ProductionCapture.Any() ? _context.ProductionCapture.Max(e => e.Id) : 0;
+                        if (!validProductNames.Contains(productName))
+                        {
+                            skippedProducts.Add(productName);
+                            continue;
+                        }
 
-                        // ✅ Extract outlet names from header row
-                        List<string> outletNames = new List<string>();
                         for (int col = 3; col < colCount; col++)
                         {
-                            outletNames.Add(worksheet.Cells[1, col].Text.Trim());
-                        }
-
-                        // ✅ Validate outlet names
-                        var foundOutlets = _context.OutletMaster.Select(a => a.OutletName.Trim()).ToList();
-                        var missingOutlets = outletNames.Where(name => !foundOutlets.Contains(name)).ToList();
-
-                        if (missingOutlets.Any())
-                        {
-                            string missingOutletNames = string.Join(", ", missingOutlets);
-                            return Json(new { success = false, message = $"The following outlets do not exist in the Outlet Master: {missingOutletNames}" });
-                        }
-
-                        // ✅ Get all valid products from ProductMaster
-                        var validProductNames = _context.ProductMaster.Select(p => p.ProductName.Trim()).ToHashSet();
-
-                        // ✅ Keep track of skipped products
-                        var skippedProducts = new HashSet<string>();
-
-                        for (int row = 3; row <= rowCount; row++)
-                        {
-                            string productName = worksheet.Cells[row, 1].Text.Trim();
-                            string unit = worksheet.Cells[row, 2].Text.Trim();
-
-                            if (!validProductNames.Contains(productName))
+                            if (int.TryParse(worksheet.Cells[row, col].Text.Trim(), out int quantity) && quantity > 0)
                             {
-                                skippedProducts.Add(productName); // Track and skip invalid product
-                                continue;
-                            }
+                                var username = HttpContext.User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name)?.Value;
+                                maxid++;
 
-                            int totalQty = Convert.ToInt32(worksheet.Cells[row, colCount].Text.Trim());
-
-                            for (int col = 3; col < colCount; col++)
-                            {
-                                if (int.TryParse(worksheet.Cells[row, col].Text.Trim(), out int quantity) && quantity > 0)
+                                productionList.Add(new ProductionCapture
                                 {
-                                    var currentuser = HttpContext.User;
-                                    string username = currentuser.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
-
-                                    maxid++;
-
-                                    ProductionCapture production = new ProductionCapture
-                                    {
-                                        Id = maxid,
-                                        Production_Id = Production_Id,
-                                        ProductName = productName,
-                                        Unit = unit,
-                                        OutletName = outletNames[col - 3],
-                                        TotalQty = quantity,
-                                        Production_Date = DateTime.Now.ToString("dd-MM-yyyy"),
-                                        Production_Time = DateTime.Now.ToString("HH:mm"),
-                                        Status = "Pending",
-                                        User = username,
-                                    };
-
-                                    productionList.Add(production);
-                                }
+                                    Id = maxid,
+                                    Production_Id = Production_Id,
+                                    ProductName = productName,
+                                    Unit = unit,
+                                    OutletName = outletNames[col - 3],
+                                    TotalQty = quantity,
+                                    Production_Date = DateTime.Now.ToString("dd-MM-yyyy"),
+                                    Production_Time = DateTime.Now.ToString("HH:mm"),
+                                    Status = "Pending",
+                                    User = username
+                                });
                             }
                         }
-
-                        // ✅ Save valid data
-                        _context.ProductionCapture.AddRange(productionList);
-                        await _context.SaveChangesAsync();
-
-                        // ✅ Prepare response
-                        string message = "Data uploaded successfully!";
-                        if (skippedProducts.Any())
-                        {
-                            message += $" Skipped products: {string.Join(", ", skippedProducts)}";
-                            return Json(new { success = false, message });
-
-                        }
-
-                        return Json(new { success = true, message });
                     }
                 }
+                else if (extension == ".xls")
+                {
+                    using var workbook = new NPOI.HSSF.UserModel.HSSFWorkbook(stream);
+                    var sheet = workbook.GetSheetAt(0);
+                    int rowCount = sheet.LastRowNum;
+
+                    var headerRow = sheet.GetRow(0);
+                    int colCount = headerRow.LastCellNum;
+
+                    for (int col = 2; col < colCount - 1; col++)
+                        outletNames.Add(headerRow.GetCell(col)?.ToString().Trim());
+
+                    var missingOutlets = outletNames.Where(name => !foundOutlets.Contains(name)).ToList();
+                    if (missingOutlets.Any())
+                        return Json(new { success = false, message = $"The following outlets do not exist in the Outlet Master: {string.Join(", ", missingOutlets)}" });
+
+                    for (int row = 2; row <= rowCount; row++)
+                    {
+                        var currentRow = sheet.GetRow(row);
+                        if (currentRow == null) continue;
+
+                        string productName = currentRow.GetCell(0)?.ToString().Trim();
+                        string unit = currentRow.GetCell(1)?.ToString().Trim();
+
+                        if (!validProductNames.Contains(productName))
+                        {
+                            skippedProducts.Add(productName);
+                            continue;
+                        }
+
+                        for (int col = 3; col < colCount - 1; col++)
+                        {
+                            if (int.TryParse(currentRow.GetCell(col)?.ToString().Trim(), out int quantity) && quantity > 0)
+                            {
+                                var username = HttpContext.User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name)?.Value;
+                                maxid++;
+
+                                productionList.Add(new ProductionCapture
+                                {
+                                    Id = maxid,
+                                    Production_Id = Production_Id,
+                                    ProductName = productName,
+                                    Unit = unit,
+                                    OutletName = outletNames[col - 2],
+                                    TotalQty = quantity,
+                                    Production_Date = DateTime.Now.ToString("dd-MM-yyyy"),
+                                    Production_Time = DateTime.Now.ToString("HH:mm"),
+                                    Status = "Pending",
+                                    User = username
+                                });
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Unsupported file format. Please upload .xls or .xlsx files only." });
+                }
+
+                _context.ProductionCapture.AddRange(productionList);
+                await _context.SaveChangesAsync();
+
+                string successMessage = "Data uploaded successfully!";
+                if (skippedProducts.Any())
+                {
+                    successMessage += $" Skipped products: {string.Join(", ", skippedProducts)}";
+                    return Json(new { success = false, message = successMessage });
+                }
+
+                return Json(new { success = true, message = successMessage });
             }
             catch (Exception ex)
             {
@@ -221,121 +259,120 @@ namespace Ajit_Bakery.Controllers
             }
         }
 
+        /*  [HttpPost]
+          public async Task<IActionResult> UploadExcel(IFormFile file)
+          {
+              if (file == null || file.Length == 0)
+              {
+                  return Json(new { success = false, message = "No file uploaded!" });
+              }
 
-        /* [HttpPost]
-         public async Task<IActionResult> UploadExcel(IFormFile file)
-         {
-             if (file == null || file.Length == 0)
-             {
-                 return Json(new { success = false, message = "No file uploaded!" });
-             }
+              try
+              {
+                  ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                  var Production_Id = GetProductionId();
 
-             try
-             {
-                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // Set license
-                 var Production_Id = GetProductionId(); // Generate a Production ID
+                  using (var stream = new MemoryStream())
+                  {
+                      await file.CopyToAsync(stream);
 
-                 using (var stream = new MemoryStream())
-                 {
-                     await file.CopyToAsync(stream);
-                     ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // 🔹 Fix for EPPlus License Issue
+                      using (var package = new ExcelPackage(stream))
+                      {
+                          ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                          int rowCount = worksheet.Dimension.Rows;
+                          int colCount = worksheet.Dimension.Columns;
 
-                     using (var package = new ExcelPackage(stream))
-                     {
-                         ExcelWorksheet worksheet = package.Workbook.Worksheets[0]; // Read first sheet
-                         int rowCount = worksheet.Dimension.Rows;
-                         int colCount = worksheet.Dimension.Columns;
+                          List<ProductionCapture> productionList = new List<ProductionCapture>();
+                          var maxid = _context.ProductionCapture.Any() ? _context.ProductionCapture.Max(e => e.Id) : 0;
 
-                         List<ProductionCapture> productionList = new List<ProductionCapture>();
-                         var maxid = _context.ProductionCapture.Any() ? _context.ProductionCapture.Max(e => e.Id) + 0 : 0;
+                          // ✅ Extract outlet names from header row
+                          List<string> outletNames = new List<string>();
+                          for (int col = 3; col < colCount; col++)
+                          {
+                              outletNames.Add(worksheet.Cells[1, col].Text.Trim());
+                          }
 
-                         // Extract outlet names from the second row
-                         List<string> outletNames = new List<string>();
-                         for (int col = 3; col < colCount; col++) // Outlet names start from column index 3
-                         {
-                             outletNames.Add(worksheet.Cells[1, col].Text.Trim()); // Read outlet names
-                         }
+                          // ✅ Validate outlet names
+                          var foundOutlets = _context.OutletMaster.Select(a => a.OutletName.Trim()).ToList();
+                          var missingOutlets = outletNames.Where(name => !foundOutlets.Contains(name)).ToList();
 
-                         //check outlet exist or not 
-                         var found = _context.OutletMaster.Select(a => a.OutletName.Trim()).ToList();
+                          if (missingOutlets.Any())
+                          {
+                              string missingOutletNames = string.Join(", ", missingOutlets);
+                              return Json(new { success = false, message = $"The following outlets do not exist in the Outlet Master: {missingOutletNames}" });
+                          }
 
-                         // Find outlets that are missing
-                         var missingOutlets = outletNames.Where(name => !found.Contains(name)).ToList();
+                          // ✅ Get all valid products from ProductMaster
+                          var validProductNames = _context.ProductMaster.Select(p => p.ProductName.Trim()).ToHashSet();
 
-                         if (missingOutlets.Any())
-                         {
-                             string missingOutletNames = string.Join(", ", missingOutlets);
-                             return Json(new { success = false, message = $"The following outlets do not exist in the Outlet Master: {missingOutletNames}" });
-                         }
+                          // ✅ Keep track of skipped products
+                          var skippedProducts = new HashSet<string>();
 
-                         //end
+                          for (int row = 3; row <= rowCount; row++)
+                          {
+                              string productName = worksheet.Cells[row, 1].Text.Trim();
+                              string unit = worksheet.Cells[row, 2].Text.Trim();
 
-                         // Read data from the third row onwards
-                         for (int row = 3; row <= rowCount; row++)
-                         {
-                             string productName = worksheet.Cells[row, 1].Text.Trim();
-                             string unit = worksheet.Cells[row, 2].Text.Trim();
-                             int totalQty = Convert.ToInt32(worksheet.Cells[row, colCount].Text.Trim()); // Last column is total qty
-                             // Iterate through outlets and add records where quantity > 0
-                             for (int col = 3; col < colCount; col++)
-                             {
-                                 if (int.TryParse(worksheet.Cells[row, col].Text.Trim(), out int quantity) && quantity > 0)
-                                 {
-                                     var currentuser = HttpContext.User;
-                                     string username = currentuser.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
-                                     maxid = maxid + 1;
-                                     ProductionCapture production = new ProductionCapture
-                                     {
-                                         Id = maxid,
-                                         Production_Id = Production_Id,
-                                         ProductName = productName,
-                                         Unit = unit,
-                                         OutletName = outletNames[col - 3], // Match column index with outlet name
-                                         TotalQty = quantity,
-                                         Production_Date = DateTime.Now.ToString("dd-MM-yyyy"),
-                                         Production_Time = DateTime.Now.ToString("HH:mm"),
-                                         Status = "Pending",
-                                         User = username,
-                                     };
+                              if (!validProductNames.Contains(productName))
+                              {
+                                  skippedProducts.Add(productName); // Track and skip invalid product
+                                  continue;
+                              }
 
-                                     productionList.Add(production);
-                                 }
-                             }
-                         }
+                              int totalQty = Convert.ToInt32(worksheet.Cells[row, colCount].Text.Trim());
 
-                         // Save to database
-                         _context.ProductionCapture.AddRange(productionList);
-                         await _context.SaveChangesAsync();
-                     }
-                 }
+                              for (int col = 3; col < colCount; col++)
+                              {
+                                  if (int.TryParse(worksheet.Cells[row, col].Text.Trim(), out int quantity) && quantity > 0)
+                                  {
+                                      var currentuser = HttpContext.User;
+                                      string username = currentuser.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
 
-                 return Json(new { success = true, message = "Data uploaded successfully!" });
-             }
-             catch (Exception ex)
-             {
-                 return Json(new { success = false, message = "Error processing file: " + ex.Message });
-             }
-         }*/
+                                      maxid++;
+
+                                      ProductionCapture production = new ProductionCapture
+                                      {
+                                          Id = maxid,
+                                          Production_Id = Production_Id,
+                                          ProductName = productName,
+                                          Unit = unit,
+                                          OutletName = outletNames[col - 3],
+                                          TotalQty = quantity,
+                                          Production_Date = DateTime.Now.ToString("dd-MM-yyyy"),
+                                          Production_Time = DateTime.Now.ToString("HH:mm"),
+                                          Status = "Pending",
+                                          User = username,
+                                      };
+
+                                      productionList.Add(production);
+                                  }
+                              }
+                          }
+
+                          // ✅ Save valid data
+                          _context.ProductionCapture.AddRange(productionList);
+                          await _context.SaveChangesAsync();
+
+                          // ✅ Prepare response
+                          string message = "Data uploaded successfully!";
+                          if (skippedProducts.Any())
+                          {
+                              message += $" Skipped products: {string.Join(", ", skippedProducts)}";
+                              return Json(new { success = false, message });
+
+                          }
+
+                          return Json(new { success = true, message });
+                      }
+                  }
+              }
+              catch (Exception ex)
+              {
+                  return Json(new { success = false, message = "Error processing file: " + ex.Message });
+              }
+          }*/
 
 
-        /* public IActionResult ExportExcel()
-         {
-             // Path to the existing file
-             string templatePath = Path.Combine(_webHostEnvironment.WebRootPath, "Doc", "ExcelExport.xlsx");
-
-             if (!System.IO.File.Exists(templatePath))
-             {
-                 return NotFound("The requested file was not found.");
-             }
-
-             // Read file bytes
-             byte[] fileBytes = System.IO.File.ReadAllBytes(templatePath);
-
-             // Return the file for download
-             return File(fileBytes,
-                         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                         "ExcelExport.xlsx");
-         }*/
 
         public IActionResult ExportExcel()
         {

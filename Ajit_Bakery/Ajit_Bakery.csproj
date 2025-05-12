@@ -54,6 +54,7 @@
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGenerators.Mvc" Version="7.0.12" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.18" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.0" />
+		<PackageReference Include="NPOI" Version="2.7.3" />
 		<PackageReference Include="PDFsharp" Version="6.1.1" />
 		<PackageReference Include="QRCoder" Version="1.3.9" />
 		<PackageReference Include="ReportViewerCore.NETCore" Version="15.1.19" />

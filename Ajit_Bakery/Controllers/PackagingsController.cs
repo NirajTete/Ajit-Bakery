@@ -951,6 +951,7 @@ namespace Ajit_Bakery.Controllers
              }
          }*/
 
+
         [HttpPost]
         public async Task<IActionResult> ReprintSticker([FromBody] List<string> receiptIds)
         {
@@ -1088,6 +1089,7 @@ namespace Ajit_Bakery.Controllers
 
             return Url.Content("~/Reports/") + fileName;
         }
+
 
     }
 }
