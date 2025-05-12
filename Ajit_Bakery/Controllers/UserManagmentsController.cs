@@ -6,6 +6,7 @@ using Ajit_Bakery.Models;
 using AspNetCoreHero.ToastNotification.Abstractions;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using NPOI.SS.Formula.Functions;
 
 namespace Ajit_Bakery.Controllers
 {
@@ -64,7 +65,7 @@ namespace Ajit_Bakery.Controllers
             var results = users.Select(userName => new UserCheckResult
             {
                 UserName = userName,
-                IsFound = userSet.Contains(userName)
+                IsFound = _context.UserManagment.Any(a => a.UserName.Trim() == userName.Trim())
             }).ToList();
 
             ViewBag.MyList = results; // Pass the processed data to View
