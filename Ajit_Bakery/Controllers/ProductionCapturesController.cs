@@ -1,4 +1,4 @@
-﻿ using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -143,6 +143,14 @@ namespace Ajit_Bakery.Controllers
                     for (int col = 3; col < colCount; col++)
                         outletNames.Add(worksheet.Cells[1, col].Text.Trim());
 
+                    for (int i = 0; i < outletNames.Count; i++)
+                    {
+                        if (outletNames[i].Contains("\n"))
+                        {
+                            outletNames[i] = outletNames[i].Replace("\n", " ").Trim();
+                        }
+                    }
+
                     var missingOutlets = outletNames.Where(name => !foundOutlets.Contains(name.Trim())).ToList();
                     if (missingOutlets.Any())
                         return Json(new { success = false, message = $"The following outlets do not exist in the Outlet Master: {string.Join(", ", missingOutlets)}" });
@@ -152,7 +160,7 @@ namespace Ajit_Bakery.Controllers
                         string productName = worksheet.Cells[row, 1].Text.Trim();
                         string unit = worksheet.Cells[row, 2].Text.Trim();
 
-                        if (!validProductNames.Contains(productName))
+                        if (!validProductNames.Contains(productName.Trim()))
                         {
                             skippedProducts.Add(productName);
                             continue;
@@ -194,7 +202,17 @@ namespace Ajit_Bakery.Controllers
                     for (int col = 2; col < colCount - 1; col++)
                         outletNames.Add(headerRow.GetCell(col)?.ToString().Trim());
 
+                    for (int i = 0; i < outletNames.Count; i++)
+                    {
+                        if (outletNames[i].Contains("\n"))
+                        {
+                            outletNames[i] = outletNames[i].Replace("\n", " ").Trim();
+                        }
+                    }
+
                     var missingOutlets = outletNames.Where(name => !foundOutlets.Contains(name)).ToList();
+
+
                     if (missingOutlets.Any())
                         return Json(new { success = false, message = $"The following outlets do not exist in the Outlet Master: {string.Join(", ", missingOutlets)}" });
 
@@ -206,7 +224,7 @@ namespace Ajit_Bakery.Controllers
                         string productName = currentRow.GetCell(0)?.ToString().Trim();
                         string unit = currentRow.GetCell(1)?.ToString().Trim();
 
-                        if (!validProductNames.Contains(productName))
+                        if (!validProductNames.Contains(productName.Trim()))
                         {
                             skippedProducts.Add(productName);
                             continue;
@@ -414,7 +432,7 @@ namespace Ajit_Bakery.Controllers
 
                     // ✅ Row 2: Title (merged and centered below headers)
                     worksheet.Cells[2, 1, 2, totalColumns].Merge = true;
-                    worksheet.Cells[2, 1].Value = "Category";                   
+                    worksheet.Cells[2, 1].Value = "Category";
                     //worksheet.Cells[2, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
 
                     // ✅ Data rows start from row 3
@@ -535,7 +553,7 @@ namespace Ajit_Bakery.Controllers
 
         public async Task<IActionResult> Index()
         {
-            
+
             //if (TempData["NotyfMessage"] != null)
             //{
             //    string message = TempData["NotyfMessage"].ToString();
@@ -550,7 +568,7 @@ namespace Ajit_Bakery.Controllers
 
             var date = DateTime.Now.ToString("dd-MM-yyyy");
             //Fetch ordered data from database
-            var list = await _context.ProductionCapture.Where(a => a.Production_Date.Trim() == date.Trim()).OrderByDescending(a => a.Id ).ToListAsync();
+            var list = await _context.ProductionCapture.Where(a => a.Production_Date.Trim() == date.Trim()).OrderByDescending(a => a.Id).ToListAsync();
 
             //Get distinct outlet names dynamically from the data
             var allOutlets = list.Select(x => x.OutletName).Distinct().ToList();
@@ -764,7 +782,7 @@ namespace Ajit_Bakery.Controllers
         public IActionResult Create()
         {
             var currentdate = DateTime.Now.ToString("dd-MM-yyyy");
-            var checkiffound = _context.ProductionCapture.OrderByDescending(a=>a.Id).Select(a => a.Production_Date).FirstOrDefault();
+            var checkiffound = _context.ProductionCapture.OrderByDescending(a => a.Id).Select(a => a.Production_Date).FirstOrDefault();
             var proid = _context.ProductionCapture.OrderByDescending(a => a.Id).Select(a => a.Production_Id).FirstOrDefault();
             //if(checkiffound != null)
             //{
@@ -773,9 +791,9 @@ namespace Ajit_Bakery.Controllers
             //        return RedirectToAction(nameof(Index));
             //    }
             //}
-            
+
             ViewBag.ProductionId = GetProductionId1();
-            
+
             return View();
         }
         [HttpGet]
