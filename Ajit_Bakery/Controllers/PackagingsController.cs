@@ -856,150 +856,43 @@ namespace Ajit_Bakery.Controllers
             return View(packaging);
         }
 
-        /* public async Task<IActionResult> Reprint(string receiptId)
-         {
-             try
-             {
-                 if (string.IsNullOrEmpty(receiptId))
-                 {
-                     return Json(new { success = false, message = "Invalid Receipt ID!" });
-                 }
-
-                 var packagingList = _context.Packaging
-                     .Where(p => p.Reciept_Id == receiptId)
-                     .ToList();
-
-                 if (packagingList.Count == 0)
-                 {
-                     return Json(new { success = false, message = "No records found for this Receipt ID!" });
-                 }
-
-                 string DATE = DateTime.Now.ToString("dd-MM-yyyy");
-                 string BOXNO = packagingList.FirstOrDefault().Box_No;
-                 string OUTLET = packagingList.FirstOrDefault().Outlet_Name;
-
-                 // Generate QR Code
-                 string qrcode = BOXNO + "$" + receiptId;
-                 string image;
-                 using (MemoryStream ms = new MemoryStream())
-                 {
-                     QRCodeGenerator qrGenerator = new QRCodeGenerator();
-                     QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrcode, QRCodeGenerator.ECCLevel.Q);
-                     PngByteQRCode qrCode = new PngByteQRCode(qrCodeData);
-                     byte[] qrCodeBytes = qrCode.GetGraphic(20);
-                     ms.Write(qrCodeBytes, 0, qrCodeBytes.Length);
-                     image = Convert.ToBase64String(ms.ToArray());
-                 }
-
-                 DataTable table1 = new DataTable();
-                 table1.Columns.AddRange(new DataColumn[]
-                 {
-                     new DataColumn("product_name", typeof(string)),
-                     new DataColumn("qnty", typeof(string)),
-                     new DataColumn("wt", typeof(string)),
-                 });
-
-                 foreach (var item in packagingList)
-                 {
-                     table1.Rows.Add(item.Product_Name, item.Qty, item.TotalNetWg + " " + item.TotalNetWg_Uom);
-                 }
-
-                 var parameters = new[]
-                 {
-                     new ReportParameter("d1", DATE),
-                     new ReportParameter("pid", receiptId),
-                     new ReportParameter("qr", image),
-                     new ReportParameter("ot", OUTLET),
-                     new ReportParameter("bx", BOXNO),
-                     new ReportParameter("rd1", receiptId),
-                 };
-
-                 using var report = new LocalReport();
-                 report.ReportPath = $"{this._webHostEnvironment.WebRootPath}\\Reports\\DispatchRPT.rdlc";
-                 report.SetParameters(parameters);
-                 ReportDataSource rds = new ReportDataSource("DataSet1", table1);
-                 report.DataSources.Add(rds);
-
-                 string renderFormat = "PDF";
-                 var pdf = report.Render(renderFormat);
-
-                 string folderPath = $"{this._webHostEnvironment.WebRootPath}\\Reports\\";
-                 if (!Directory.Exists(folderPath))
-                 {
-                     Directory.CreateDirectory(folderPath);
-                 }
-
-                 // Delete old PDFs
-                 foreach (string pdfFile in Directory.GetFiles(folderPath, "*.pdf"))
-                 {
-                     if (System.IO.File.GetCreationTime(pdfFile) < DateTime.Now.AddHours(-24))
-                     {
-                         System.IO.File.Delete(pdfFile);
-                     }
-                 }
-
-                 string fileName = $"Reprint_PackagingSlip_{receiptId}.pdf";
-                 string filePath = System.IO.Path.Combine(folderPath, fileName);
-                 System.IO.File.WriteAllBytes(filePath, pdf);
-                 string pdfUrl = Url.Content("~/Reports/") + fileName;
-
-                 return Json(new { success = true, pdfUrl = pdfUrl });
-             }
-             catch (Exception ex)
-             {
-                 return Json(new { success = false, message = ex.Message });
-             }
-         }*/
-
-
         [HttpPost]
         public async Task<IActionResult> ReprintSticker([FromBody] List<string> receiptIds)
         {
+            if (receiptIds == null || !receiptIds.Any())
+            {
+                return Json(new { success = false, message = "No receipt selected!" });
+            }
+
             try
             {
-                if (receiptIds == null || receiptIds.Count == 0)
-                {
-                    return Json(new { success = false, message = "No receipt selected!" });
-                }
-
-                // Fetch packaging data based on selected receipt IDs
-                var packagingList = _context.Packaging
+                var packagingList = await _context.Packaging
                     .Where(p => receiptIds.Contains(p.Reciept_Id))
-                    .ToList();
+                    .ToListAsync();
 
-                if (packagingList.Count == 0)
+                if (!packagingList.Any())
                 {
                     return Json(new { success = false, message = "No matching receipts found!" });
                 }
 
-                // Re-generate PDF for selected receipts
                 string pdfUrl = GeneratePackagingSlip(packagingList);
 
-                //Send to lan ip
-                string printstk1 = null;
-                string printprn1 = "";
-                string printerName1 = _config["AppSettings:loc2_printer"];
-                string prnFilePath = string.Empty;
+                // Send to printer over LAN
                 try
                 {
-                    var printerIp1 = IPAddress.Parse(printerName1);
-                    var printerPort1 = 9100;
-                    var client1 = new TcpClient();
-                    client1.Connect(printerIp1, printerPort1);
+                    string printerIpStr = _config["AppSettings:loc2_printer"];
+                    using var client = new TcpClient();
+                    await client.ConnectAsync(IPAddress.Parse(printerIpStr), 9100);
 
-                    byte[] byteArray1 = Encoding.ASCII.GetBytes(pdfUrl);
-                    var stream1 = client1.GetStream();
-                    stream1.Write(byteArray1, 0, byteArray1.Length);
-                    stream1.Flush();
-
-                    client1.Close();
-                    Thread.Sleep(300);
+                    byte[] data = Encoding.ASCII.GetBytes(pdfUrl);
+                    using var stream = client.GetStream();
+                    await stream.WriteAsync(data, 0, data.Length);
+                    await stream.FlushAsync();
                 }
                 catch (Exception ex)
                 {
+                    // Consider logging the exception
                 }
-                //end
-
 
                 return Json(new { success = true, pdfUrl });
             }
@@ -1008,88 +901,68 @@ namespace Ajit_Bakery.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+
         private string GeneratePackagingSlip(List<Packaging> packagingList)
         {
-            string DATE = DateTime.Now.ToString("dd-MM-yyyy");
-            string folderPath = $"{this._webHostEnvironment.WebRootPath}\\Reports\\";
-            if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
+            string date = DateTime.Now.ToString("dd-MM-yyyy");
+            string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "Reports");
+            Directory.CreateDirectory(folderPath);
 
             string fileName = $"Reprint_{DateTime.Now:yyyyMMddHHmmss}.pdf";
             string filePath = Path.Combine(folderPath, fileName);
 
             using var report = new LocalReport();
-            report.ReportPath = $"{this._webHostEnvironment.WebRootPath}\\Reports\\DispatchRPT.rdlc";
-            var boxno = packagingList.Select(a => a.Box_No).FirstOrDefault();
-            var rd = packagingList.Select(a => a.Reciept_Id).FirstOrDefault();
+            report.ReportPath = Path.Combine(_webHostEnvironment.WebRootPath, "Reports", "DispatchRPT.rdlc");
 
-            string qrcode = boxno + "$" + packagingList.Select(a => a.Reciept_Id.Trim()).FirstOrDefault();
-            string image;
-            using (MemoryStream ms = new MemoryStream())
+            var firstItem = packagingList.First();
+            string boxNo = firstItem.Box_No;
+            string receiptId = firstItem.Reciept_Id.Trim();
+            string outletName = firstItem.Outlet_Name;
+            string productionId = firstItem.Production_Id;
+
+            // Generate QR code
+            string qrCodeContent = $"{boxNo}${receiptId}";
+            string base64QrImage;
+            using (var ms = new MemoryStream())
             {
-                QRCodeGenerator qrGenerator = new QRCodeGenerator();
-                QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrcode, QRCodeGenerator.ECCLevel.Q);
-                PngByteQRCode qrCode = new PngByteQRCode(qrCodeData);
-                byte[] qrCodeBytes = qrCode.GetGraphic(20);
-                ms.Write(qrCodeBytes, 0, qrCodeBytes.Length);
-                image = Convert.ToBase64String(ms.ToArray());
+                var qrGenerator = new QRCodeGenerator();
+                var qrCodeData = qrGenerator.CreateQrCode(qrCodeContent, QRCodeGenerator.ECCLevel.Q);
+                var qrCode = new PngByteQRCode(qrCodeData);
+                byte[] qrBytes = qrCode.GetGraphic(20);
+                ms.Write(qrBytes, 0, qrBytes.Length);
+                base64QrImage = Convert.ToBase64String(ms.ToArray());
             }
 
+            // Prepare DataTable
             DataTable table = new DataTable();
-            table.Columns.AddRange(new DataColumn[]
+            table.Columns.AddRange(new[]
             {
         new DataColumn("product_name", typeof(string)),
         new DataColumn("qnty", typeof(string)),
-        new DataColumn("wt", typeof(string)),
-            });
+        new DataColumn("wt", typeof(string))
+    });
 
-            /* foreach (var item in packagingList)
-             {
-                 table.Rows.Add(item.Product_Name, item.Qty, $"{item.TotalNetWg} {item.TotalNetWg_Uom}");
-             }*/
+            packagingList.ForEach(item =>
+                table.Rows.Add(item.Product_Name, item.Qty, $"{item.TotalNetWg} {item.TotalNetWg_Uom}"));
 
-            var groupedList = packagingList
-                                 .GroupBy(p => new { p.Box_No, p.Outlet_Name }) // Group by multiple fields
-                                 .Select(g => new
-                                 {
-                                     BoxNo = g.Key.Box_No,
-                                     OutletName = g.Key.Outlet_Name,
-                                     Products = g.Select(p => new
-                                     {
-                                         p.Product_Name,
-                                         p.Qty,
-                                         p.TotalNetWg,
-                                         p.TotalNetWg_Uom,
-                                     }).ToList()
-                                 }).ToList();
-            string pdfUrl = "";
-
-            packagingList.ForEach(item => table.Rows.Add(item.Product_Name, item.Qty, item.TotalNetWg + " " + item.TotalNetWg_Uom));
-            var proid = packagingList.Select(a => a.Production_Id).FirstOrDefault();
-            var Outlet_Name = packagingList.Select(a => a.Outlet_Name).FirstOrDefault();
+            // Set parameters and generate report
             var parameters = new[]
-                {
-                        new ReportParameter("d1", DATE),
-                        new ReportParameter("pid", proid),
-                        new ReportParameter("qr", image),
-                        new ReportParameter("ot", Outlet_Name),
-                        new ReportParameter("bx", boxno),
-                        new ReportParameter("rd1", rd),
-                    };
+            {
+        new ReportParameter("d1", date),
+        new ReportParameter("pid", productionId),
+        new ReportParameter("qr", base64QrImage),
+        new ReportParameter("ot", outletName),
+        new ReportParameter("bx", boxNo),
+        new ReportParameter("rd1", receiptId)
+    };
 
             report.SetParameters(parameters);
-            //ReportDataSource rds = new ReportDataSource("DataSet1", table1);
-            //report.DataSources.Add(rds);
-            //var pdf = report.Render(renderFormat);
-
-
-
             report.DataSources.Add(new ReportDataSource("DataSet1", table));
-            var pdf = report.Render("PDF");
-            System.IO.File.WriteAllBytes(filePath, pdf);
+            byte[] pdfBytes = report.Render("PDF");
+            System.IO.File.WriteAllBytes(filePath, pdfBytes);
 
-            return Url.Content("~/Reports/") + fileName;
+            return Url.Content("~/Reports/" + fileName);
         }
-
 
     }
 }

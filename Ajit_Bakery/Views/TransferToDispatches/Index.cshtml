@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Index";
+
+    string Depname = User.Claims.FirstOrDefault(a => a.Type == "UserDept").Value;
 }
 
 <div class="card">
@@ -9,9 +11,13 @@
         <div class="d-flex align-items-baseline">
             <a asp-action="Index" asp-controller="Home" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
             <h4 class="mx-auto text-white text-2xl font-semibold">  Transfer To Dispatch </h4>
-            <a asp-action="Create" asp-controller="TransferToDispatches" class="btn btn-success btn-sm text-white">
-                <i class="fas fa-plus-square"></i>  Transfer To Dispatch
-            </a>
+            @if (Depname != "Dispatch")
+            {
+                <a asp-action="Create" asp-controller="TransferToDispatches" class="btn btn-success btn-sm text-white">
+                    <i class="fas fa-plus-square"></i>  Transfer To Dispatch
+                </a>
+            }
+
         </div>
     </div>
     <div class="card-body mt-4">
@@ -24,7 +30,7 @@
                         @* <th class="text-center">DC No. </th> *@
                         <th class="text-center">Outlet Name </th>
                         <th class="text-center">Box No.</th>
-                        <th class="text-center" >Receipt No.</th>
+                        <th class="text-center">Receipt No.</th>
                         <th class="text-center">Product Name.</th>
                         <th class="text-center">Category</th>
                         <th class="text-center">Total Qty</th>
@@ -46,8 +52,8 @@
                             <td><span class="badge bg-primary">@Html.DisplayFor(modelItem => item.Reciept_Id)</span></td>
                             <td>@Html.DisplayFor(modelItem => item.Product_Name)</td>
                             <td>@Html.DisplayFor(modelItem => item.Category)</td>
-                            <td  style="text-align:center">@Html.DisplayFor(modelItem => item.Qty)</td>
-                          @*   <td>
+                            <td style="text-align:center">@Html.DisplayFor(modelItem => item.Qty)</td>
+                            @*   <td>
                                 <button class="btn btn-warning btn-sm"
                                         onclick="GenerateDCPdf('@item.Production_Id', '@item.DCNo', '@item.Box_No', '@item.Reciept_Id')">
                                     <i class="fas fa-file-invoice"></i> DC
@@ -152,7 +158,7 @@
         //                 }
 
         //             },
-                  
+
         //         ],
         //         info: false, ordering: false,
         //     });

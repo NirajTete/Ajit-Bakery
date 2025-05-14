@@ -64,7 +64,7 @@ namespace Ajit_Bakery.Controllers
                          new Claim(ClaimTypes.Name,user.UserName),
                          new Claim(ClaimTypes.Email, user.Email),
                          //new Claim("UnitName", user.UnitLocation),
-                         //new Claim("PlantName", user.plantname),
+                         new Claim("UserDept", user.UserDept),
                          new Claim("Menu", jsonData),
                          new Claim(ClaimTypes.Role,user.UserRole)
                      };
