@@ -435,7 +435,9 @@ namespace Ajit_Bakery.Controllers
             var defItem = new SelectListItem()
             {
                 Value = "",
-                Text = "----Select Production_Id ----"
+                Text = "-- Select Production_Id --",
+                Selected = true,
+                Disabled = true
             };
 
             lstProducts.Insert(0, defItem);

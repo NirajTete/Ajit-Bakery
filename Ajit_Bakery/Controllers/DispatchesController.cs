@@ -237,7 +237,9 @@ namespace Ajit_Bakery.Controllers
             var defItem = new SelectListItem()
             {
                 Value = "",
-                Text = "----Select DCNo ----"
+                Text = "-- Select DCNo --",
+                Selected = true,
+                Disabled = true
             };
 
             lstProducts.Insert(0, defItem);
@@ -257,7 +259,9 @@ namespace Ajit_Bakery.Controllers
             var defItem = new SelectListItem()
             {
                 Value = "",
-                Text = "----Select Production_Id ----"
+                Text = "-- Select Production_Id --",
+                Selected = true,
+                Disabled = true
             };
 
             lstProducts.Insert(0, defItem);
@@ -277,7 +281,9 @@ namespace Ajit_Bakery.Controllers
             var defItem = new SelectListItem()
             {
                 Value = "",
-                Text = "----Select DriverName ----"
+                Text = "-- Select DriverName --",
+                Selected = true,
+                Disabled = true
             };
 
             lstProducts.Insert(0, defItem);

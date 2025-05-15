@@ -161,20 +161,18 @@ namespace Ajit_Bakery.Controllers
         }
         public IActionResult Create(string? username)
         {
-            //ViewBag.role= GetRole();
-            //return View();
+            //ViewBag.role = GetRole();
+            //ViewBag.MainMenu = GetMainMenu();
+            //ViewBag.SubMenu = GetSubMenu();
+            //ViewBag.OprationMenu = GetOprationMenu();
+            //ViewBag.reportmenu = GetReportMenu();
 
             ViewBag.role = GetRole();
             ViewBag.MainMenu = GetMainMenu();
             ViewBag.SubMenu = GetSubMenu();
             ViewBag.OprationMenu = GetOprationMenu();
             ViewBag.reportmenu = GetReportMenu();
-            //ViewBag.WmarketingMenu = GetMarketingMenu();
-
-          /*  if (username == null || _context.UserManagment == null)
-            {
-                return NotFound();
-            }*/
+            ViewBag.WmarketingMenu = GetMarketingMenu();
 
             var userManagement = _context.UserManagment.Where(a => a.UserName == username).FirstOrDefault();
             if (userManagement == null)
@@ -186,114 +184,107 @@ namespace Ajit_Bakery.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(string[] mainmenu, string[] submenu, string[] oprationmenu,
+        //public async Task<IActionResult> Create(string[] mainmenu, string[] submenu, string[] oprationmenu,
+        //    string[] reportmenu, string[] marketingmenu, UserManagment userManagement)
+            
+        public async Task<IActionResult> Create( string[] mainmenu, string[] submenu, string[] oprationmenu,
             string[] reportmenu, string[] marketingmenu, UserManagment userManagement)
         {
-
-            var previewdata = _context.UserManagment.Where(a => a.UserName == userManagement.UserName).ToList();
-
-            _context.RemoveRange(previewdata);
-
-            _context.SaveChanges();
-
-            // Add new records based on the fruitIds
-            foreach (var fruit in mainmenu)
+            try
             {
-                int maxId = _context.UserManagment.Any() ? _context.UserManagment.Max(e => e.Id) + 1 : 1;
-                userManagement.Id = maxId;
-                var newUserManagement = new UserManagment
-                {
-                    UserName = userManagement.UserName,
-                    PageName = fruit,
-                    Role = userManagement.Role,
-                    Id = maxId,
-                };
-
-                _context.Add(newUserManagement);
+                var previewdata = _context.UserManagment.Where(a => a.UserName == userManagement.UserName).ToList();
+                _context.RemoveRange(previewdata);
                 _context.SaveChanges();
-            }
 
-            foreach (var fruit in submenu)
+                foreach (var fruit in mainmenu)
+                {
+                    int maxId = _context.UserManagment.Any() ? _context.UserManagment.Max(e => e.Id) + 1 : 1;
+                    userManagement.Id = maxId;
+                    var newUserManagement = new UserManagment
+                    {
+                        UserName = userManagement.UserName,
+                        PageName = fruit,
+                        Role = userManagement.Role,
+                        Id = maxId,
+                    };
+
+                    _context.Add(newUserManagement);
+                    _context.SaveChanges();
+                }
+
+                foreach (var fruit in submenu)
+                {
+                    int maxId = _context.UserManagment.Any() ? _context.UserManagment.Max(e => e.Id) + 1 : 1;
+                    userManagement.Id = maxId;
+                    var newUserManagement = new UserManagment
+                    {
+                        UserName = userManagement.UserName,
+                        PageName = fruit,
+                        Role = userManagement.Role,
+                        Id = maxId,
+                    };
+
+                    _context.Add(newUserManagement);
+                    _context.SaveChanges();
+                }
+
+                foreach (var fruit in oprationmenu)
+                {
+                    int maxId = _context.UserManagment.Any() ? _context.UserManagment.Max(e => e.Id) + 1 : 1;
+                    userManagement.Id = maxId;
+                    var newUserManagement = new UserManagment
+                    {
+                        UserName = userManagement.UserName,
+                        PageName = fruit,
+                        Role = userManagement.Role,
+                        Id = maxId,
+                    };
+
+                    _context.Add(newUserManagement);
+                    _context.SaveChanges();
+                }
+
+                foreach (var fruit in marketingmenu)
+                {
+                    int maxId = _context.UserManagment.Any() ? _context.UserManagment.Max(e => e.Id) + 1 : 1;
+                    userManagement.Id = maxId;
+                    var newUserManagement = new UserManagment
+                    {
+                        UserName = userManagement.UserName,
+                        PageName = fruit,
+                        Role = userManagement.Role,
+                        Id = maxId,
+                    };
+
+                    _context.Add(newUserManagement);
+                    _context.SaveChanges();
+                }
+
+                foreach (var fruit in reportmenu)
+                {
+                    int maxId = _context.UserManagment.Any() ? _context.UserManagment.Max(e => e.Id) + 1 : 1;
+                    userManagement.Id = maxId;
+                    var newUserManagement = new UserManagment
+                    {
+                        UserName = userManagement.UserName,
+                        PageName = fruit,
+                        Role = userManagement.Role,
+                        Id = maxId,
+                    };
+
+                    _context.Add(newUserManagement);
+                    _context.SaveChanges();
+                }
+
+                //_notyfyService.Success("Pages Alloted Successfully !");
+                //return RedirectToAction(nameof(Index));
+
+            }
+            catch(Exception ex)
             {
-                int maxId = _context.UserManagment.Any() ? _context.UserManagment.Max(e => e.Id) + 1 : 1;
-                userManagement.Id = maxId;
-                var newUserManagement = new UserManagment
-                {
-                    UserName = userManagement.UserName,
-                    PageName = fruit,
-                    Role = userManagement.Role,
-                    Id = maxId,
-                };
 
-                _context.Add(newUserManagement);
-                _context.SaveChanges();
             }
-
-            foreach (var fruit in oprationmenu)
-            {
-                int maxId = _context.UserManagment.Any() ? _context.UserManagment.Max(e => e.Id) + 1 : 1;
-                userManagement.Id = maxId;
-                var newUserManagement = new UserManagment
-                {
-                    UserName = userManagement.UserName,
-                    PageName = fruit,
-                    Role = userManagement.Role,
-                    Id = maxId,
-                };
-
-                _context.Add(newUserManagement);
-                _context.SaveChanges();
-            }
-
-            foreach (var fruit in marketingmenu)
-            {
-                int maxId = _context.UserManagment.Any() ? _context.UserManagment.Max(e => e.Id) + 1 : 1;
-                userManagement.Id = maxId;
-                var newUserManagement = new UserManagment
-                {
-                    UserName = userManagement.UserName,
-                    PageName = fruit,
-                    Role = userManagement.Role,
-                    Id = maxId,
-                };
-
-                _context.Add(newUserManagement);
-                _context.SaveChanges();
-            }
-
-            foreach (var fruit in reportmenu)
-            {
-                int maxId = _context.UserManagment.Any() ? _context.UserManagment.Max(e => e.Id) + 1 : 1;
-                userManagement.Id = maxId;
-                var newUserManagement = new UserManagment
-                {
-                    UserName = userManagement.UserName,
-                    PageName = fruit,
-                    Role = userManagement.Role,
-                    Id = maxId,
-                };
-
-                _context.Add(newUserManagement);
-                _context.SaveChanges();
-            }
-
-            //maintain logs
-            //ViewData["UserID"] = _userManager.GetUserId(this.User);
-            //string username = _userManager.GetUserName(this.User);
-            //var logs = new Logs();
-            //logs.pagename = "User Managment";
-            //logs.action = "Create";
-            //logs.task = "Allot Page Access";
-            //logs.taskid = userManagement.Id;
-            //logs.date = DateTime.Now.ToString("dd-MM-yyyy");
-            //logs.time = DateTime.Now.ToString("HH:mm:ss");
-            //logs.username = username;
-            //_context.Add(logs);
-
-
-            // Save changes to the database
-            _notyfyService.Success("Pages Alloted Successfully !");
-            return RedirectToAction(nameof(Index));
+            return Json(new { success = true, message = "Pages Alloted successfully !" });
         }
 
         public async Task<IActionResult> Edit(string? username)
@@ -332,115 +323,105 @@ namespace Ajit_Bakery.Controllers
         public async Task<IActionResult> Edit(int id, string[] mainmenu, string[] submenu, string[] oprationmenu,
             string[] reportmenu, string[] marketingmenu, UserManagment userManagement)
         {
-            if(userManagement.Role == null)
+            try
             {
-                userManagement.Role = "User";
-            }
-            var previewdata = _context.UserManagment.Where(a => a.UserName == userManagement.UserName).ToList();
-
-            _context.RemoveRange(previewdata);
-
-            _context.SaveChanges();
-
-            // Add new records based on the fruitIds
-            foreach (var fruit in mainmenu)
-            {
-                int maxId = _context.UserManagment.Any() ? _context.UserManagment.Max(e => e.Id) + 1 : 1;
-                userManagement.Id = maxId;
-                var newUserManagement = new UserManagment
+                if (userManagement.Role == null)
                 {
-                    Id = maxId,
-                    UserName = userManagement.UserName,
-                    PageName = fruit,
-                    Role = userManagement.Role,
-                };
-
-                _context.Add(newUserManagement);
+                    userManagement.Role = "User";
+                }
+                var previewdata = _context.UserManagment.Where(a => a.UserName == userManagement.UserName).ToList();
+                _context.RemoveRange(previewdata);
                 _context.SaveChanges();
-            }
 
-            foreach (var fruit in submenu)
-            {
-                int maxId = _context.UserManagment.Any() ? _context.UserManagment.Max(e => e.Id) + 1 : 1;
-                userManagement.Id = maxId;
-                var newUserManagement = new UserManagment
+                foreach (var fruit in mainmenu)
                 {
-                    Id = maxId,
-                    UserName = userManagement.UserName,
-                    PageName = fruit,
-                    Role = userManagement.Role,
-                };
+                    int maxId = _context.UserManagment.Any() ? _context.UserManagment.Max(e => e.Id) + 1 : 1;
+                    userManagement.Id = maxId;
+                    var newUserManagement = new UserManagment
+                    {
+                        Id = maxId,
+                        UserName = userManagement.UserName,
+                        PageName = fruit,
+                        Role = userManagement.Role,
+                    };
 
-                _context.Add(newUserManagement);
-                _context.SaveChanges();
-            }
+                    _context.Add(newUserManagement);
+                    _context.SaveChanges();
+                }
 
-            foreach (var fruit in oprationmenu)
-            {
-                int maxId = _context.UserManagment.Any() ? _context.UserManagment.Max(e => e.Id) + 1 : 1;
-                userManagement.Id = maxId;
-                var newUserManagement = new UserManagment
+                foreach (var fruit in submenu)
                 {
-                    Id = maxId,
-                    UserName = userManagement.UserName,
-                    PageName = fruit,
-                    Role = userManagement.Role,
-                };
+                    int maxId = _context.UserManagment.Any() ? _context.UserManagment.Max(e => e.Id) + 1 : 1;
+                    userManagement.Id = maxId;
+                    var newUserManagement = new UserManagment
+                    {
+                        Id = maxId,
+                        UserName = userManagement.UserName,
+                        PageName = fruit,
+                        Role = userManagement.Role,
+                    };
 
-                _context.Add(newUserManagement);
-                _context.SaveChanges();
-            }
+                    _context.Add(newUserManagement);
+                    _context.SaveChanges();
+                }
 
-            foreach (var fruit in reportmenu)
-            {
-                int maxId = _context.UserManagment.Any() ? _context.UserManagment.Max(e => e.Id) + 1 : 1;
-                userManagement.Id = maxId;
-                var newUserManagement = new UserManagment
+                foreach (var fruit in oprationmenu)
                 {
-                    Id = maxId,
-                    UserName = userManagement.UserName,
-                    PageName = fruit,
-                    Role = userManagement.Role,
-                };
+                    int maxId = _context.UserManagment.Any() ? _context.UserManagment.Max(e => e.Id) + 1 : 1;
+                    userManagement.Id = maxId;
+                    var newUserManagement = new UserManagment
+                    {
+                        Id = maxId,
+                        UserName = userManagement.UserName,
+                        PageName = fruit,
+                        Role = userManagement.Role,
+                    };
 
-                _context.Add(newUserManagement);
-                _context.SaveChanges();
-            }
+                    _context.Add(newUserManagement);
+                    _context.SaveChanges();
+                }
 
-            foreach (var fruit in marketingmenu)
-            {
-                int maxId = _context.UserManagment.Any() ? _context.UserManagment.Max(e => e.Id) + 1 : 1;
-                userManagement.Id = maxId;
-                var newUserManagement = new UserManagment
+                foreach (var fruit in reportmenu)
                 {
-                    UserName = userManagement.UserName,
-                    PageName = fruit,
-                    Role = userManagement.Role,
-                    Id = maxId,
-                };
+                    int maxId = _context.UserManagment.Any() ? _context.UserManagment.Max(e => e.Id) + 1 : 1;
+                    userManagement.Id = maxId;
+                    var newUserManagement = new UserManagment
+                    {
+                        Id = maxId,
+                        UserName = userManagement.UserName,
+                        PageName = fruit,
+                        Role = userManagement.Role,
+                    };
 
-                _context.Add(newUserManagement);
+                    _context.Add(newUserManagement);
+                    _context.SaveChanges();
+                }
+
+                foreach (var fruit in marketingmenu)
+                {
+                    int maxId = _context.UserManagment.Any() ? _context.UserManagment.Max(e => e.Id) + 1 : 1;
+                    userManagement.Id = maxId;
+                    var newUserManagement = new UserManagment
+                    {
+                        UserName = userManagement.UserName,
+                        PageName = fruit,
+                        Role = userManagement.Role,
+                        Id = maxId,
+                    };
+
+                    _context.Add(newUserManagement);
+                    _context.SaveChanges();
+                }
+
+                var currentuser = HttpContext.User;
+                string username = currentuser.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
                 _context.SaveChanges();
+                _notyfyService.Success("Updated Pages Alloted Successfully !");
             }
+            catch(Exception ex)
+            {
 
-
-            //maintain logs
-            var currentuser = HttpContext.User;
-            //ViewData["UserID"] = currentuser.Claims.FirstOrDefault(a=>a.Type == "MenuId").Value;
-            string username = currentuser.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
-            //var logs = new Logs();
-            //logs.pagename = "User Managment";
-            //logs.action = "Create";
-            //logs.task = "Allot Page Access";
-            //logs.taskid = userManagement.Id;
-            //logs.date = DateTime.Now.ToString("dd-MM-yyyy");
-            //logs.time = DateTime.Now.ToString("HH:mm:ss");
-            //logs.username = username;
-            //_context.Add(logs);
-            _context.SaveChanges();
-            _notyfyService.Success("Updated Pages Alloted Successfully !");
-            // Save changes to the database
-
+            }
             return RedirectToAction(nameof(Index));
         }
 

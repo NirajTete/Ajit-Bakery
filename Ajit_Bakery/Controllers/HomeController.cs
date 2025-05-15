@@ -34,6 +34,7 @@ public class HomeController : Controller
 
         //return Json(new { count = productionList.Count });
 
+        var currentday = DateTime.Now.Day;
         var currentMonth = DateTime.Now.Month;
         var currentYear = DateTime.Now.Year;
 
@@ -51,21 +52,23 @@ public class HomeController : Controller
             )
             .Select(dateString => dateString.Split('-')) // Split into [dd, MM, yyyy]
             .Where(parts =>
+                int.TryParse(parts[0], out int day) && day == currentday && // Match month
                 int.TryParse(parts[1], out int month) && month == currentMonth && // Match month
                 int.TryParse(parts[2], out int year) && year == currentYear // Match year
             )
             .Count(); // Get the count       
 
+        var dateTimeNow = DateTime.Now.ToString("dd-MM-yyyy");
+
         // Count completed dispatches
-        var completedDispatchCount = _context.Dispatch
-            .Count(x => x.Status == "Completed");
+        var completedDispatchCount = _context.Dispatch.Where(s => s.Dispatch_Date == dateTimeNow && s.Status == "Completed").ToList().Count();
 
         // Count pending production orders
-        var pendingProductionCount = _context.ProductionCapture
+        var pendingProductionCount = _context.ProductionCapture.Where(s=> s.Production_Date == dateTimeNow)
             .Count(a => a.Status == "Pending");
 
         // Count completed production orders
-        var completedProductionCount = _context.SaveProduction
+        var completedProductionCount = _context.SaveProduction.Where(s => s.SaveProduction_Date == dateTimeNow)
             .Count(); /*x => x.Status == "Completed"*/
 
         // Assign values to ViewBag

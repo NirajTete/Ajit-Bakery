@@ -5,102 +5,103 @@
 }
 
 
-<div class="containeratio col-md-12">
-            <div class="card-header bg-dark text-white">
-                <div class="d-flex align-items-baseline">
-                    <h5 class="mx-auto font-weight-bolder">User Management Page</h5>
-                    <a asp-action="Index" class="btn btn-success text-white"><i class="fa fa-reply"></i> Back</a>
+
+<div class="card">
+    <div class="card-header bg-dark text-white py-2">
+        <div class="d-flex align-items-baseline">
+            <a asp-action="Index" asp-controller="Home" class="btn btn-link text-white"><i class="fa fa-arrow-left"></i></a>
+            <h4 class="mx-auto text-white text-2xl font-semibold"> User Management Page</h4>
+            @*  <a asp-action="CreateUser" class="btn btn-success btn-sm text-white">
+                <i class="fas fa-plus-square"></i> Add User
+            </a> *@
+        </div>
+    </div>
+    <div class="card-body mt-4">
+        <form asp-action="Create" id="productForm" onsubmit="return validateForm()">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="UserName" class="control-label fw-bold small"><b>Username</b></label>
+                        <input asp-for="UserName" class="form-control text-lowercase" style=" width: 480px;" readonly />
+                        <span asp-validation-for="UserName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Role" class="control-label fw-bold small"><b>Role</b></label>
+                        <select asp-for="Role" id="role" asp-items="@ViewBag.role" onchange="role()" class="form-control" required style="width: 480px;"></select>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label asp-for="PageName" class="control-label fw-bold small"><b>Page Access</b></label>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label asp-for="PageName" class="control-label fw-bold small"><b>Admin</b></label>
+                        <select id="demo" multiple class="form-control" asp-items="@ViewBag.MainMenu" asp-for="PageName" name="mainmenu" multiselect-select-all="true">
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label asp-for="PageName" class="control-label fw-bold small"><b>Masters</b></label>
+                        <select id="demo1" multiple class="form-control" asp-items="@ViewBag.SubMenu" asp-for="PageName" name="submenu" multiselect-select-all="true">
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label asp-for="PageName" class="control-label fw-bold small"><b>Operation</b></label>
+                        <select id="demo2" multiple class="form-control" asp-items="@ViewBag.OprationMenu" asp-for="PageName" name="oprationmenu" multiselect-select-all="true">
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label asp-for="PageName" class="control-label fw-bold small"><b>Reprint</b></label>
+                        <select id="demo4" multiple class="form-control selectdrop" asp-items="@ViewBag.WmarketingMenu" asp-for="selectedpages" name="marketingmenu" multiselect-select-all="true">
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label asp-for="PageName" class="control-label fw-bold small"><b>Report</b></label>
+                        <select id="demo3" multiple class="form-control" asp-items="@ViewBag.reportmenu" asp-for="PageName" name="reportmenu" multiselect-select-all="true">
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+
+            <br />
+            <div class="row">
+                <div class="col-md-6">
+                    @*<input type="submit" value="Create" class="btn btn-primary col-md-12" />*@
+                    <input type="submit" value="Save" class="btn btn-primary col-md-12" />
+                </div>
+                <div class="col-md-6">
+                    @*<a asp-action="Index" class="btn btn-danger col-md-12">Back</a> *@
+                    <a asp-action="Index" class="btn btn-danger col-md-12">Back to List</a>
                 </div>
             </div>
+            <br />
 
-            @*<h4>UserManagement</h4>*@
-            <div class="card-body">
-        <form asp-action="Create" id="productForm" onsubmit="return validateForm()">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label asp-for="UserName" class="control-label fw-bold small"><b>Username</b></label>
-                                <input asp-for="UserName" class="form-control text-lowercase" style=" width: 480px;" readonly />
-                                <span asp-validation-for="UserName" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label asp-for="Role" class="control-label fw-bold small"><b>Role</b></label>
-                                <select asp-for="Role" id="role" asp-items="@ViewBag.role" onchange="role()" class="form-control" required style="width: 480px;"></select>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label asp-for="PageName" class="control-label fw-bold small"><b>Page Access</b></label>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label asp-for="PageName" class="control-label fw-bold small"><b>Admin</b></label>
-                                <select id="demo" multiple class="form-control" asp-items="@ViewBag.MainMenu" asp-for="PageName" name="mainmenu" multiselect-select-all="true">
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label asp-for="PageName" class="control-label fw-bold small"><b>Masters</b></label>
-                                <select id="demo1" multiple class="form-control" asp-items="@ViewBag.SubMenu" asp-for="PageName" name="submenu" multiselect-select-all="true">
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label asp-for="PageName" class="control-label fw-bold small"><b>Operation</b></label>
-                                <select id="demo2" multiple class="form-control" asp-items="@ViewBag.OprationMenu" asp-for="PageName" name="oprationmenu" multiselect-select-all="true">
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label asp-for="PageName" class="control-label fw-bold small"><b>Marketing</b></label>
-                                <select id="demo4" multiple class="form-control" asp-items="@ViewBag.WmarketingMenu" asp-for="PageName" name="marketingmenu" multiselect-select-all="true">
-                                </select>
-                            </div>
-                        </div>
-
-
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label asp-for="PageName" class="control-label fw-bold small"><b>Report</b></label>
-                                <select id="demo3" multiple class="form-control" asp-items="@ViewBag.reportmenu" asp-for="PageName" name="reportmenu" multiselect-select-all="true">
-                                </select>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <br />
-                    <div class="row">
-                        <div class="col-md-6">
-                            @*<input type="submit" value="Create" class="btn btn-primary col-md-12" />*@
-                            <input type="submit" value="Save" class="btn btn-primary col-md-12" />
-                        </div>
-                        <div class="col-md-6">
-                            @*<a asp-action="Index" class="btn btn-danger col-md-12">Back</a> *@
-                            <a asp-action="Index" class="btn btn-danger col-md-12">Back to List</a>
-                        </div>
-                    </div>
-                    <br />
-
-                </form>
-            </div>
-            @*card end*@
-        </div>
+        </form>
+    </div>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 

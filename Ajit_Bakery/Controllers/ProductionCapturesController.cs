@@ -52,7 +52,9 @@ namespace Ajit_Bakery.Controllers
             var defItem = new SelectListItem()
             {
                 Value = "",
-                Text = "- Select Outlets -"
+                Text = "-- Select Outlets --",
+                Selected = true,
+                Disabled = true
             };
 
             lstProducts.Insert(0, defItem);
@@ -74,7 +76,9 @@ namespace Ajit_Bakery.Controllers
             var defItem = new SelectListItem()
             {
                 Value = "",
-                Text = "- Select ProductName -"
+                Text = "-- Select ProductName --",
+                Selected = true,
+                Disabled = true
             };
 
             lstProducts.Insert(0, defItem);
@@ -98,7 +102,10 @@ namespace Ajit_Bakery.Controllers
             var defItem = new SelectListItem()
             {
                 Value = "",
-                Text = "- Select Production Id -"
+                Text = "-- Production Id --",
+                Selected = true,
+                Disabled = true
+
             };
 
             lstProducts.Insert(0, defItem);
@@ -716,7 +723,9 @@ namespace Ajit_Bakery.Controllers
             var defItem = new SelectListItem()
             {
                 Value = "",
-                Text = "-Select Design-"
+                Text = "-- Select Design --",
+                Selected = true,
+                Disabled = true
             };
 
             lstProducts.Insert(0, defItem);

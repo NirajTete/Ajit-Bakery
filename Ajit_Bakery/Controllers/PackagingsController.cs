@@ -438,7 +438,9 @@ namespace Ajit_Bakery.Controllers
                 lstProducts.Insert(0, new SelectListItem()
                 {
                     Value = "",
-                    Text = "----Select Outlet----"
+                    Text = "-- Select Outlet --",
+                    Selected = true,
+                    Disabled = true
                 });
             }
             return Json(new { success = true, data = lstProducts });
@@ -461,7 +463,9 @@ namespace Ajit_Bakery.Controllers
             lstProducts.Insert(0, new SelectListItem
             {
                 Value = "",
-                Text = "----Select Box No ----"
+                Text = "-- Select Box No --",
+                Selected = true,
+                Disabled = true
             });
 
             return lstProducts;
@@ -481,7 +485,9 @@ namespace Ajit_Bakery.Controllers
             var defItem = new SelectListItem()
             {
                 Value = "",
-                Text = "----Select Production_Id ----"
+                Text = "-- Select Production_Id --",
+                Selected = true,
+                Disabled = true
             };
 
             lstProducts.Insert(0, defItem);

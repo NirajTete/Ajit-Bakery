@@ -26,7 +26,7 @@ namespace Ajit_Bakery.Controllers
         private readonly DataDBContext _context;
         private readonly IConfiguration _config;
         private readonly IApiService _apiService;
-        public ProductMastersController(DataDBContext context, IConfiguration config, IApiService apiService,INotyfService notyfyService)
+        public ProductMastersController(DataDBContext context, IConfiguration config, IApiService apiService, INotyfService notyfyService)
         {
             _context = context;
             //ADDED
@@ -73,15 +73,15 @@ namespace Ajit_Bakery.Controllers
                 return RedirectToAction(nameof(Index));  // Ensure redirect even in case of an error
             }
 
-            var GETCATEGORY = _context.ProductMaster.Select(a=>a.Category.Trim()).Distinct().ToList();
+            var GETCATEGORY = _context.ProductMaster.Select(a => a.Category.Trim()).Distinct().ToList();
             List<ProductMaster> category_master = new List<ProductMaster>();
-            foreach(var item in GETCATEGORY)
+            foreach (var item in GETCATEGORY)
             {
-                    ProductMaster productMaster = new ProductMaster()
-                    {
-                        Category = item.Trim(),
-                    };
-                    category_master.Add(productMaster);
+                ProductMaster productMaster = new ProductMaster()
+                {
+                    Category = item.Trim(),
+                };
+                category_master.Add(productMaster);
             }
             var localCatList = category_master;
 
@@ -421,7 +421,9 @@ namespace Ajit_Bakery.Controllers
             var defItem = new SelectListItem()
             {
                 Value = "",
-                Text = "--Select Dial--"
+                Text = "-- Select Dial --",
+                Selected = true,
+                Disabled = true
             };
 
             lstProducts.Insert(0, defItem);
@@ -495,7 +497,7 @@ namespace Ajit_Bakery.Controllers
 
                 int maxId = _context.ProductMaster.Any() ? _context.ProductMaster.Max(e => e.Id) + 1 : 1;
                 productMaster.Id = maxId;
-                productMaster.ProductName = productMaster.ProductName ;
+                productMaster.ProductName = productMaster.ProductName;
                 //productMaster.ProductName = productMaster.ProductName + " (" + productMaster.Qty + productMaster.Uom + ") ";
                 productMaster.CreateDate = DateTime.Now.ToString("dd-MM-yyyy");
                 productMaster.ModifiedDate = DateTime.Now.ToString("dd-MM-yyyy");
@@ -516,7 +518,7 @@ namespace Ajit_Bakery.Controllers
                     int cgst = 0;
                     int sgst = 0;
                     int igst = 0;
-                 
+
                     if (existinguom.Count > 0)
                     {
                         if (!existinguom.Contains(product.ProductName.Trim(), StringComparer.OrdinalIgnoreCase))
@@ -579,14 +581,14 @@ namespace Ajit_Bakery.Controllers
                 }
                 //ENDED
 
-               
+
                 //return RedirectToAction(nameof(Index));
-                return Json(new {success = true, message = "Created Successfully !" });
+                return Json(new { success = true, message = "Created Successfully !" });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 //return RedirectToAction(nameof(Index));
-                return Json(new { success = false, message = "Warning : "+ ex.Message });
+                return Json(new { success = false, message = "Warning : " + ex.Message });
             }
         }
 
@@ -638,7 +640,7 @@ namespace Ajit_Bakery.Controllers
                     .FirstOrDefaultAsync(m => m.Id == id);
                 if (productMaster == null)
                 {
-                    return Json(new { success = false, message = "Data not found in master ! "});
+                    return Json(new { success = false, message = "Data not found in master ! " });
                 }
                 else
                 {
@@ -648,9 +650,9 @@ namespace Ajit_Bakery.Controllers
 
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return Json(new { success = false, message = "WWarning : "+ex.Message });
+                return Json(new { success = false, message = "WWarning : " + ex.Message });
             }
         }
         private bool ProductMasterExists(int id)
