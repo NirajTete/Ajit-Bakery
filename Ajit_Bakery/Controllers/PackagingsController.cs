@@ -387,7 +387,7 @@ namespace Ajit_Bakery.Controllers
             return Json(new { success = false, message = "No remaining Qty found against " + Outlet_Name + "  outlet !" });
         }
 
-        /* public IActionResult GetOutlets(string Production_Id)
+       /* public IActionResult GetOutlets(string Production_Id)
         {
             var lstProducts = new List<SelectListItem>();
             if (Production_Id != null)
@@ -409,6 +409,7 @@ namespace Ajit_Bakery.Controllers
 
             return Json(new { success = true, data = lstProducts });
         }*/
+
         public IActionResult GetOutlets(string Production_Id)
         {
             var lstProducts = new List<SelectListItem>();
@@ -445,31 +446,31 @@ namespace Ajit_Bakery.Controllers
             }
             return Json(new { success = true, data = lstProducts });
         }
-        private List<SelectListItem> GetBoxNos()
+        private List<SelectListItem> GetBoxNos(string selectedBoxNo = null)
         {
             var lstProducts = _context.BoxMaster
-                    .Where(b => b.Use_Flag == 0)
-                    .AsNoTracking()
-                    .Select(n => n.BoxNumber)  // Select BoxNumber first
-                    .Distinct()                // Apply Distinct at the string level
-                    .Select(n => new SelectListItem
-                    {
-                        Value = n,
-                        Text = n
-                    })
-                    .ToList();
+                .Where(b => b.Use_Flag == 0)
+                .AsNoTracking()
+                .Select(n => n.BoxNumber)
+                .Distinct()
+                .Select(n => new SelectListItem
+                {
+                    Value = n,
+                    Text = n,
+                    Selected = (selectedBoxNo != null && n == selectedBoxNo)
+                })
+                .OrderBy(x => x.Text)
+                .ToList();
 
-            // Add default "Select" option
             lstProducts.Insert(0, new SelectListItem
             {
                 Value = "",
                 Text = "-- Select Box No --",
-                Selected = true,
+                Selected = string.IsNullOrEmpty(selectedBoxNo),
                 Disabled = true
             });
 
             return lstProducts;
-
         }
         private List<SelectListItem> GetProduction_Id()
         {

@@ -173,11 +173,15 @@ namespace Ajit_Bakery.Controllers
                             continue;
                         }
 
-                        for (int col = 3; col < colCount; col++)
+                        for (int col = 2; col < colCount; col++)
                         {
-                            if (int.TryParse(worksheet.Cells[row, col].Text.Trim(), out int quantity) && quantity > 0)
+                            //if (int.TryParse(worksheet.Cells[row, col].Text.Trim(), out int quantity) && quantity > 0)
+                            //{
+                            var cellValue = worksheet.Cells[row, col]?.Text;
+                            if (!string.IsNullOrWhiteSpace(cellValue) && int.TryParse(cellValue.Trim(), out int quantity) && quantity > 0)
                             {
-                                var username = HttpContext.User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name)?.Value;
+
+                            var username = HttpContext.User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name)?.Value;
                                 maxid++;
 
                                 productionList.Add(new ProductionCapture
@@ -223,7 +227,7 @@ namespace Ajit_Bakery.Controllers
                     if (missingOutlets.Any())
                         return Json(new { success = false, message = $"The following outlets do not exist in the Outlet Master: {string.Join(", ", missingOutlets)}" });
 
-                    for (int row = 2; row <= rowCount; row++)
+                    for (int row = 1; row <= rowCount; row++)
                     {
                         var currentRow = sheet.GetRow(row);
                         if (currentRow == null) continue;
@@ -237,9 +241,11 @@ namespace Ajit_Bakery.Controllers
                             continue;
                         }
 
-                        for (int col = 3; col < colCount - 1; col++)
+                        for (int col = 2; col < colCount - 1; col++)
                         {
-                            if (int.TryParse(currentRow.GetCell(col)?.ToString().Trim(), out int quantity) && quantity > 0)
+                            //if (int.TryParse(currentRow.GetCell(col)?.ToString().Trim(), out int quantity) && quantity > 0)
+                            var cellValue = currentRow.GetCell(col)?.ToString();
+                            if (!string.IsNullOrWhiteSpace(cellValue) && int.TryParse(cellValue.Trim(), out int quantity) && quantity > 0)
                             {
                                 var username = HttpContext.User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name)?.Value;
                                 maxid++;

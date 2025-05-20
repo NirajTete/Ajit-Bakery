@@ -4,6 +4,12 @@
     ViewData["Title"] = "Create";
 }
 
+<style>
+    .select2-container--default .select2-selection--single {
+        height: 34px !important;
+    }
+</style>
+
 <div class="card">
     <div class="card-header bg-dark text-white py-2">
         <div class="d-flex align-items-baseline">
@@ -21,7 +27,7 @@
                 <div class="row">
                     <div class="form-group col-sm-4">
                         <label asp-for="Production_Id" class="control-label fw-bold small">Production Id</label>
-                        <select asp-for="Production_Id" id="Production_Id" style="font-size:18px"  required class="form-control text-uppercase" asp-items="@ViewBag.GetProduction_Id" onchange="OnProduction_IdChange()">
+                        <select asp-for="Production_Id" id="Production_Id" style="font-size:18px" required class="form-control text-uppercase" asp-items="@ViewBag.GetProduction_Id" onchange="OnProduction_IdChange()">
                         </select>
                     </div>
                     <div class="col-sm-2">
@@ -665,6 +671,13 @@
             return true; // Allow form submission if all fields are filled
         }
         $(document).ready(function () {
+
+             $('#ProductName').select2({
+                placeholder: "-- Select Product Name--",
+                allowClear: true,
+                width: '100%'
+            });
+
             $("#SaveProduction").submit(function (event) {
                 event.preventDefault(); // Prevent default form submission
 

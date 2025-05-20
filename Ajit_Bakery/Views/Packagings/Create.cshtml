@@ -4,6 +4,12 @@
     ViewData["Title"] = "Create";
 }
 
+<style>
+    .select2-container--default .select2-selection--single {
+        height: 34px !important;
+    }
+</style>
+
 <div class="card">
     <div class="card-header bg-dark text-white py-2">
         <div class="d-flex align-items-baseline">
@@ -93,7 +99,7 @@
             <div class="modal-body">
                 <table id="cakeTable" class="table table-striped table-bordered">
                     <thead>
-                        <tr >
+                        <tr>
                             <th>Product Name</th>
                             <th class="text-center">Quantity</th>
                             @* <th>Production Date</th> *@
@@ -184,7 +190,7 @@
                             searching: true, // Enable search
                             ordering: false, // Disable sorting
                             lengthChange: false, // Disable "Show X entries" dropdown
-                            pageLength: 10   
+                            pageLength: 10
                         });
 
                         // Ensure modal is shown with fresh data
@@ -220,7 +226,7 @@
 
             // Load data
             loadCakeDetails(selectedOutlet);
-        });      
+        });
     </script>
 
     <script>
@@ -275,7 +281,21 @@
         //         });
         //     });
         // });
-         $(document).ready(function () {
+        $(document).ready(function () {
+
+            $('#Box_No').select2({
+                placeholder: "-- Select Box --",
+                allowClear: true,
+                width: '100%'
+            });
+
+            // Move focus to ScanItem when a box is selected
+            $('#Box_No').on('change', function () {
+                setTimeout(function () {
+                    $('#ScanItem').focus();
+                }, 100); // short delay ensures select2 doesn't steal back focus
+            });
+
             $("#Packaging").submit(function (event) {
                 event.preventDefault(); // Prevent default form submission
 
