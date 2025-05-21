@@ -134,10 +134,17 @@ namespace Ajit_Bakery.Controllers
                 await file.CopyToAsync(stream);
                 stream.Position = 0;
 
+                // Create lookup dictionaries with lower case keys for case-insensitive matching
+                var outletLookup = _context.OutletMaster
+                    .AsEnumerable()
+                    .ToDictionary(o => o.OutletName.Trim().ToLowerInvariant(), o => o.OutletName.Trim());
+
+                var productLookup = _context.ProductMaster
+                    .AsEnumerable()
+                    .ToDictionary(p => p.ProductName.Trim().ToLowerInvariant(), p => p.ProductName.Trim());
+
                 List<string> outletNames = new List<string>();
                 HashSet<string> skippedProducts = new HashSet<string>();
-                var foundOutlets = _context.OutletMaster.Select(a => a.OutletName.Trim()).ToList();
-                var validProductNames = _context.ProductMaster.Select(p => p.ProductName.Trim()).ToList();
 
                 if (extension == ".xlsx")
                 {
@@ -148,49 +155,47 @@ namespace Ajit_Bakery.Controllers
                     int colCount = worksheet.Dimension.Columns;
 
                     for (int col = 3; col < colCount; col++)
-                        outletNames.Add(worksheet.Cells[1, col].Text.Trim());
+                        outletNames.Add(worksheet.Cells[1, col].Text.Trim().Replace("\n", " ").Trim());
 
-                    for (int i = 0; i < outletNames.Count; i++)
-                    {
-                        if (outletNames[i].Contains("\n"))
-                        {
-                            outletNames[i] = outletNames[i].Replace("\n", " ").Trim();
-                        }
-                    }
+                    var missingOutlets = outletNames
+                        .Where(name => !outletLookup.ContainsKey(name.ToLowerInvariant()))
+                        .ToList();
 
-                    var missingOutlets = outletNames.Where(name => !foundOutlets.Contains(name.Trim())).ToList();
                     if (missingOutlets.Any())
                         return Json(new { success = false, message = $"The following outlets do not exist in the Outlet Master: {string.Join(", ", missingOutlets)}" });
 
                     for (int row = 3; row <= rowCount; row++)
                     {
-                        string productName = worksheet.Cells[row, 1].Text.Trim();
+                        string productNameRaw = worksheet.Cells[row, 1].Text.Trim();
                         string unit = worksheet.Cells[row, 2].Text.Trim();
+                        string productKey = productNameRaw.ToLowerInvariant();
 
-                        if (!validProductNames.Contains(productName.Trim()))
+                        if (!productLookup.ContainsKey(productKey))
                         {
-                            skippedProducts.Add(productName);
+                            skippedProducts.Add(productNameRaw);
                             continue;
                         }
 
-                        for (int col = 2; col < colCount; col++)
+                        string canonicalProductName = productLookup[productKey];
+
+                        for (int col = 3; col < colCount; col++)
                         {
-                            //if (int.TryParse(worksheet.Cells[row, col].Text.Trim(), out int quantity) && quantity > 0)
-                            //{
                             var cellValue = worksheet.Cells[row, col]?.Text;
                             if (!string.IsNullOrWhiteSpace(cellValue) && int.TryParse(cellValue.Trim(), out int quantity) && quantity > 0)
                             {
+                                var outletKey = outletNames[col - 3].ToLowerInvariant();
+                                var outletName = outletLookup[outletKey];
 
-                            var username = HttpContext.User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name)?.Value;
+                                var username = HttpContext.User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name)?.Value;
                                 maxid++;
 
                                 productionList.Add(new ProductionCapture
                                 {
                                     Id = maxid,
                                     Production_Id = Production_Id,
-                                    ProductName = productName,
+                                    ProductName = canonicalProductName,
                                     Unit = unit,
-                                    OutletName = outletNames[col - 3],
+                                    OutletName = outletName,
                                     TotalQty = quantity,
                                     Production_Date = DateTime.Now.ToString("dd-MM-yyyy"),
                                     Production_Time = DateTime.Now.ToString("HH:mm"),
@@ -206,23 +211,15 @@ namespace Ajit_Bakery.Controllers
                     using var workbook = new NPOI.HSSF.UserModel.HSSFWorkbook(stream);
                     var sheet = workbook.GetSheetAt(0);
                     int rowCount = sheet.LastRowNum;
-
                     var headerRow = sheet.GetRow(0);
                     int colCount = headerRow.LastCellNum;
 
                     for (int col = 2; col < colCount - 1; col++)
-                        outletNames.Add(headerRow.GetCell(col)?.ToString().Trim());
+                        outletNames.Add(headerRow.GetCell(col)?.ToString().Trim().Replace("\n", " ").Trim());
 
-                    for (int i = 0; i < outletNames.Count; i++)
-                    {
-                        if (outletNames[i].Contains("\n"))
-                        {
-                            outletNames[i] = outletNames[i].Replace("\n", " ").Trim();
-                        }
-                    }
-
-                    var missingOutlets = outletNames.Where(name => !foundOutlets.Contains(name)).ToList();
-
+                    var missingOutlets = outletNames
+                        .Where(name => !outletLookup.ContainsKey(name.ToLowerInvariant()))
+                        .ToList();
 
                     if (missingOutlets.Any())
                         return Json(new { success = false, message = $"The following outlets do not exist in the Outlet Master: {string.Join(", ", missingOutlets)}" });
@@ -232,21 +229,26 @@ namespace Ajit_Bakery.Controllers
                         var currentRow = sheet.GetRow(row);
                         if (currentRow == null) continue;
 
-                        string productName = currentRow.GetCell(0)?.ToString().Trim();
+                        string productNameRaw = currentRow.GetCell(0)?.ToString().Trim();
                         string unit = currentRow.GetCell(1)?.ToString().Trim();
+                        string productKey = productNameRaw.ToLowerInvariant();
 
-                        if (!validProductNames.Contains(productName.Trim()))
+                        if (!productLookup.ContainsKey(productKey))
                         {
-                            skippedProducts.Add(productName);
+                            skippedProducts.Add(productNameRaw);
                             continue;
                         }
 
+                        string canonicalProductName = productLookup[productKey];
+
                         for (int col = 2; col < colCount - 1; col++)
                         {
-                            //if (int.TryParse(currentRow.GetCell(col)?.ToString().Trim(), out int quantity) && quantity > 0)
                             var cellValue = currentRow.GetCell(col)?.ToString();
                             if (!string.IsNullOrWhiteSpace(cellValue) && int.TryParse(cellValue.Trim(), out int quantity) && quantity > 0)
                             {
+                                var outletKey = outletNames[col - 2].ToLowerInvariant();
+                                var outletName = outletLookup[outletKey];
+
                                 var username = HttpContext.User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name)?.Value;
                                 maxid++;
 
@@ -254,9 +256,9 @@ namespace Ajit_Bakery.Controllers
                                 {
                                     Id = maxid,
                                     Production_Id = Production_Id,
-                                    ProductName = productName,
+                                    ProductName = canonicalProductName,
                                     Unit = unit,
-                                    OutletName = outletNames[col - 2],
+                                    OutletName = outletName,
                                     TotalQty = quantity,
                                     Production_Date = DateTime.Now.ToString("dd-MM-yyyy"),
                                     Production_Time = DateTime.Now.ToString("HH:mm"),
@@ -289,6 +291,7 @@ namespace Ajit_Bakery.Controllers
                 return Json(new { success = false, message = "Error processing file: " + ex.Message });
             }
         }
+
 
         /*  [HttpPost]
           public async Task<IActionResult> UploadExcel(IFormFile file)
@@ -610,7 +613,7 @@ namespace Ajit_Bakery.Controllers
             foreach (var group in groupedData)
             {
                 //Fetch the matching record to get the correct timestamp
-                var foundData = list.FirstOrDefault(a => a.Production_Date == group.ProductionDate);
+                var foundData = list.FirstOrDefault(a => a.Production_Date.Trim() == group.ProductionDate.Trim() && a.Production_Id.Trim() == group.ProductionOrderId.Trim());
                 string formattedDate = foundData != null
                     ? $"{foundData.Production_Date} - {foundData.Production_Time}"
                     : group.ProductionDate.ToString();
