@@ -260,8 +260,8 @@ namespace Ajit_Bakery.Controllers
                 }
             }
 
-            int completecount = _context.SaveProduction.Where(a => a.Production_Id.Trim() == Production_Id.Trim()).ToList().Count();
-            int pendingcount = Math.Max(0, _context.ProductionCapture.Where(a => a.Production_Id.Trim() == Production_Id.Trim()).ToList().Sum(pc => pc.TotalQty) - completecount);
+            int completecount = _context.SaveProduction.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.SaveProduction_Date.Trim() == date.Trim()).ToList().Count();
+            int pendingcount = Math.Max(0, _context.ProductionCapture.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Production_Date.Trim() == date.Trim()).ToList().Sum(pc => pc.TotalQty) - completecount);
             ViewBag.completecount = completecount;
             ViewBag.pendingcount = pendingcount;
             //DialDetailViewModellist = DialDetailViewModellist.Where(a => a.PendingQty > 0).ToList();
@@ -480,7 +480,7 @@ namespace Ajit_Bakery.Controllers
                 var currentuser1 = HttpContext.User;
                 string username = currentuser1.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
 
-                if (saveProduction.ProductGrossWg == 0)
+                if (saveProduction.ProductGrossWg == 0 || saveProduction.TotalNetWg == 0)
                 {
                     return Json(new { success = false, message = "Please do enter the gross wt.!" });
                 }

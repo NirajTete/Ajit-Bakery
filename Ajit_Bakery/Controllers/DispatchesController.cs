@@ -184,9 +184,12 @@ namespace Ajit_Bakery.Controllers
 
             if (!string.IsNullOrEmpty(dcno))
             {
+
+                var datetime = DateTime.Now.ToString("dd-MM-yyyy");
+
                 // Get total packaged quantity from Packaging table where DispatchReady_Flag == 1
                 getcount = _context.Packaging
-                    .Where(a => a.DispatchReady_Flag == 1 && a.Outlet_Name.Trim() == dcno.Trim())
+                    .Where(a => a.DispatchReady_Flag == 1 && a.Outlet_Name.Trim() == dcno.Trim() && a.Packaging_Date.Trim() == datetime.Trim())
                     .Sum(a => (int?)a.Qty) ?? 0;
 
                 // Get total dispatched quantity from Dispatch table for the same outlet

@@ -166,7 +166,7 @@
 
                     <div class="form-group col-sm-3">
                         <label asp-for="ProductGrossWg_Uom" class="control-label fw-bold small"></label>
-                        <select asp-for="ProductGrossWg_Uom" id="ProductGrossWg_Uom" readonly required class="form-control text-uppercase" style="font-size:18px;color: green; font-weight: 650;text-transform: uppercase" onchange="OnUomChange()">
+                        <select asp-for="ProductGrossWg_Uom" id="ProductGrossWg_Uom" disabled required class="form-control text-uppercase" style="font-size:18px;color: green; font-weight: 650;text-transform: uppercase" onchange="OnUomChange()">
                             @* <option>KGS</option> *@
                             <option>GMS</option>
                         </select>
@@ -284,11 +284,12 @@
 
     <script>
         function getCurrentWeight() {
-            fetch('/SaveProductions/GetWeight')
-                .then(res => res.json())
-                .then(data => {
+            fetch('/SaveProductions/GetWeight').then(res => res.json()).then(data => {
                     const input = document.getElementById("ProductGrossWg");
                     input.value = data.weight;
+
+                    // Ensure the Refresh function is bound to onchange
+                    input.onchange = Refresh;
 
                     // Manually trigger the onchange event
                     const event = new Event('change', { bubbles: true });
@@ -299,6 +300,7 @@
                     alert("Failed to read weight. Please check the connection.");
                 });
         }
+
     </script>
 
     <script>
@@ -790,6 +792,8 @@
             console.log(DialTierWg_Uom);
             $("#DialTierWgValue").val(DialTierWg + " " + DialTierWg_Uom);
         }
+
+
         function Refresh() {
 
             // alert("Hii");
@@ -838,6 +842,7 @@
             //     }
             // });
         }
+
         function OnUomChange() {
             var uom = $("#ProductGrossWg_Uom").val(); // Get selected UOM (KGS/GMS)
             var weight = parseFloat($("#ProductGrossWg").val()) || 0; // Get entered weight, default to 0
@@ -853,6 +858,7 @@
 
             $("#ProductGrossWgValue").val(convertedWeight + " GMS"); // Set converted value
         }
+
         function GetDialShape() {
             // alert("call");
             var dialShape = $("#DialShape").val(); // Get selected DialShape value
