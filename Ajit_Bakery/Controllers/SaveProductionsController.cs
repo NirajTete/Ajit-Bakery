@@ -480,7 +480,7 @@ namespace Ajit_Bakery.Controllers
                 var currentuser1 = HttpContext.User;
                 string username = currentuser1.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
 
-                if (saveProduction.ProductGrossWg == 0 || saveProduction.TotalNetWg == 0)
+                if (saveProduction.ProductGrossWg <= 0 || saveProduction.TotalNetWg <= 0)
                 {
                     return Json(new { success = false, message = "Please do enter the gross wt.!" });
                 }
