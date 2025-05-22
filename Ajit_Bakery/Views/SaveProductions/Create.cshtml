@@ -95,10 +95,13 @@
                 <tbody></tbody>
                 </table>
                 </div>
-                *@                <div class="row mt-2">
+                *@          
+
+                <div class="row mt-2">
                     <div class="form-group col-sm-6">
                         <label asp-for="ProductName" class="control-label fw-bold small fw-bold small"></label>
                         <select asp-for="ProductName" style="font-weight:600; font-size:18px;" class="form-control text-uppercase" id="ProductName" required>
+                            <option value="">-- Select Product --</option>
                         </select>
                     </div>
                     <div class="form-group col-sm-4">
@@ -166,7 +169,7 @@
 
                     <div class="form-group col-sm-3">
                         <label asp-for="ProductGrossWg_Uom" class="control-label fw-bold small"></label>
-                        <select asp-for="ProductGrossWg_Uom" id="ProductGrossWg_Uom" disabled required class="form-control text-uppercase" style="font-size:18px;color: green; font-weight: 650;text-transform: uppercase" onchange="OnUomChange()">
+                        <select asp-for="ProductGrossWg_Uom" id="ProductGrossWg_Uom" required class="form-control text-uppercase" style="font-size:18px;color: green; font-weight: 650;text-transform: uppercase" onchange="OnUomChange()">
                             @* <option>KGS</option> *@
                             <option>GMS</option>
                         </select>
@@ -438,10 +441,7 @@
                 },
                 success: function (response) {
                     console.log("Server Response:", response);
-                    // $("#TotalNetWg").val(response.totalNetWg); // Assuming the response contains updated TotalNetWg
 
-                    // $("#mrpRs").val(Math.ceil(response.mrpRs)); // Rounds up to the next whole number
-                    // $("#sellingRs").val(Math.ceil(response.sellingRs)); // Rounds up to the next whole number
                     $("#mrpRs").val(response.mrpRs.toFixed(2)); // Assuming the response contains updated TotalNetWg
                     $("#sellingRs").val(response.sellingRs.toFixed(2)); // Assuming the response contains updated TotalNetWg
                 },
@@ -489,21 +489,14 @@
                                     confirmButtonText: "OK"
                                 });
                                 $("#count").val("");
-                                $("#ProductName").val("");
+                                // $("#ProductName").val("");
+                                $("#ProductName").val("").trigger("change");
                             }
                             else {
                                 // $("#count").val(response.data);
                                 $("#count").val(1);
-                                // 🔹 Populate the DialCode Dropdown
-                                // var dialDropdown = $("#DialCode");
-                                // dialDropdown.empty(); // Clear previous options
-                                // dialDropdown.append('<option value="">Select Dial</option>'); // Default option
 
                                 console.log(response.dialCodes);
-                                // Append new options using correct case
-                                // $.each(response.dialCodes, function (index, value) {
-                                //     dialDropdown.append('<option value="' + value + '">' + value + '</option>');
-                                // });
 
                                 $('#DialCode').empty(); // Clears the contents of the element with the ID 'loadTxt'
                                 $('#DialCode').append('<option value="">Select Dial</option>');
@@ -553,33 +546,6 @@
                         });
 
 
-                        // //bind table data
-                        // // **Bind Table Data**
-                        // $("#TableDataId").show();
-                        // var $tableBody = $("#tableData tbody");
-                        // $tableBody.empty(); // Clear previous table data
-
-                        // $.each(response.tableData, function (index, item) {
-                        //     var row = `<tr>
-                        //             <td>${item.productName}</td>
-                        //             <td>${item.basicUnit}</td>
-                        //                     <td class="text-center table-success">${item.totalQty}</td>
-                        //                     <td class="text-center table-warning">${item.pendingQty}</td>
-                        //             <td>${item.mrp.toFixed(2)}</td>
-                        //             <td>${item.selling.toFixed(2)}</td>
-                        //         </tr>`;
-                        //     $tableBody.append(row);
-                        // });
-
-                        // $("#tableData").DataTable({
-                        //     destroy: true,  // Ensure it reinitializes properly
-                        //     paging: true,   // Enable pagination
-                        //     searching: true, // Enable search
-                        //     ordering: false, // Disable sorting
-                        //     lengthChange: false, // Disable "Show X entries" dropdown
-                        //     pageLength: 10
-                        // });
-                        // **Bind Table Data**
                         $("#TableDataId").show();
 
                         var $table = $("#tableData");
@@ -614,11 +580,6 @@
                         });
 
 
-                        // document.querySelectorAll("#SaveProduction input").forEach(input => {
-                        //     if (input.type === "text" || input.type === "number") {
-                        //         input.value = "";
-                        //     }
-                        // });
 
                         document.querySelectorAll("#SaveProduction input").forEach(input => {
                             if ((input.type === "text" || input.type === "number") &&
@@ -659,6 +620,7 @@
             });
 
         }
+
         function validateForm() {
             let isValid = true;
             let fields = document.querySelectorAll(".required-field");
