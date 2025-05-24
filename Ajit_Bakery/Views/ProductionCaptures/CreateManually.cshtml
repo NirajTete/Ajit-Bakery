@@ -4,6 +4,11 @@
     ViewData["Title"] = "CreateManually";
 }
 
+<style>
+    .select2-container--default .select2-selection--single {
+        height: 34px !important;
+    }
+</style>    
 
 <div class="card">
 
@@ -106,6 +111,13 @@
 
 
         $(document).ready(function () {
+
+             $('#ProductName').select2({
+                placeholder: "-- Select Product Name--",
+                allowClear: true,
+                width: '100%'
+            });
+
             $("#CreateManually").submit(function (event) {
                 event.preventDefault(); // Prevent default form submission
 

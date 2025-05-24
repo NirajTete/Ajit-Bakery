@@ -53,11 +53,11 @@ namespace Ajit_Bakery.Controllers
                     {
                         if (TotalNetWg > product.Unitqty && TotalNetWg <= (product.Unitqty * 2))
                         {
-                            return Json(new { success = true,  unitqty = product.Unitqty });
+                            return Json(new { success = true, unitqty = product.Unitqty });
                         }
                         else
                         {
-                            return Json(new { success = false, message = "Enter Correct Wt.,item unit range i,e " + product.Unitqty + " and you have enter " + TotalNetWg , unitqty= product.Unitqty });
+                            return Json(new { success = false, message = "Enter Correct Wt.,item unit range i,e " + product.Unitqty + " and you have enter " + TotalNetWg, unitqty = product.Unitqty });
                         }
 
                     }
@@ -171,9 +171,41 @@ namespace Ajit_Bakery.Controllers
                 })
                 .Distinct()
                 .ToList();
-            var productioncount = _context.SaveProduction.Where(a=>a.SaveProduction_Date.Trim() == date.Trim() && a.Production_Id.Trim() == Production_Id.Trim()).ToList();
-            if(lstProducts.Count != productioncount.Count)
+
+            var productioncount = _context.SaveProduction.Where(a => a.SaveProduction_Date.Trim() == date.Trim() && a.Production_Id.Trim() == Production_Id.Trim()).ToList();
+
+            var productplancount = _context.ProductionCapture.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Production_Date.Trim() == date.Trim()).ToList();
+
+            var sumqty = productplancount.Sum(a => a.TotalQty);
+
+            if (sumqty >= productioncount.Count)
             {
+                foreach (var item in lstProducts.ToList()) // Copy to avoid modifying collection while iterating
+                {
+                    // Filter planning records for current product
+                    var currentProductPlans = productplancount
+                        .Where(a => a.ProductName == item.Value)
+                        .ToList();
+
+                    // Get sum of planned quantity for current product
+                    var planningSum = currentProductPlans.Sum(a => a.TotalQty);
+
+                    // Filter actual production records for current product
+                    var currentProductProductions = productioncount
+                        .Where(a => a.ProductName == item.Value)
+                        .ToList();
+
+                    // Get count of productions recorded for current product
+                    var productionSum = currentProductProductions.Count();
+
+                    // If actual production exceeds planned quantity, remove product from dropdown list
+                    if (productionSum >= planningSum)
+                    {
+                        // Remove product from the list because production already met or exceeded the plan
+                        lstProducts.Remove(item);
+                    }
+                }
+
                 var defItem = new SelectListItem()
                 {
                     Value = "",
@@ -195,7 +227,7 @@ namespace Ajit_Bakery.Controllers
                 };
                 lstProducts.Insert(0, defItem);
             }
-            
+
             var list = _context.ProductionCapture
                 .Where(a => a.Production_Id.Trim() == Production_Id.Trim() &&
                             a.Status == "Pending" &&
@@ -261,7 +293,9 @@ namespace Ajit_Bakery.Controllers
             }
 
             int completecount = _context.SaveProduction.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.SaveProduction_Date.Trim() == date.Trim()).ToList().Count();
+
             int pendingcount = Math.Max(0, _context.ProductionCapture.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Production_Date.Trim() == date.Trim()).ToList().Sum(pc => pc.TotalQty) - completecount);
+
             ViewBag.completecount = completecount;
             ViewBag.pendingcount = pendingcount;
             //DialDetailViewModellist = DialDetailViewModellist.Where(a => a.PendingQty > 0).ToList();
@@ -776,8 +810,8 @@ namespace Ajit_Bakery.Controllers
                 wguom = saveProduction.TotalNetWg_Uom,
                 mrp = mrp?.MRP.ToString() ?? "NA",
                 productcode = mrp?.ProductCode ?? "NA",
-                Date="",
-                Time="",
+                Date = "",
+                Time = "",
             }));
 
             // ✅ GENERATE STICKER LOGIC
@@ -794,8 +828,8 @@ namespace Ajit_Bakery.Controllers
                 wguom = saveProduction.TotalNetWg_Uom,
                 mrp = mrp?.MRP.ToString() ?? "NA",
                 productcode = mrp?.ProductCode ?? "NA",
-                Date= saveProduction.SaveProduction_Date,
-                Time= saveProduction.SaveProduction_Time,
+                Date = saveProduction.SaveProduction_Date,
+                Time = saveProduction.SaveProduction_Time,
             }));
 
             string printerName1 = _config["AppSettings:loc1_printer"];
@@ -815,7 +849,7 @@ namespace Ajit_Bakery.Controllers
             for (int i = 0; i < def; i++)
             {
                 string fileContent = System.IO.File.ReadAllText(prnFilePath);
-                var DT = SaveProduction_list.Select(a=>a.Date).FirstOrDefault();
+                var DT = SaveProduction_list.Select(a => a.Date).FirstOrDefault();
                 var TM = SaveProduction_list.Select(a => a.Time).FirstOrDefault();
 
                 //var TM = DateTime.Now.ToString("hh:mm");
@@ -893,7 +927,7 @@ namespace Ajit_Bakery.Controllers
 
         public IActionResult GetWt()
         {
-            return Json(new {success = true, message = "Weight Get !" });
+            return Json(new { success = true, message = "Weight Get !" });
         }
 
         [HttpGet]

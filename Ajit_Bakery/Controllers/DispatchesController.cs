@@ -379,6 +379,8 @@ namespace Ajit_Bakery.Controllers
             //TALLY ADDED
             try
             {
+                Packagings_List.Clear();
+
                 var baseurls = _config["AppSettings:BaseUrl"];
                 var Cname = _config["AppSettings:CompanyName"];
 

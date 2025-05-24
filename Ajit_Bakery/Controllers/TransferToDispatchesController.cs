@@ -446,6 +446,8 @@ namespace Ajit_Bakery.Controllers
 
         public IActionResult Create()
         {
+            Packagings_List.Clear();
+
             ViewBag.GetProduction_Id = GetProduction_Id();
             return View();
         }
