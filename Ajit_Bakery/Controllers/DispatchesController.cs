@@ -853,8 +853,6 @@ namespace Ajit_Bakery.Controllers
           return (_context.Dispatch?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
-
-
         public IActionResult GetDMData(string ProductionId, string DCNo, string BoxNo, string ReceiptNo, string OutletName)
         {
             List<Dispatch> dispatch = new List<Dispatch>();

@@ -504,42 +504,60 @@
                                 $("#loadingIndicator").hide();
                                 console.log("Response:", response);
                                 console.log("Response:", JSON.stringify(response));
-                                if (response.success) {
-                                    let newRow = `<tr>
-                                                <td>${Production_Id}</td>
-                                                <td>${outletName}</td>
-                                                <td>${Box_No}</td>
-                                                <td>${response.data.productName}</td>
-                                                <td>${response.data.qty}</td>
-                                                <td>${response.data.totalNetWg + " " + response.data.totalNetWg_Uom}</td>
-                                                </tr>`;
+                                        if (response.success) {
+                                // Check current row count in the table
+                                let currentRowCount = $("#productTableBody tbody tr").length;
 
-                                    $("#productTableBody tbody").append(newRow);
-                                    $('#ScanItem').val("").focus();
-
-                                    //qtypick = qtypick, qtyremainig = valuefound
-
-                                    $("#qtyremainig").val(response.qtyremainig);
-                                    $("#qtypick").val(response.qtypick);
-
-                                    if(response.qtyremainig == 0){
-                                        $("#Outlet_Name").val("");
-                                        $("#Box_No").val("");
-                                        $("#qtyremainig").val(0);
-                                        $("#qtypick").val(0);
-                                        $("#ScanItem").val("");
-                                    }
-
-
-                                } else {
-                                    //Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to process item.' });
+                                if (currentRowCount >= 5) {
                                     Swal.fire({
                                         icon: "warning",
-                                        title: "Warning",
-                                        text: response.message,
+                                        title: "Limit Reached",
+                                        text: "Only 5 items can be added. Please process or remove some entries before adding more.",
+                                        timer: 4000
                                     });
-                                    $('#ScanItem').val("");
+
+                                    // Optionally reset ScanItem field
+                                    $('#ScanItem').val("").focus();
+                                    return; // Exit early so new row isn't added
                                 }
+
+                                // Construct and append new row
+                                let newRow = `<tr>
+                                    <td>${Production_Id}</td>
+                                    <td>${outletName}</td>
+                                    <td>${Box_No}</td>
+                                    <td>${response.data.productName}</td>
+                                    <td>${response.data.qty}</td>
+                                    <td>${response.data.totalNetWg + " " + response.data.totalNetWg_Uom}</td>
+                                </tr>`;
+
+                                $("#productTableBody tbody").append(newRow);
+
+                                // Reset ScanItem field
+                                $('#ScanItem').val("").focus();
+
+                                // Update quantity fields
+                                $("#qtyremainig").val(response.qtyremainig);
+                                $("#qtypick").val(response.qtypick);
+
+                                // If remaining quantity is zero, clear related fields
+                                if (response.qtyremainig == 0) {
+                                    $("#Outlet_Name").val("");
+                                    $("#Box_No").val("");
+                                    $("#qtyremainig").val(0);
+                                    $("#qtypick").val(0);
+                                    $("#ScanItem").val("");
+                                }
+
+                            } else {
+                                Swal.fire({
+                                    icon: "warning",
+                                    title: "Warning",
+                                    text: response.message,
+                                });
+                                $('#ScanItem').val("");
+                            }
+
                                 // OnOutletChange();
                             },
                             error: function (error) {
