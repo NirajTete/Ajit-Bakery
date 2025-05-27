@@ -23,38 +23,38 @@ LBLCOND 3,2
 OPTIMIZE "BATCH" ON
 PP8,95:AN7
 BARSET "DATAMATRIX",1,1,3,66,0,7
-PB "AB00024#Choco Berry - .25#250#225"
+PB "AB00006#Pineapple - .25#250#200"
 PP83,116:NASC 8
 FT "CG Triumvirate Condensed Bold",6,0,99
-PT "Choco Berry"
+PT "Pineapple -"
 PP83,92:FT "CG Triumvirate Condensed Bold",6,0,99
-PT " - .25"
+PT " .25"
 PP83,68:FT "CG Triumvirate Condensed Bold",6,0,99
 PT "250 GMS"
 PP83,44:FT "CG Triumvirate Condensed Bold",6,0,99
 PT "MRP:Rs."
 PP167,46:FT "CG Triumvirate Condensed Bold",7,0,99
-PT "225"
+PT "200"
 PP278,114:FT "CG Triumvirate Condensed Bold",9,0,99
-PT "24-05-2025"
+PT "26-05-2025"
 PP344,66:FT "CG Triumvirate Condensed Bold",9,0,99
-PT "12:14"
+PT "13:02"
 PP551,95:BARSET "DATAMATRIX",1,1,3,66,0,7
-PB "AB00024#Choco Berry - .25#250#225"
+PB "AB00006#Pineapple - .25#250#200"
 PP626,116:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "Choco Berry"
+PT "Pineapple -"
 PP626,92:FT "CG Triumvirate Condensed Bold",6,0,99
-PT "Choco Berry"
+PT "Pineapple -"
 PP626,68:FT "CG Triumvirate Condensed Bold",6,0,99
 PT "250 GMS"
 PP626,44:FT "CG Triumvirate Condensed Bold",6,0,99
 PT "MRP:Rs."
 PP710,46:FT "CG Triumvirate Condensed Bold",7,0,99
-PT "225"
+PT "200"
 PP819,114:FT "CG Triumvirate Condensed Bold",9,0,99
-PT "24-05-2025"
+PT "26-05-2025"
 PP887,66:FT "CG Triumvirate Condensed Bold",9,0,99
-PT "12:14"
+PT "13:02"
 LAYOUT RUN ""
 PF
 PRINT KEY OFF

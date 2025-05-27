@@ -134,7 +134,6 @@ namespace Ajit_Bakery.Controllers
                 await file.CopyToAsync(stream);
                 stream.Position = 0;
 
-                // Create lookup dictionaries with lower case keys for case-insensitive matching
                 var outletLookup = _context.OutletMaster
                     .AsEnumerable()
                     .ToDictionary(o => o.OutletName.Trim().ToLowerInvariant(), o => o.OutletName.Trim());
@@ -154,8 +153,27 @@ namespace Ajit_Bakery.Controllers
                     int rowCount = worksheet.Dimension.Rows;
                     int colCount = worksheet.Dimension.Columns;
 
-                    for (int col = 3; col < colCount; col++)
-                        outletNames.Add(worksheet.Cells[1, col].Text.Trim().Replace("\n", " ").Trim());
+                    // Find the index of the "TOTAL" column
+                    int totalColIndex = -1;
+                    for (int col = 1; col <= colCount; col++)
+                    {
+                        var headerText = worksheet.Cells[1, col].Text.Trim().ToUpper().Replace("\n", " ");
+                        if (headerText == "TOTAL")
+                        {
+                            totalColIndex = col;
+                            break;
+                        }
+                    }
+                    int loopUntil = totalColIndex > 0 ? totalColIndex : colCount;
+
+                    for (int col = 3; col < loopUntil; col++)
+                    {
+                        var outletName = worksheet.Cells[1, col].Text.Trim().Replace("\n", " ").Trim();
+                        if (!string.IsNullOrEmpty(outletName))
+                        {
+                            outletNames.Add(outletName);
+                        }
+                    }
 
                     var missingOutlets = outletNames
                         .Where(name => !outletLookup.ContainsKey(name.ToLowerInvariant()))
@@ -172,20 +190,26 @@ namespace Ajit_Bakery.Controllers
 
                         if (!productLookup.ContainsKey(productKey))
                         {
-                            skippedProducts.Add(productNameRaw);
+                            if (!string.Equals(productNameRaw, "FANCY CAKE", StringComparison.OrdinalIgnoreCase))
+                            {
+                                skippedProducts.Add(productNameRaw);
+                            }
                             continue;
                         }
 
                         string canonicalProductName = productLookup[productKey];
 
-                        for (int col = 3; col < colCount; col++)
+                        for (int col = 3; col < loopUntil; col++)
                         {
+                            int outletIndex = col - 3;
+                            if (outletIndex >= outletNames.Count)
+                                continue;
+
                             var cellValue = worksheet.Cells[row, col]?.Text;
                             if (!string.IsNullOrWhiteSpace(cellValue) && int.TryParse(cellValue.Trim(), out int quantity) && quantity > 0)
                             {
-                                var outletKey = outletNames[col - 3].ToLowerInvariant();
+                                var outletKey = outletNames[outletIndex].ToLowerInvariant();
                                 var outletName = outletLookup[outletKey];
-
                                 var username = HttpContext.User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name)?.Value;
                                 maxid++;
 
@@ -214,8 +238,26 @@ namespace Ajit_Bakery.Controllers
                     var headerRow = sheet.GetRow(0);
                     int colCount = headerRow.LastCellNum;
 
-                    for (int col = 2; col < colCount - 1; col++)
-                        outletNames.Add(headerRow.GetCell(col)?.ToString().Trim().Replace("\n", " ").Trim());
+                    int totalColIndex = -1;
+                    for (int col = 0; col < colCount; col++)
+                    {
+                        var cellValue = headerRow.GetCell(col)?.ToString()?.Trim().ToUpper().Replace("\n", " ");
+                        if (cellValue == "TOTAL")
+                        {
+                            totalColIndex = col;
+                            break;
+                        }
+                    }
+                    int loopUntil = totalColIndex > 0 ? totalColIndex : colCount;
+
+                    for (int col = 2; col < loopUntil; col++)
+                    {
+                        var cellValue = headerRow.GetCell(col)?.ToString()?.Trim().Replace("\n", " ");
+                        if (!string.IsNullOrEmpty(cellValue))
+                        {
+                            outletNames.Add(cellValue);
+                        }
+                    }
 
                     var missingOutlets = outletNames
                         .Where(name => !outletLookup.ContainsKey(name.ToLowerInvariant()))
@@ -235,20 +277,26 @@ namespace Ajit_Bakery.Controllers
 
                         if (!productLookup.ContainsKey(productKey))
                         {
-                            skippedProducts.Add(productNameRaw);
+                            if (!string.Equals(productNameRaw, "FANCY CAKE", StringComparison.OrdinalIgnoreCase))
+                            {
+                                skippedProducts.Add(productNameRaw);
+                            }
                             continue;
                         }
 
                         string canonicalProductName = productLookup[productKey];
 
-                        for (int col = 2; col < colCount - 1; col++)
+                        for (int col = 2; col < loopUntil; col++)
                         {
+                            int outletIndex = col - 2;
+                            if (outletIndex >= outletNames.Count)
+                                continue;
+
                             var cellValue = currentRow.GetCell(col)?.ToString();
                             if (!string.IsNullOrWhiteSpace(cellValue) && int.TryParse(cellValue.Trim(), out int quantity) && quantity > 0)
                             {
-                                var outletKey = outletNames[col - 2].ToLowerInvariant();
+                                var outletKey = outletNames[outletIndex].ToLowerInvariant();
                                 var outletName = outletLookup[outletKey];
-
                                 var username = HttpContext.User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name)?.Value;
                                 maxid++;
 
@@ -291,6 +339,7 @@ namespace Ajit_Bakery.Controllers
                 return Json(new { success = false, message = "Error processing file: " + ex.Message });
             }
         }
+
 
 
         /*  [HttpPost]

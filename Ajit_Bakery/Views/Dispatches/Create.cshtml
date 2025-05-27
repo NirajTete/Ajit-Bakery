@@ -95,7 +95,7 @@
                     </div>
 
                 </div>
-                <div class="row" style="display:none" id="TransportDetails">
+                <div class="row" @* style="display:none" *@ id="TransportDetails">
                     <div class="form-group col-sm-2">
                         <label asp-for="VehicleOwn" class="control-label fw-bold small">Vehicle Own</label>
                         <select asp-for="VehicleOwn" class="form-control text-uppercase" autocomplete="off" onchange="VehicleOwnChange()" id="VehicleOwn" required>
@@ -436,13 +436,13 @@
                                     $('#ScanItem').val("").focus();
                                     $("#qtypick").val(response.qtypick);
 
-                                    if (response.qtypick == 0) {
-                                        $("#qtypick").val(0);
-                                        $("#ScanItem").val("");
-                                        $("#TransportDetails").show();  // Show Transport Details
-                                    } else {
-                                        $("#TransportDetails").hide(); // Hide Transport Details
-                                    }
+                                    // if (response.qtypick == 0) {
+                                    //     $("#qtypick").val(0);
+                                    //     $("#ScanItem").val("");
+                                    //     $("#TransportDetails").show();  // Show Transport Details
+                                    // } else {
+                                    //     $("#TransportDetails").hide(); // Hide Transport Details
+                                    // }
 
 
 

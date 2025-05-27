@@ -387,28 +387,28 @@ namespace Ajit_Bakery.Controllers
             return Json(new { success = false, message = "No remaining Qty found against " + Outlet_Name + "  outlet !" });
         }
 
-       /* public IActionResult GetOutlets(string Production_Id)
-        {
-            var lstProducts = new List<SelectListItem>();
-            if (Production_Id != null)
-            {
-                lstProducts = _context.ProductionCapture.Where(a => a.Status == "Pending" && a.Production_Id.Trim() == Production_Id.Trim()).AsNoTracking().Select(n =>
-            new SelectListItem
-            {
-                Value = n.OutletName,
-                Text = n.OutletName
-            }).Distinct().ToList();
+        /* public IActionResult GetOutlets(string Production_Id)
+         {
+             var lstProducts = new List<SelectListItem>();
+             if (Production_Id != null)
+             {
+                 lstProducts = _context.ProductionCapture.Where(a => a.Status == "Pending" && a.Production_Id.Trim() == Production_Id.Trim()).AsNoTracking().Select(n =>
+             new SelectListItem
+             {
+                 Value = n.OutletName,
+                 Text = n.OutletName
+             }).Distinct().ToList();
 
-                var defItem = new SelectListItem()
-                {
-                    Value = "",
-                    Text = "----Select OutletName ----"
-                };
-                lstProducts.Insert(0, defItem);
-            }
+                 var defItem = new SelectListItem()
+                 {
+                     Value = "",
+                     Text = "----Select OutletName ----"
+                 };
+                 lstProducts.Insert(0, defItem);
+             }
 
-            return Json(new { success = true, data = lstProducts });
-        }*/
+             return Json(new { success = true, data = lstProducts });
+         }*/
 
         public IActionResult GetOutlets(string Production_Id)
         {
@@ -497,6 +497,10 @@ namespace Ajit_Bakery.Controllers
         [HttpGet]
         public IActionResult Create()
         {
+            Packagings_List.Clear();
+            SaveProduction_List.Clear();
+            ProductionCapture_List.Clear();
+
             ViewBag.GetProduction_Id = GetProduction_Id();
             ViewBag.GetBoxNos = GetBoxNos();
             return View();
