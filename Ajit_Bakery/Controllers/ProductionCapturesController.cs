@@ -617,23 +617,13 @@ namespace Ajit_Bakery.Controllers
         //}
 
         public async Task<IActionResult> Index()
-        {
-
-            //if (TempData["NotyfMessage"] != null)
-            //{
-            //    string message = TempData["NotyfMessage"].ToString();
-            //    string type = TempData["NotyfType"].ToString();
-
-            //    if (type == "Warning")
-            //        _notyfyService.Warning(message);
-            //    else
-            //        _notyfyService.Information(message); // You can handle other types if needed
-            //}
+        {         
             List<ProductionCapture> productionCaptures = new List<ProductionCapture>();
 
-            var date = DateTime.Now.ToString("dd-MM-yyyy");
+            var yesdate = DateTime.Now.AddDays(-1).ToString("dd-MM-yyyy");
+            var todaydate = DateTime.Now.ToString("dd-MM-yyyy");
             //Fetch ordered data from database
-            var list = await _context.ProductionCapture.Where(a => a.Production_Date.Trim() == date.Trim()).OrderByDescending(a => a.Id).ToListAsync();
+            var list = await _context.ProductionCapture.Where(a => a.Production_Date.Trim() == todaydate.Trim() || a.Production_Date.Trim() == yesdate.Trim()).OrderByDescending(a => a.Id).ToListAsync();
 
             //Get distinct outlet names dynamically from the data
             var allOutlets = list.Select(x => x.OutletName).Distinct().ToList();

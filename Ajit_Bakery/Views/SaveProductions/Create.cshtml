@@ -25,18 +25,26 @@
             <form asp-action="Create" id="SaveProduction" onsubmit="return validateForm()">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="row">
-                    <div class="form-group col-sm-4">
+                    <div class="form-group col-sm-3">
                         <label asp-for="Production_Id" class="control-label fw-bold small">Production Id</label>
                         <select asp-for="Production_Id" id="Production_Id" style="font-size:18px" required class="form-control text-uppercase" asp-items="@ViewBag.GetProduction_Id" onchange="OnProduction_IdChange()">
                         </select>
                     </div>
+
+                    <div class="col-sm-3">
+                        <label asp-for="outlet" class="control-label fw-bold small">Production Id</label>
+                        <select asp-for="outlet" id="outlet" style="font-size:18px" required class="form-control text-uppercase" asp-items="@ViewBag.outlet" onchange="OnOutletChange()">
+                        </select>
+                    </div>
+
                     <div class="col-sm-2">
                         <label class="control-label fw-bold small">&nbsp;</label>
                         <button style="font-weight:600; font-size:16px;color:cornflowerblue" class="accordion-button collapsed " type="button" data-bs-toggle="collapse" data-bs-target="#TableDataId" aria-expanded="false" aria-controls="TableDataId">
                             View Detailed
                         </button>
                     </div>
-                    <div class="col-sm-6">
+
+                    <div class="col-sm-4">
                         <div class="d-flex justify-content-center gap-4">
                             <div class="text-center" style="width: 150px;">
                                 <label class="control-label fw-bold small text-center">Completed Production</label>
@@ -307,215 +315,218 @@
     </script>
 
     <script>
-        function roundDownToNearest25(value) {
-            console.log("value :" + value);
-            if (!isNaN(value)) {
-                var newvalue = Math.floor(value / 25) * 25
-                console.log("newvalue : " + newvalue);
-                return newvalue; // Always round down to nearest 25
-            }
-            return 0; // Default to 0 if invalid
-        }
-
-        function calculateNetWeight() {
-            var ProductGrossWg = $("#ProductGrossWg").val();
-            var DialTierWg = $("#DialTierWg").val();
-            var Production_Id1 = $("#Production_Id").val();
-            var productName1 = $("#ProductName").val();
-            var NetWg1 = $("#DialTierWg").val();
-            var TotalNetWg1 = $("#ProductGrossWg").val();
-            $.ajax({
-                url: "/SaveProductions/checkvalue", // Change to your actual controller and method
-                type: "POST",
-                data: {
-                    ProductGrossWg: ProductGrossWg,
-                    DialTierWg: DialTierWg,
-                    Production_Id: Production_Id1,
-                    productName: productName1,
-                    TotalNetWg: parseFloat(TotalNetWg1)
-                },
-                success: function (response) {
-                    console.log(response);
-                    console.log(JSON.stringify(response));
-                    if (response.success) {
-                        var Tvalue = parseInt($("#TotalNetWg").val()) || 0; // Ensure it's a number
-                        console.log("parseInt(Tvalue) : " + Tvalue);
-                        console.log("response.unitqty : " + response.unitqty);
-
-                        if (Tvalue < response.unitqty) {  // Change the condition to check if it's less
-                            Swal.fire({
-                                icon: 'warning',
-                                title: 'Warning!',
-                                text: "Please, Take proper weighing!"
-                            });
-
-                            // Reset form values
-                            $("#ProductGrossWg").val(0);
-                            $("#ProductGrossWgValue").val("");
-                            $("#TotalNetWg").val("");
-                            $("#mrpRs").val("");
-                            $("#sellingRs").val("");
-
-                            // Handle the DialCode button
-                            var weight = parseFloat($("#ProductGrossWg").val()) || 0;
-                            $("#DialCode").prop("disabled", weight > 0 ? true : false);
-
-                            return;
-                        }
+                function roundDownToNearest25(value) {
+                    console.log("value :" + value);
+                    if (!isNaN(value)) {
+                        var newvalue = Math.floor(value / 25) * 25
+                        console.log("newvalue : " + newvalue);
+                        return newvalue; // Always round down to nearest 25
                     }
-                    else {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning!',
-                            text: response.message
-                        });
-
-                        $("#ProductGrossWg").val(0);
-                        $("#ProductGrossWgValue").val("");
-                        $("#TotalNetWg").val("");
-                        $("#mrpRs").val("");
-                        $("#sellingRs").val("");
-
-                        var weight = parseFloat($("#ProductGrossWg").val()) || 0;
-
-                        if (weight > 0) {
-                            $("#DialCode").prop("disabled", true);
-                        }
-                        else if (weight == 0) {
-                            $("#DialCode").prop("disabled", false);
-                        }
-                        else {
-                            $("#DialCode").prop("disabled", false);
-                        }
-
-                        return;
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error("AJAX Error:", error);
+                    return 0; // Default to 0 if invalid
                 }
-            });
 
-            let grossWeight = parseFloat(document.getElementById("ProductGrossWg").value) || 0;
-            let tierWeight = parseFloat(document.getElementById("DialTierWg").value) || 0;
-            let netWeight = grossWeight - tierWeight;
+                function calculateNetWeight() {
+                    var ProductGrossWg = $("#ProductGrossWg").val();
+                    var DialTierWg = $("#DialTierWg").val();
+                    var Production_Id1 = $("#Production_Id").val();
+                    var productName1 = $("#ProductName").val();
+                    var NetWg1 = $("#DialTierWg").val();
+                    var TotalNetWg1 = $("#ProductGrossWg").val();
+                    $.ajax({
+                        url: "/SaveProductions/checkvalue", // Change to your actual controller and method
+                        type: "POST",
+                        data: {
+                            ProductGrossWg: ProductGrossWg,
+                            DialTierWg: DialTierWg,
+                            Production_Id: Production_Id1,
+                            productName: productName1,
+                            TotalNetWg: parseFloat(TotalNetWg1)
+                        },
+                        success: function (response) {
+                            console.log(response);
+                            console.log(JSON.stringify(response));
+                            if (response.success) {
+                                var Tvalue = parseInt($("#TotalNetWg").val()) || 0; // Ensure it's a number
+                                console.log("parseInt(Tvalue) : " + Tvalue);
+                                console.log("response.unitqty : " + response.unitqty);
 
-            // Ensure net weight is always positive
-            if (netWeight < 0) {
-                netWeight = 0;
-            }
-            netWeight = netWeight < 0 ? 0 : netWeight;
+                                if (Tvalue < response.unitqty) {  // Change the condition to check if it's less
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Warning!',
+                                        text: "Please, Take proper weighing!"
+                                    });
 
-            console.log("NetWg : " + netWeight);
-            console.log("TotalNetWg : " + netWeight);
+                                    // Reset form values
+                                    $("#ProductGrossWg").val(0);
+                                    $("#ProductGrossWgValue").val("");
+                                    $("#TotalNetWg").val("");
+                                    $("#mrpRs").val("");
+                                    $("#sellingRs").val("");
 
-            // Apply rounding logic
-            let roundedNetWeight = roundDownToNearest25(parseFloat(netWeight));
-            console.log("Rounded NetWg : " + roundedNetWeight);
-            console.log("Rounded TotalNetWg : " + roundedNetWeight);
-            // Update input fields with the rounded values
-            document.getElementById("NetWg").value = roundedNetWeight.toFixed(2);
-            document.getElementById("TotalNetWg").value = roundedNetWeight.toFixed(2);
+                                    // Handle the DialCode button
+                                    var weight = parseFloat($("#ProductGrossWg").val()) || 0;
+                                    $("#DialCode").prop("disabled", weight > 0 ? true : false);
 
-            // document.getElementById("NetWg").value = netWeight.toFixed(2); // Display with two decimal places
-            // document.getElementById("TotalNetWg").value = netWeight.toFixed(2); // Display with two decimal places
-            $("#NetWg_uom").val("GMS"); // Set UOM to "GMS"
-            $("#TotalNetWg_Uom").val("GMS"); // Set UOM to "GMS"
-
-            sendNetWeightToServer(netWeight);
-
-        }
-        document.getElementById("ProductGrossWg").addEventListener("change", calculateNetWeight);
-        document.getElementById("DialTierWg").addEventListener("change", calculateNetWeight);
-        function sendNetWeightToServer(netWeight) {
-            var Production_Id = $("#Production_Id").val();
-            var productName = $("#ProductName").val();
-            var TotalNetWg = $("#TotalNetWg").val();
-            $.ajax({
-                url: "/SaveProductions/CalculateTotalNetWeight", // Change to your actual controller and method
-                type: "POST",
-                data: {
-                    Production_Id: Production_Id,
-                    productName: productName,
-                    TotalNetWg: parseFloat(TotalNetWg)
-                },
-                success: function (response) {
-                    console.log("Server Response:", response);
-
-                    $("#mrpRs").val(response.mrpRs.toFixed(2)); // Assuming the response contains updated TotalNetWg
-                    $("#sellingRs").val(response.sellingRs.toFixed(2)); // Assuming the response contains updated TotalNetWg
-                },
-                error: function (xhr, status, error) {
-                    console.error("AJAX Error:", error);
-                }
-            });
-        }
-
-
-        $("#ProductName").change(function () {
-            var productName = $(this).val(); // Get selected product name
-            var Production_Id = $("#Production_Id").val(); // Get selected product name
-
-            if (productName) {
-                $.ajax({
-                    url: "/SaveProductions/GetProductDetails",  // Update with your actual API/Action URL
-                    type: "GET",
-                    data: { productName: productName, Production_Id: Production_Id },
-                    dataType: "json",
-                    success: function (response) {
-                        console.log("Response:", response);
-
-                        if (response.success) {
-
-                            $("#count").val("");
-                            $("#ProductGrossWg").val("");
-                            $("#ProductGrossWg_Uom").val("");
-                            $("#ProductGrossWgValue").val("");
-                            $("#DialShape").val("");
-                            $("#DialCode").val("");
-                            $("#DialTierWg").val("");
-                            $("#DialTierWg_Uom").val("");
-                            $("#DialTierWgValue").val("");
-                            $("#TotalNetWg").val("");
-                            $("#TotalNetWg_Uom").val("");
-
-                            // Example: Update fields based on response
-                            if (response.data == 0) {
-                                Swal.fire({
-                                    icon: "warning",
-                                    title: "Production Already Completed",
-                                    text: "This product's production has already been done!",
-                                    confirmButtonColor: "#3085d6",
-                                    confirmButtonText: "OK"
-                                });
-                                $("#count").val("");
-                                // $("#ProductName").val("");
-                                $("#ProductName").val("").trigger("change");
+                                    return;
+                                }
                             }
                             else {
-                                // $("#count").val(response.data);
-                                $("#count").val(1);
-
-                                console.log(response.dialCodes);
-
-                                $('#DialCode').empty(); // Clears the contents of the element with the ID 'loadTxt'
-                                $('#DialCode').append('<option value="">Select Dial</option>');
-                                $.each(response.dialCodes, function (index, item) { // Iterates over each item in the 'response' array
-                                    console.log(item);
-                                    $('#DialCode').append($('<option>').text(item).val(item)); // Appends an <option> element to the element with the ID 'loadTxt', setting its text and value attributes based on the properties of the 'item' object
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Warning!',
+                                    text: response.message
                                 });
+
+                                $("#ProductGrossWg").val(0);
+                                $("#ProductGrossWgValue").val("");
+                                $("#TotalNetWg").val("");
+                                $("#mrpRs").val("");
+                                $("#sellingRs").val("");
+
+                                var weight = parseFloat($("#ProductGrossWg").val()) || 0;
+
+                                if (weight > 0) {
+                                    $("#DialCode").prop("disabled", true);
+                                }
+                                else if (weight == 0) {
+                                    $("#DialCode").prop("disabled", false);
+                                }
+                                else {
+                                    $("#DialCode").prop("disabled", false);
+                                }
+
+                                return;
                             }
-                        } else {
-                            alert("Product details not found.");
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("AJAX Error:", error);
                         }
-                    },
-                    error: function () {
-                        alert("Error fetching product details.");
+                    });
+
+                    let grossWeight = parseFloat(document.getElementById("ProductGrossWg").value) || 0;
+                    let tierWeight = parseFloat(document.getElementById("DialTierWg").value) || 0;
+                    let netWeight = grossWeight - tierWeight;
+
+                    // Ensure net weight is always positive
+                    if (netWeight < 0) {
+                        netWeight = 0;
+                    }
+                    netWeight = netWeight < 0 ? 0 : netWeight;
+
+                    console.log("NetWg : " + netWeight);
+                    console.log("TotalNetWg : " + netWeight);
+
+                    // Apply rounding logic
+                    let roundedNetWeight = roundDownToNearest25(parseFloat(netWeight));
+                    console.log("Rounded NetWg : " + roundedNetWeight);
+                    console.log("Rounded TotalNetWg : " + roundedNetWeight);
+                    // Update input fields with the rounded values
+                    document.getElementById("NetWg").value = roundedNetWeight.toFixed(2);
+                    document.getElementById("TotalNetWg").value = roundedNetWeight.toFixed(2);
+
+                    // document.getElementById("NetWg").value = netWeight.toFixed(2); // Display with two decimal places
+                    // document.getElementById("TotalNetWg").value = netWeight.toFixed(2); // Display with two decimal places
+                    $("#NetWg_uom").val("GMS"); // Set UOM to "GMS"
+                    $("#TotalNetWg_Uom").val("GMS"); // Set UOM to "GMS"
+
+                    sendNetWeightToServer(netWeight);
+
+                }
+                document.getElementById("ProductGrossWg").addEventListener("change", calculateNetWeight);
+                document.getElementById("DialTierWg").addEventListener("change", calculateNetWeight);
+
+                function sendNetWeightToServer(netWeight) {
+                    var Production_Id = $("#Production_Id").val();
+                    var productName = $("#ProductName").val();
+                    var TotalNetWg = $("#TotalNetWg").val();
+                    $.ajax({
+                        url: "/SaveProductions/CalculateTotalNetWeight", // Change to your actual controller and method
+                        type: "POST",
+                        data: {
+                            Production_Id: Production_Id,
+                            productName: productName,
+                            TotalNetWg: parseFloat(TotalNetWg)
+                        },
+                        success: function (response) {
+                            console.log("Server Response:", response);
+
+                            $("#mrpRs").val(response.mrpRs.toFixed(2)); // Assuming the response contains updated TotalNetWg
+                            $("#sellingRs").val(response.sellingRs.toFixed(2)); // Assuming the response contains updated TotalNetWg
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("AJAX Error:", error);
+                        }
+                    });
+                }
+
+
+                $("#ProductName").change(function () {
+                    var productName = $(this).val(); // Get selected product name
+                    var Production_Id = $("#Production_Id").val(); // Get selected product name
+
+                    if (productName) {
+                        $.ajax({
+                            url: "/SaveProductions/GetProductDetails",  // Update with your actual API/Action URL
+                            type: "GET",
+                            data: { productName: productName, Production_Id: Production_Id },
+                            dataType: "json",
+                            success: function (response) {
+                                console.log("Response:", response);
+
+                                if (response.success) {
+
+                                    $("#count").val("");
+                                    $("#ProductGrossWg").val("");
+                                    $("#ProductGrossWg_Uom").val("");
+                                    $("#ProductGrossWgValue").val("");
+                                    $("#DialShape").val("");
+                                    $("#DialCode").val("");
+                                    $("#DialTierWg").val("");
+                                    $("#DialTierWg_Uom").val("");
+                                    $("#DialTierWgValue").val("");
+                                    $("#TotalNetWg").val("");
+                                    $("#TotalNetWg_Uom").val("");
+
+                                    // Example: Update fields based on response
+                                    if (response.data == 0) {
+                                        Swal.fire({
+                                            icon: "warning",
+                                            title: "Production Already Completed",
+                                            text: "This product's production has already been done!",
+                                            confirmButtonColor: "#3085d6",
+                                            confirmButtonText: "OK"
+                                        });
+                                        $("#count").val("");
+                                        // $("#ProductName").val("");
+                                        $("#ProductName").val("").trigger("change");
+                                    }
+                                    else {
+                                        // $("#count").val(response.data);
+                                        $("#count").val(1);
+
+                                        console.log(response.dialCodes);
+
+                                        $('#DialCode').empty(); // Clears the contents of the element with the ID 'loadTxt'
+                                        $('#DialCode').append('<option value="">Select Dial</option>');
+                                        $.each(response.dialCodes, function (index, item) { // Iterates over each item in the 'response' array
+                                            console.log(item);
+                                            $('#DialCode').append($('<option>').text(item).val(item)); // Appends an <option> element to the element with the ID 'loadTxt', setting its text and value attributes based on the properties of the 'item' object
+                                        });
+                                    }
+                                } else {
+                                    alert("Product details not found.");
+                                }
+                            },
+                            error: function () {
+                                alert("Error fetching product details.");
+                            }
+                        });
                     }
                 });
-            }
-        });
-        function OnProduction_IdChange() {
+
+        function OnProduction_IdChange(){
+
             var Production_Id = $("#Production_Id").val();
 
             $.ajax({
@@ -528,10 +539,7 @@
                         console.log("response.data : " + JSON.stringify(response.data));
                         console.log("response.TableData : " + JSON.stringify(response.TableData));
 
-                        $("#completeCount").val(response.completecount);
-                        $("#pendingCount").val(response.pendingcount);
-
-                        var $dropdown = $("#ProductName");  // Get the select element
+                        var $dropdown = $("#outlet");  // Get the select element
                         $dropdown.empty();  // Clear previous options
 
                         // Iterate over response data and append options
@@ -546,67 +554,12 @@
                         });
 
 
-                        $("#TableDataId").show();
-
-                        var $table = $("#tableData");
-
-                        // Destroy existing DataTable instance before clearing data
-                        if ($.fn.DataTable.isDataTable($table)) {
-                            $table.DataTable().clear().destroy();
-                        }
-
-                        var $tableBody = $table.find("tbody");
-                        $tableBody.empty(); // Clear previous table data
-
-                        $.each(response.tableData, function (index, item) {
-                            var row = `<tr>
-                <td>${item.productName}</td>
-                <td>${item.basicUnit}</td>
-                <td class="text-center table-success">${item.totalQty}</td>
-                <td class="text-center table-warning">${item.pendingQty}</td>
-                <td>${item.mrp.toFixed(2)}</td>
-                <td>${item.selling.toFixed(2)}</td>
-            </tr>`;
-                            $tableBody.append(row);
-                        });
-
-                        // Reinitialize DataTable
-                        $table.DataTable({
-                            paging: true,
-                            searching: true,
-                            ordering: false,
-                            lengthChange: false,
-                            pageLength: 10
-                        });
-
-
-
-                        document.querySelectorAll("#SaveProduction input").forEach(input => {
-                            if ((input.type === "text" || input.type === "number") &&
-                                input.id !== "completeCount" && input.id !== "pendingCount") {
-                                input.value = "";
-                            }
-                        });
-
-                        // document.getElementById("DialCode").disabled = false;
-                        $("#DialCode").val("");
-
-                        console.log("GetDialCodes call...");
-                        $('#ProductName').change();
-
-                        //ended
-                        // <td>${item.selling_Rs.toFixed(2)}</td>
-                        // <td>${item.mrP_Rs.toFixed(2)}</td>
-                        //bind into Outlet_Name id
                     } else {
                         Swal.fire({
                             icon: 'warning',
                             title: 'Warning!',
                             text: response.message
                         });
-                        $("#Production_Id").val("");
-                        $("#completeCount").val(0);
-                        $("#pendingCount").val(0);
                         return;
                     }
                 },
@@ -621,91 +574,105 @@
 
         }
 
-        function validateForm() {
-            let isValid = true;
-            let fields = document.querySelectorAll(".required-field");
 
-            for (let field of fields) {
-                if (field.value.trim() === "") {
-                    alert("Please fill out all required fields.");
-                    field.focus(); // Focus on the first empty field
-                    return false; // Prevent form submission
-                }
-            }
-            return true; // Allow form submission if all fields are filled
-        }
-        $(document).ready(function () {
 
-            $('#ProductName').select2({
-                placeholder: "-- Select Product Name--",
-                allowClear: true,
-                width: '100%'
-            });
-
-            $("#SaveProduction").submit(function (event) {
-                event.preventDefault(); // Prevent default form submission
-
-                let countValue = parseInt($("#count").val()) || 0;
-                if (countValue === 0) {
-                    Swal.fire({
-                        icon: "error",
-                        title: "You Can't Proceed!",
-                        text: "You have already completed all production for this Product ID.",
-                        confirmButtonText: "OK"
-                    }).then(() => {
-                        window.location.href = "@Url.Action("Index", "SaveProductions")"; // Redirect to Index
-                    });
-                    return; // Exit function to prevent further execution
-                }
-
-                // Ask for confirmation before submitting the form
-                Swal.fire({
-                    title: "Generate Sticker?",
-                    text: "Do you want to generate a sticker for this production?",
-                    icon: "question",
-                    showCancelButton: true,
-                    confirmButtonText: "Yes",
-                    cancelButtonText: "No"
-                }).then((result) => {
-                    if (!result.isConfirmed) {
-                        return; // Exit if user clicks "No"
-                    }
-
-                    let generateStickerValue = 1; // Set value only if confirmed
-                    let formData = $(this).serialize() + "&generatesticker=" + generateStickerValue;
-
-                    console.log("formData : " + formData);
-                    // $('#spinner').show();
-                    $("#loadingIndicator").show();
+                function OnOutletChange() {
+                    var Production_Id = $("#Production_Id").val();
+                    var outlet = $("#outlet").val();
 
                     $.ajax({
                         type: "POST",
-                        url: "@Url.Action("Create", "SaveProductions")", // Replace with actual URL
-                        data: formData,
+                        url: "@Url.Action("GetProducts", "SaveProductions")", // Replace with your controller
+                        data: { Production_Id: Production_Id, Outlet: outlet },
                         success: function (response) {
-                            // $('#spinner').hide();
-                            $("#loadingIndicator").hide();
                             if (response.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Success!',
-                                    text: response.message,
-                                    confirmButtonText: "OK"
-                                }).then(() => {
-                                    window.location.href = "@Url.Action("Index", "SaveProductions")"; // Redirect to Index
+                                console.log("response : " + JSON.stringify(response));
+                                console.log("response.data : " + JSON.stringify(response.data));
+                                console.log("response.TableData : " + JSON.stringify(response.TableData));
+
+                                $("#completeCount").val(response.completecount);
+                                $("#pendingCount").val(response.pendingcount);
+
+                                var $dropdown = $("#ProductName");  // Get the select element
+                                $dropdown.empty();  // Clear previous options
+
+                                // Iterate over response data and append options
+                                $.each(response.data, function (index, item) {
+                                    var option = $("<option>")
+                                        .val(item.value)  // Set option value
+                                        .text(item.text)  // Set option text
+                                        .prop("disabled", item.disabled)  // Set disabled property
+                                        .prop("selected", item.selected); // Set selected property
+
+                                    $dropdown.append(option);
                                 });
-                                $("#SaveProduction")[0].reset(); // Reset form after success
+
+
+                                $("#TableDataId").show();
+
+                                var $table = $("#tableData");
+
+                                // Destroy existing DataTable instance before clearing data
+                                if ($.fn.DataTable.isDataTable($table)) {
+                                    $table.DataTable().clear().destroy();
+                                }
+
+                                var $tableBody = $table.find("tbody");
+                                $tableBody.empty(); // Clear previous table data
+
+                                $.each(response.tableData, function (index, item) {
+                                    var row = `<tr>
+                        <td>${item.productName}</td>
+                        <td>${item.basicUnit}</td>
+                        <td class="text-center table-success">${item.totalQty}</td>
+                        <td class="text-center table-warning">${item.pendingQty}</td>
+                        <td>${item.mrp.toFixed(2)}</td>
+                        <td>${item.selling.toFixed(2)}</td>
+                    </tr>`;
+                                    $tableBody.append(row);
+                                });
+
+                                // Reinitialize DataTable
+                                $table.DataTable({
+                                    paging: true,
+                                    searching: true,
+                                    ordering: false,
+                                    lengthChange: false,
+                                    pageLength: 10
+                                });
+
+
+
+                                document.querySelectorAll("#SaveProduction input").forEach(input => {
+                                    if ((input.type === "text" || input.type === "number") &&
+                                        input.id !== "completeCount" && input.id !== "pendingCount") {
+                                        input.value = "";
+                                    }
+                                });
+
+                                // document.getElementById("DialCode").disabled = false;
+                                $("#DialCode").val("");
+
+                                console.log("GetDialCodes call...");
+                                $('#ProductName').change();
+
+                                //ended
+                                // <td>${item.selling_Rs.toFixed(2)}</td>
+                                // <td>${item.mrP_Rs.toFixed(2)}</td>
+                                //bind into Outlet_Name id
                             } else {
                                 Swal.fire({
                                     icon: 'warning',
                                     title: 'Warning!',
                                     text: response.message
                                 });
+                                $("#Production_Id").val("");
+                                $("#completeCount").val(0);
+                                $("#pendingCount").val(0);
+                                return;
                             }
                         },
                         error: function () {
-                            $("#loadingIndicator").hide();
-                            // $('#spinner').hide();
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error!',
@@ -713,175 +680,273 @@
                             });
                         }
                     });
-                });
-            });
-        });
-        function calculateTotalNetWeight() {
-            // Get values in grams
-            let productGrossWg = parseFloat(document.getElementById("ProductGrossWgValue").value) || 0;
-            let dialTierWg = parseFloat(document.getElementById("DialTierWgValue").value) || 0;
 
-            // Convert to kilograms
-            let totalNetWeight = (productGrossWg - dialTierWg) / 1000;
-
-            // Set the result in TotalNetWg
-            document.getElementById("TotalNetWg").value = totalNetWeight.toFixed(3); // 3 decimal places
-            document.getElementById("TotalNetWg_Uom").value = "KGS"; // 3 decimal places
-        }
-        function OnDialWgChange() {
-            var DialTierWg = $("#DialTierWg").val();
-            var DialTierWg_Uom = $("#DialTierWg_Uom").val();
-
-            var min = 1;
-            var max = 1000;
-            if (DialTierWg < min || DialTierWg > max) {
-                Swal.fire({
-                    icon: "warning",
-                    title: "Invalid Input!",
-                    text: "Please enter a value between " + min + " and " + max + ".",
-                });
-
-                // Reset the value to the nearest valid limit
-                if (DialTierWg < min) {
-                    DialTierWg = min;
-                } else if (DialTierWg > max) {
-                    DialTierWg = max;
                 }
 
+                function validateForm() {
+                    let isValid = true;
+                    let fields = document.querySelectorAll(".required-field");
 
-                $("#DialTierWg").val(DialTierWg);
-            }
-            console.log(DialTierWg_Uom);
-            $("#DialTierWgValue").val(DialTierWg + " " + DialTierWg_Uom);
-        }
+                    for (let field of fields) {
+                        if (field.value.trim() === "") {
+                            alert("Please fill out all required fields.");
+                            field.focus(); // Focus on the first empty field
+                            return false; // Prevent form submission
+                        }
+                    }
+                    return true; // Allow form submission if all fields are filled
+                }
+                $(document).ready(function () {
 
-
-        function Refresh() {
-
-            // alert("Hii");
-
-            OnUomChange();
-            calculateTotalNetWeight();
-            var uom = $("#ProductGrossWg_Uom").val();
-            var weight = parseFloat($("#ProductGrossWg").val()) || 0;
-
-
-            // Comment By Niraj
-            // if (weight > 0) {
-            //     $("#DialCode").prop("disabled", true);
-            // }else if(weight==0){
-            //     $("#DialCode").prop("disabled", false);
-            // }
-            // else {
-            //     $("#DialCode").prop("disabled", false);
-            // }
-
-
-
-            // $.ajax({
-            //     url: "/SaveProductions/GetProductData",  // Update with your actual API/Action URL
-            //     type: "GET",
-            //     data: { productName: productName, Production_Id: Production_Id ,uom:uom,weight:weight},
-            //     dataType: "json",
-            //     success: function (response) {
-            //         if (response.success) {
-            //             // Handle success case
-            //         } else {
-            //             Swal.fire({
-            //                 icon: 'warning',
-            //                 title: 'Warning!',
-            //                 text: response.message || "Something went wrong!" // Default message if response.message is empty
-            //             });
-
-            //             // Clear the input fields
-            //             $("#ProductGrossWg_Uom").val("");
-            //             $("#ProductGrossWg").val("");
-            //             $("#ProductGrossWgValue").val("");
-            //         }
-            //     },
-            //     error: function () {
-            //         alert("Error fetching product details.");
-            //     }
-            // });
-        }
-
-        function OnUomChange() {
-            var uom = $("#ProductGrossWg_Uom").val(); // Get selected UOM (KGS/GMS)
-            var weight = parseFloat($("#ProductGrossWg").val()) || 0; // Get entered weight, default to 0
-
-            var convertedWeight = 0;
-
-            if (uom === "KGS") {
-                convertedWeight = weight * 1000; // Convert KGS to GMS
-            } else {
-                convertedWeight = weight; // Already in GMS
-                $("#ProductGrossWg_Uom").val("GMS");
-            }
-
-            $("#ProductGrossWgValue").val(convertedWeight + " GMS"); // Set converted value
-        }
-
-        function GetDialShape() {
-            // alert("call");
-            var dialShape = $("#DialShape").val(); // Get selected DialShape value
-
-            $.ajax({
-                url: '/SaveProductions/GetDialShape',  // Update this with your actual controller
-                type: 'GET',
-                data: { shape: dialShape },
-                success: function (response) {
-                    console.log("data : " + JSON.stringify(response.data));
-                    // Bind data to DialCode dropdown
-                    var dialCodeDropdown = $("#DialCode");
-                    dialCodeDropdown.empty(); // Clear previous options
-                    dialCodeDropdown.append('<option value="">Select Dial</option>'); // Default option
-
-                    $.each(response.data, function (index, item) {
-                        dialCodeDropdown.append('<option value="' + item.dialCode + '">' + item.dialCode + '</option>');
+                    $('#ProductName').select2({
+                        placeholder: "-- Select Product Name--",
+                        allowClear: true,
+                        width: '100%'
                     });
 
-                    // // If DialTierWg is returned, update the input field
-                    // if (response.dialTierWg) {
-                    //     $("#DialTierWg").val(response.dialTierWg);
-                    // } else {
-                    //     $("#DialTierWg").val(''); // Clear if no data
-                    // }
-                },
-                error: function () {
-                    alert("Error fetching data. Please try again.");
+                    $("#SaveProduction").submit(function (event) {
+                        event.preventDefault(); // Prevent default form submission
+
+                        let countValue = parseInt($("#count").val()) || 0;
+                        if (countValue === 0) {
+                            Swal.fire({
+                                icon: "error",
+                                title: "You Can't Proceed!",
+                                text: "You have already completed all production for this Product ID.",
+                                confirmButtonText: "OK"
+                            }).then(() => {
+                                window.location.href = "@Url.Action("Index", "SaveProductions")"; // Redirect to Index
+                            });
+                            return; // Exit function to prevent further execution
+                        }
+
+                        // Ask for confirmation before submitting the form
+                        Swal.fire({
+                            title: "Generate Sticker?",
+                            text: "Do you want to generate a sticker for this production?",
+                            icon: "question",
+                            showCancelButton: true,
+                            confirmButtonText: "Yes",
+                            cancelButtonText: "No"
+                        }).then((result) => {
+                            if (!result.isConfirmed) {
+                                return; // Exit if user clicks "No"
+                            }
+
+                            let generateStickerValue = 1; // Set value only if confirmed
+                            let formData = $(this).serialize() + "&generatesticker=" + generateStickerValue;
+
+                            console.log("formData : " + formData);
+                            // $('#spinner').show();
+                            $("#loadingIndicator").show();
+
+                            $.ajax({
+                                type: "POST",
+                                url: "@Url.Action("Create", "SaveProductions")", // Replace with actual URL
+                                data: formData,
+                                success: function (response) {
+                                    // $('#spinner').hide();
+                                    $("#loadingIndicator").hide();
+                                    if (response.success) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Success!',
+                                            text: response.message,
+                                            confirmButtonText: "OK"
+                                        }).then(() => {
+                                            window.location.href = "@Url.Action("Index", "SaveProductions")"; // Redirect to Index
+                                        });
+                                        $("#SaveProduction")[0].reset(); // Reset form after success
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'warning',
+                                            title: 'Warning!',
+                                            text: response.message
+                                        });
+                                    }
+                                },
+                                error: function () {
+                                    $("#loadingIndicator").hide();
+                                    // $('#spinner').hide();
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error!',
+                                        text: 'Something went wrong! Please try again.'
+                                    });
+                                }
+                            });
+                        });
+                    });
+                });
+                function calculateTotalNetWeight() {
+                    // Get values in grams
+                    let productGrossWg = parseFloat(document.getElementById("ProductGrossWgValue").value) || 0;
+                    let dialTierWg = parseFloat(document.getElementById("DialTierWgValue").value) || 0;
+
+                    // Convert to kilograms
+                    let totalNetWeight = (productGrossWg - dialTierWg) / 1000;
+
+                    // Set the result in TotalNetWg
+                    document.getElementById("TotalNetWg").value = totalNetWeight.toFixed(3); // 3 decimal places
+                    document.getElementById("TotalNetWg_Uom").value = "KGS"; // 3 decimal places
                 }
-            });
-            //OnDialWgChange();
-        }
-        function GetDialCodes() {
-            //alert("call");
+                function OnDialWgChange() {
+                    var DialTierWg = $("#DialTierWg").val();
+                    var DialTierWg_Uom = $("#DialTierWg_Uom").val();
 
-            var DialCode = $("#DialCode").val(); // Get selected DialCode value
+                    var min = 1;
+                    var max = 1000;
+                    if (DialTierWg < min || DialTierWg > max) {
+                        Swal.fire({
+                            icon: "warning",
+                            title: "Invalid Input!",
+                            text: "Please enter a value between " + min + " and " + max + ".",
+                        });
 
-            $.ajax({
-                url: '/SaveProductions/GetDialCodes',  // Ensure correct controller name
-                type: 'GET',
-                data: { DialCode: DialCode }, // Pass correct parameter
-                dataType: 'json', // Ensure response is JSON
-                success: function (response) {
-                    console.log("Response Data:", response);
+                        // Reset the value to the nearest valid limit
+                        if (DialTierWg < min) {
+                            DialTierWg = min;
+                        } else if (DialTierWg > max) {
+                            DialTierWg = max;
+                        }
 
-                    if (response.success && response.data) {
-                        $("#DialTierWg").val(response.data.dialWg); // Set value
-                        $("#DialTierWg_Uom").val(response.data.dialWgUom); // Set value
-                        $("#DialShape").val(response.data.dialShape);
-                    } else {
-                        $("#DialTierWg").val(''); // Clear field if no data found
-                        alert("No data found for this Dial Code.");
+
+                        $("#DialTierWg").val(DialTierWg);
                     }
-                    OnDialWgChange();
-                    calculateTotalNetWeight();
-                },
-                error: function (xhr, status, error) {
-                    console.error("AJAX Error:", status, error);
-                    alert("Error fetching data. Please try again.");
+                    console.log(DialTierWg_Uom);
+                    $("#DialTierWgValue").val(DialTierWg + " " + DialTierWg_Uom);
                 }
-            });
-        }
+
+
+                function Refresh() {
+
+                    // alert("Hii");
+
+                    OnUomChange();
+                    calculateTotalNetWeight();
+                    var uom = $("#ProductGrossWg_Uom").val();
+                    var weight = parseFloat($("#ProductGrossWg").val()) || 0;
+
+
+                    // Comment By Niraj
+                    // if (weight > 0) {
+                    //     $("#DialCode").prop("disabled", true);
+                    // }else if(weight==0){
+                    //     $("#DialCode").prop("disabled", false);
+                    // }
+                    // else {
+                    //     $("#DialCode").prop("disabled", false);
+                    // }
+
+
+
+                    // $.ajax({
+                    //     url: "/SaveProductions/GetProductData",  // Update with your actual API/Action URL
+                    //     type: "GET",
+                    //     data: { productName: productName, Production_Id: Production_Id ,uom:uom,weight:weight},
+                    //     dataType: "json",
+                    //     success: function (response) {
+                    //         if (response.success) {
+                    //             // Handle success case
+                    //         } else {
+                    //             Swal.fire({
+                    //                 icon: 'warning',
+                    //                 title: 'Warning!',
+                    //                 text: response.message || "Something went wrong!" // Default message if response.message is empty
+                    //             });
+
+                    //             // Clear the input fields
+                    //             $("#ProductGrossWg_Uom").val("");
+                    //             $("#ProductGrossWg").val("");
+                    //             $("#ProductGrossWgValue").val("");
+                    //         }
+                    //     },
+                    //     error: function () {
+                    //         alert("Error fetching product details.");
+                    //     }
+                    // });
+                }
+
+                function OnUomChange() {
+                    var uom = $("#ProductGrossWg_Uom").val(); // Get selected UOM (KGS/GMS)
+                    var weight = parseFloat($("#ProductGrossWg").val()) || 0; // Get entered weight, default to 0
+
+                    var convertedWeight = 0;
+
+                    if (uom === "KGS") {
+                        convertedWeight = weight * 1000; // Convert KGS to GMS
+                    } else {
+                        convertedWeight = weight; // Already in GMS
+                        $("#ProductGrossWg_Uom").val("GMS");
+                    }
+
+                    $("#ProductGrossWgValue").val(convertedWeight + " GMS"); // Set converted value
+                }
+
+                function GetDialShape() {
+                    // alert("call");
+                    var dialShape = $("#DialShape").val(); // Get selected DialShape value
+
+                    $.ajax({
+                        url: '/SaveProductions/GetDialShape',  // Update this with your actual controller
+                        type: 'GET',
+                        data: { shape: dialShape },
+                        success: function (response) {
+                            console.log("data : " + JSON.stringify(response.data));
+                            // Bind data to DialCode dropdown
+                            var dialCodeDropdown = $("#DialCode");
+                            dialCodeDropdown.empty(); // Clear previous options
+                            dialCodeDropdown.append('<option value="">Select Dial</option>'); // Default option
+
+                            $.each(response.data, function (index, item) {
+                                dialCodeDropdown.append('<option value="' + item.dialCode + '">' + item.dialCode + '</option>');
+                            });
+
+                            // // If DialTierWg is returned, update the input field
+                            // if (response.dialTierWg) {
+                            //     $("#DialTierWg").val(response.dialTierWg);
+                            // } else {
+                            //     $("#DialTierWg").val(''); // Clear if no data
+                            // }
+                        },
+                        error: function () {
+                            alert("Error fetching data. Please try again.");
+                        }
+                    });
+                    //OnDialWgChange();
+                }
+                function GetDialCodes() {
+                    //alert("call");
+
+                    var DialCode = $("#DialCode").val(); // Get selected DialCode value
+
+                    $.ajax({
+                        url: '/SaveProductions/GetDialCodes',  // Ensure correct controller name
+                        type: 'GET',
+                        data: { DialCode: DialCode }, // Pass correct parameter
+                        dataType: 'json', // Ensure response is JSON
+                        success: function (response) {
+                            console.log("Response Data:", response);
+
+                            if (response.success && response.data) {
+                                $("#DialTierWg").val(response.data.dialWg); // Set value
+                                $("#DialTierWg_Uom").val(response.data.dialWgUom); // Set value
+                                $("#DialShape").val(response.data.dialShape);
+                            } else {
+                                $("#DialTierWg").val(''); // Clear field if no data found
+                                alert("No data found for this Dial Code.");
+                            }
+                            OnDialWgChange();
+                            calculateTotalNetWeight();
+
+                            calculateNetWeight();
+
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("AJAX Error:", status, error);
+                            alert("Error fetching data. Please try again.");
+                        }
+                    });
+                }
     </script>
 }

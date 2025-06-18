@@ -38,6 +38,7 @@ namespace Ajit_Bakery.Models
         [Display(Name = "Save Time")]
         public string SaveProduction_Time { get; set; }
         public string? User { get; set; }
+
         [NotMapped]
         public string generatesticker { get; set; }
         [Display(Name = "Save Date")]
@@ -63,5 +64,6 @@ namespace Ajit_Bakery.Models
         //[NotMapped]
         public double mrpRs { get; set; }
 
+        public string? outlet { get; set; }
     }
 }

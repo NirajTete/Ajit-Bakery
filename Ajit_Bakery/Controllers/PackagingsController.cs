@@ -362,11 +362,12 @@ namespace Ajit_Bakery.Controllers
         {
 
             var date = DateTime.Now.ToString("dd-MM-yyyy");
-            var Packagingdata = _context.Packaging.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Outlet_Name.Trim() == Outlet_Name.Trim() && a.Packaging_Date.Trim() == date.Trim()).ToList().Sum(a => a.Qty);
-            var Packagingdata1 = Packagings_List.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Outlet_Name.Trim() == Outlet_Name.Trim() && a.Packaging_Date.Trim() == date.Trim()).ToList().Sum(a => a.Qty);
+            var yestdate = DateTime.Now.AddDays(-1).ToString("dd-MM-yyyy");
+            var Packagingdata = _context.Packaging.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Outlet_Name.Trim() == Outlet_Name.Trim() && (a.Packaging_Date.Trim() == date.Trim() || a.Packaging_Date.Trim() == yestdate.Trim())).ToList().Sum(a => a.Qty);
+            var Packagingdata1 = Packagings_List.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Outlet_Name.Trim() == Outlet_Name.Trim() && (a.Packaging_Date.Trim() == date.Trim() || a.Packaging_Date.Trim() == yestdate.Trim())).ToList().Sum(a => a.Qty);
 
-            var ProductionCapturedata = _context.ProductionCapture.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Status.Trim() == "Pending" && a.OutletName.Trim() == Outlet_Name.Trim() && a.Production_Date.Trim() == date.Trim()).ToList().Sum(a => a.TotalQty);
-            var ProductionCapturedata1 = ProductionCapture_List.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Status.Trim() == "Pending" && a.OutletName.Trim() == Outlet_Name.Trim() && a.Production_Date.Trim() == date.Trim()).ToList().Sum(a => a.TotalQty);
+            var ProductionCapturedata = _context.ProductionCapture.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Status.Trim() == "Pending" && a.OutletName.Trim() == Outlet_Name.Trim() && (a.Production_Date.Trim() == date.Trim() || a.Production_Date.Trim() == yestdate.Trim())).ToList().Sum(a => a.TotalQty);
+            var ProductionCapturedata1 = ProductionCapture_List.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Status.Trim() == "Pending" && a.OutletName.Trim() == Outlet_Name.Trim() && (a.Production_Date.Trim() == date.Trim() || a.Production_Date.Trim() == yestdate.Trim())).ToList().Sum(a => a.TotalQty);
 
             var qtyremainig = ProductionCapturedata + ProductionCapturedata1;
             var qtypick = Packagingdata + Packagingdata1;
@@ -476,6 +477,7 @@ namespace Ajit_Bakery.Controllers
         {
             var lstProducts = new List<SelectListItem>();
             var currentdate = DateTime.Now.ToString("dd-MM-yyyy");
+
             lstProducts = _context.SaveProduction.Where(a => a.Packaging_Flag == 0 && a.SaveProduction_Date.Trim() == currentdate.Trim()).AsNoTracking().Select(n =>
             new SelectListItem
             {
