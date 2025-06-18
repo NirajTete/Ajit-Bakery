@@ -43,22 +43,10 @@ public class HomeController : Controller
             .Select(x => x.Production_Date) // Fetch only necessary column
             .ToList();  // Load into memory
 
-        // Filter records that match the current month and year
-        var list1 = productionList
-            .Where(dateString =>
-                !string.IsNullOrEmpty(dateString) && // Avoid null values
-                dateString.Length == 10 && // Ensure valid format (dd-MM-yyyy)
-                dateString[2] == '-' && dateString[5] == '-' // Validate correct format
-            )
-            .Select(dateString => dateString.Split('-')) // Split into [dd, MM, yyyy]
-            .Where(parts =>
-                //int.TryParse(parts[0], out int day) && day == currentday && // Match month
-                int.TryParse(parts[1], out int month) && month == currentMonth && // Match month
-                int.TryParse(parts[2], out int year) && year == currentYear // Match year
-            )
-            .Count(); // Get the count       
+
 
         var dateTimeNow = DateTime.Now.ToString("dd-MM-yyyy");
+        var list1 = _context.ProductionCapture.Where(a => a.Production_Date.Trim() == dateTimeNow.Trim()).ToList().Sum(a => a.TotalQty);
 
         // Count completed dispatches
         var completedDispatchCount = _context.Dispatch.Where(s => /*s.Dispatch_Date == dateTimeNow &&*/ s.Status == "Completed").ToList().Count();

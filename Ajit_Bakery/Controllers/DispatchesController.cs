@@ -46,7 +46,7 @@ namespace Ajit_Bakery.Controllers
         public IActionResult GetOutlets(string Production_Id)
         {
             List<DialDetailViewModel> DialDetailViewModellist = new List<DialDetailViewModel>();
-            if(Production_Id != null)
+            if (Production_Id != null)
             {
                 var date = DateTime.Now.ToString("dd-MM-yyyy");
                 var list = _context.ProductionCapture.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Status == "Pending" && a.Production_Date.Trim() == date.Trim()).ToList();
@@ -97,9 +97,9 @@ namespace Ajit_Bakery.Controllers
 
                 var outlet_list = _context.Packaging.Where(a => a.DispatchReady_Flag == 1 && a.Dispatch_Flag == 0 && a.Production_Id.Trim() == Production_Id.Trim() && a.Packaging_Date.Trim() == date.Trim()).Select(a => a.Outlet_Name.Trim()).Distinct().ToList();
 
-                return Json(new { success = true, TableData = DialDetailViewModellist.Where(a=>a.DispatchReady > 0), outlet_list });
+                return Json(new { success = true, TableData = DialDetailViewModellist.Where(a => a.DispatchReady > 0), outlet_list });
             }
-            return Json(new {success = false, message = "Production id is found null !"} );
+            return Json(new { success = false, message = "Production id is found null !" });
         }
 
         public IActionResult PickedData(string boxno, string receiptno, string dcno)
@@ -214,7 +214,7 @@ namespace Ajit_Bakery.Controllers
         {
             var drivercontactno = "";
             var drivervehicaleno = "";
-            if(VehicleDriverName !=null || VehicleDriverName != "")
+            if (VehicleDriverName != null || VehicleDriverName != "")
             {
                 var data = _context.TransportMaster.Where(a => a.DriverName.Trim() == VehicleDriverName.Trim()).FirstOrDefault();
                 if (data != null)
@@ -223,7 +223,7 @@ namespace Ajit_Bakery.Controllers
                     drivervehicaleno = data.VehicleNo;
                 }
             }
-            
+
             return Json(new { success = true, drivercontactno, drivervehicaleno });
         }
         private List<SelectListItem> GetDCNO()
@@ -290,7 +290,7 @@ namespace Ajit_Bakery.Controllers
             };
 
             lstProducts.Insert(0, defItem);
-            return Json(new {sucess = true, data = lstProducts});
+            return Json(new { sucess = true, data = lstProducts });
 
         }
         [HttpGet]
@@ -430,7 +430,7 @@ namespace Ajit_Bakery.Controllers
         }
         private async Task<(List<SelectListItem> VoucherTypes, List<SelectListItem> LedgerTypes)> GetLedgerTypes()
         {
-        
+
             var baseurl = _config["AppSettings:BaseUrl"];
             var url1 = $"{baseurl}/AllLedger";
             var result = await _apiService.GetAsync<ApiResponse<List<Ledger>>>(url1, null);
@@ -444,7 +444,7 @@ namespace Ajit_Bakery.Controllers
                 })
                 .Distinct()
                 .ToList();
-         
+
             var baseurl1 = _config["AppSettings:BaseUrl"];
             var url11 = $"{baseurl}/Vouchers/GetVoucherTypeData";
             var result11 = await _apiService.GetAsync<ApiResponse<List<getVouchers>>>(url11, null);
@@ -553,7 +553,7 @@ namespace Ajit_Bakery.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create( Dispatch dispatch)
+        public async Task<IActionResult> Create(Dispatch dispatch)
         {
             var DAProduction_id = "";
             var DAOutletName = "";
@@ -644,31 +644,31 @@ namespace Ajit_Bakery.Controllers
                     DAProduction_id = Packagings_List.Select(a => a.Production_Id.Trim()).FirstOrDefault() ?? "NA";
                     DAOutletName = Packagings_List.Select(a => a.Outlet_Name.Trim()).FirstOrDefault() ?? "NA";
                     var SaveProduction_Date = _context.SaveProduction.Where(a => a.Production_Id.Trim() == item.Production_Id.Trim() && a.ProductName.Trim() == item.Product_Name.Trim() && a.TotalNetWg == item.TotalNetWg && a.TotalNetWg_Uom.Trim() == item.TotalNetWg_Uom.Trim() && a.Box_No.Trim() == item.Box_No.Trim()).FirstOrDefault();
-                    var productiondetails = _context.ProductionCapture.Where(a=>a.ProductName.Trim() == item.Product_Name.Trim() && a.OutletName.Trim() == item.Outlet_Name.Trim()).FirstOrDefault();
+                    var productiondetails = _context.ProductionCapture.Where(a => a.ProductName.Trim() == item.Product_Name.Trim() && a.OutletName.Trim() == item.Outlet_Name.Trim()).FirstOrDefault();
                     var maxId = _context.Dispatch.Any() ? _context.Dispatch.Max(e => e.Id) + 1 : 1;
-                    
+
                     //ADD INTO DISPATCH TABLE
                     Dispatch Dispatch = new Dispatch()
                     {
                         Id = maxId,
-                        ProductionId =item.Production_Id,
-                        ProductName =item.Product_Name,
-                        OutletName =item.Outlet_Name,
-                        ReceiptNo =item.Reciept_Id,
-                        DCNo =DCNO,
-                        BoxNo =item.Box_No,
-                        Qty =item.Qty,
-                        TotalNetWg =item.TotalNetWg,
-                        TotalNetWg_Uom =item.TotalNetWg_Uom,
+                        ProductionId = item.Production_Id,
+                        ProductName = item.Product_Name,
+                        OutletName = item.Outlet_Name,
+                        ReceiptNo = item.Reciept_Id,
+                        DCNo = DCNO,
+                        BoxNo = item.Box_No,
+                        Qty = item.Qty,
+                        TotalNetWg = item.TotalNetWg,
+                        TotalNetWg_Uom = item.TotalNetWg_Uom,
                         Production_Date = productiondetails.Production_Date,
                         Production_Time = productiondetails.Production_Time,
                         SaveProduction_Date = SaveProduction_Date.SaveProduction_Date,
                         SaveProduction_Time = SaveProduction_Date.SaveProduction_Time,
                         Packaging_Date = item.Packaging_Date,
-                        Packaging_Time =item.Packaging_Time,
-                        TransferToDispatch_Date =item.DispatchReady_Date,
-                        TransferToDispatch_Time =item.DispatchReady_Time,
-                        Dispatch_Date =DATE,
+                        Packaging_Time = item.Packaging_Time,
+                        TransferToDispatch_Date = item.DispatchReady_Date,
+                        TransferToDispatch_Time = item.DispatchReady_Time,
+                        Dispatch_Date = DATE,
                         Dispatch_Time = TIME,
                         VehicleDriverContactNo = dispatch.VehicleDriverContactNo,
                         VehicleNumber = dispatch.VehicleNumber,
@@ -676,6 +676,7 @@ namespace Ajit_Bakery.Controllers
                         VehicleOwn = dispatch.VehicleOwn,
                         user = username.ToString(),
                         INNO = INNO,
+                        Status = "Pending"
                     };
                     _context.Dispatch.Add(Dispatch);
                     _context.BoxMaster.Where(b => b.BoxNumber == item.Box_No).ExecuteUpdate(setters => setters.SetProperty(b => b.Use_Flag, 2));
@@ -690,80 +691,279 @@ namespace Ajit_Bakery.Controllers
             }
 
             //UPDATE PRODUCTION_CAPTURE TABLE
-            var find_production = _context.ProductionCapture.Where(a=>a.Production_Id.Trim() == DAProduction_id.Trim() && a.OutletName.Trim() == DAOutletName.Trim()).ToList();
-            var find_dispatch = _context.Dispatch.Where(a => a.ProductionId.Trim() == DAProduction_id.Trim() && a.OutletName.Trim() == DAOutletName.Trim()).ToList();
-            if (find_production.Sum(a => a.TotalQty) == find_dispatch.Sum(a => a.Qty))
-            {
-                find_production.ForEach(a =>
-                {
-                    a.Status = "Completed";
-                });
-                _context.ProductionCapture.UpdateRange(find_production);
-                _context.SaveChanges();
+            var groupdata_production = _context.ProductionCapture
+                                    .Where(a => a.Production_Id.Trim() == DAProduction_id.Trim() &&
+                                                a.OutletName.Trim() == DAOutletName.Trim() && a.Status == "Pending")
+                                    .GroupBy(a => new { a.Production_Id, a.OutletName, a.ProductName })
+                                    .Select(g => new
+                                    {
+                                        Production_Id = g.Key.Production_Id,
+                                        OutletName = g.Key.OutletName,
+                                        ProductName = g.Key.ProductName,
+                                        TotalQty = g.Sum(x => x.TotalQty)
+                                    })
+                                    .ToList();
 
-                find_dispatch.ForEach(a =>
+            var groupdata_dispatch = _context.Dispatch
+                                    .Where(a => a.ProductionId.Trim() == DAProduction_id.Trim() &&
+                                                a.OutletName.Trim() == DAOutletName.Trim() && a.Status == "Pending")
+                                    .GroupBy(a => new { a.ProductionId, a.OutletName, a.ProductName })
+                                    .Select(g => new
+                                    {
+                                        Production_Id = g.Key.ProductionId,
+                                        OutletName = g.Key.OutletName,
+                                        ProductName = g.Key.ProductName,
+                                        TotalQty = g.Sum(x => x.Qty)
+                                    })
+                                    .ToList();
+            foreach (var item in groupdata_production)
+            {
+                var found = groupdata_dispatch.Where(a => a.ProductName.Trim() == item.ProductName.Trim() && a.OutletName.Trim() == item.OutletName.Trim() && a.Production_Id.Trim() == item.Production_Id.Trim()).FirstOrDefault();
+                if (found != null)
                 {
-                    a.Status = "Completed";
-                });
-                _context.Dispatch.UpdateRange(find_dispatch);
-                _context.SaveChanges();
+                    if (item.TotalQty == found.TotalQty)
+                    {
+                        var find_production = _context.ProductionCapture.Where(a => a.Production_Id.Trim() == DAProduction_id.Trim() && a.OutletName.Trim() == DAOutletName.Trim() && a.ProductName.Trim() == item.ProductName.Trim()).ToList();
+
+                        var find_dispatch = _context.Dispatch.Where(a => a.ProductionId.Trim() == DAProduction_id.Trim() && a.OutletName.Trim() == DAOutletName.Trim() && a.ProductName.Trim() == item.ProductName.Trim()).ToList();
+
+                        if (find_production.Sum(a => a.TotalQty) == find_dispatch.Sum(a => a.Qty))
+                        {
+                            find_production.ForEach(a =>
+                            {
+                                a.Status = "Completed";
+                            });
+                            _context.ProductionCapture.UpdateRange(find_production);
+                            _context.SaveChanges();
+
+                            find_dispatch.ForEach(a =>
+                            {
+                                a.Status = "Completed";
+                            });
+                            _context.Dispatch.UpdateRange(find_dispatch);
+                            _context.SaveChanges();
+                        }
+                    }
+
+                }
             }
 
-            return Json(new {success = true, message = "Successfully Done !"});
+            return Json(new { success = true, message = "Successfully Done !" });
         }
+
+
+        /* public async Task<IActionResult> Create( Dispatch dispatch)
+         {
+             var DAProduction_id = "";
+             var DAOutletName = "";
+
+             var DATE = DateTime.Now.ToString("dd-MM-yyyy");
+             //var DATE = "01-04-2025";
+             DateTime dcdate = DateTime.ParseExact(DATE, "dd-MM-yyyy", null);
+             string indate = dcdate.ToString("yyyy-MM-dd");
+
+             var TIME = DateTime.Now.ToString("HH:mm");
+
+             //TALLY ENTRY-INVOICE 
+             var DCNO = GetDCNOSTR();
+             var INNO = GetINNOSTR();
+             var inward = dispatch;
+             var outletdetails = _context.OutletMaster.Where(a => a.OutletName.Trim() == dispatch.OutletName.Trim()).FirstOrDefault();
+             float BaseAmount = (float)(Packagings_List.Sum(a => a.sellingRs * a.Qty));
+             Invoice Invoice = new Invoice()
+             {
+                 EntryType = inward.LedgerType ?? "",
+                 refno = inward.ProductionId ?? "",
+                 partyname = inward.OutletName ?? "",
+                 contactno = outletdetails.OutletContactNo ?? "",
+                 address = outletdetails.OutletAddress ?? "",
+                 fright = 0,
+                 Freight_type = "",
+                 totalamount = BaseAmount,//
+                 FreighAmount = 0,
+                 BaseAmount = BaseAmount,
+                 paymentterm = "",
+                 termofdilivery = "",
+                 remark = "",
+                 gst_type = "",
+                 cgst = 0,
+                 sgst = 0,
+                 FinalAmount = BaseAmount,
+                 igst = 0,
+                 gstno = "",
+                 country = "",
+                 state = "",
+                 pincode = "",
+                 VoucherType = inward.VoucherType ?? "NA",
+                 InvoiceItemDetails = new List<InvoiceItemDetails>(),
+                 dcno = DCNO ?? "NA",
+                 invoiceno = INNO ?? "NA",
+                 truckno = inward.VehicleNumber ?? "NA",
+                 dispatchby = inward.VehicleDriverName ?? "NA",
+                 destination = "",
+                 agent = inward.VehicleOwn,
+                 invDate = indate,
+                 dcDate = indate,
+                 orderDate = DATE,
+             };
+             foreach (var item in Packagings_List)
+             {
+                 int gst = 0;
+                 var HSN = "NA";
+                 double amount = item.Qty * item.sellingRs;
+                 double UNIT = item.TotalNetWg / 1000;
+                 InvoiceItemDetails SOorderItemDetails = new InvoiceItemDetails()
+                 {
+                     productname = item.Product_Name ?? "NA",
+                     UNIT = Convert.ToDouble(UNIT),
+                     qty = Convert.ToInt32(item.Qty),
+                     uom = "KGS",
+                     amount = (float)(amount),
+                     rate = (float)(item.sellingRs),
+                     cgst = "0",
+                     sgst = "0",
+                     igst = "0",
+                     hsn = HSN,
+                 };
+                 Invoice.InvoiceItemDetails.Add(SOorderItemDetails);
+             }
+             var baseurl = _configuration["AppSettings:BaseUrl"];
+             var url = $"{baseurl}/Vouchers/Save_Delievery";
+             var data = await _apiService.PostAsync<ApiResponse<string>>(url, Invoice);
+             //END
+
+             if (Packagings_List.Count > 0)
+             {
+                 var currentuser1 = HttpContext.User;
+                 string username = currentuser1.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name).Value;
+
+                 //ADD TO DISPATCH TABLE 
+                 foreach (var item in Packagings_List)
+                 {
+                     DAProduction_id = Packagings_List.Select(a => a.Production_Id.Trim()).FirstOrDefault() ?? "NA";
+                     DAOutletName = Packagings_List.Select(a => a.Outlet_Name.Trim()).FirstOrDefault() ?? "NA";
+                     var SaveProduction_Date = _context.SaveProduction.Where(a => a.Production_Id.Trim() == item.Production_Id.Trim() && a.ProductName.Trim() == item.Product_Name.Trim() && a.TotalNetWg == item.TotalNetWg && a.TotalNetWg_Uom.Trim() == item.TotalNetWg_Uom.Trim() && a.Box_No.Trim() == item.Box_No.Trim()).FirstOrDefault();
+                     var productiondetails = _context.ProductionCapture.Where(a=>a.ProductName.Trim() == item.Product_Name.Trim() && a.OutletName.Trim() == item.Outlet_Name.Trim()).FirstOrDefault();
+                     var maxId = _context.Dispatch.Any() ? _context.Dispatch.Max(e => e.Id) + 1 : 1;
+
+                     //ADD INTO DISPATCH TABLE
+                     Dispatch Dispatch = new Dispatch()
+                     {
+                         Id = maxId,
+                         ProductionId =item.Production_Id,
+                         ProductName =item.Product_Name,
+                         OutletName =item.Outlet_Name,
+                         ReceiptNo =item.Reciept_Id,
+                         DCNo =DCNO,
+                         BoxNo =item.Box_No,
+                         Qty =item.Qty,
+                         TotalNetWg =item.TotalNetWg,
+                         TotalNetWg_Uom =item.TotalNetWg_Uom,
+                         Production_Date = productiondetails.Production_Date,
+                         Production_Time = productiondetails.Production_Time,
+                         SaveProduction_Date = SaveProduction_Date.SaveProduction_Date,
+                         SaveProduction_Time = SaveProduction_Date.SaveProduction_Time,
+                         Packaging_Date = item.Packaging_Date,
+                         Packaging_Time =item.Packaging_Time,
+                         TransferToDispatch_Date =item.DispatchReady_Date,
+                         TransferToDispatch_Time =item.DispatchReady_Time,
+                         Dispatch_Date =DATE,
+                         Dispatch_Time = TIME,
+                         VehicleDriverContactNo = dispatch.VehicleDriverContactNo,
+                         VehicleNumber = dispatch.VehicleNumber,
+                         VehicleDriverName = dispatch.VehicleDriverName,
+                         VehicleOwn = dispatch.VehicleOwn,
+                         user = username.ToString(),
+                         INNO = INNO,
+                     };
+                     _context.Dispatch.Add(Dispatch);
+                     _context.BoxMaster.Where(b => b.BoxNumber == item.Box_No).ExecuteUpdate(setters => setters.SetProperty(b => b.Use_Flag, 2));
+                     _context.SaveChanges();
+
+                     //UPDATE PACKAGING TABLE
+                     item.Dispatch_Flag = 1;
+                     item.DCNo = DCNO;
+                     _context.Packaging.Update(item);
+                     _context.SaveChanges();
+                 }
+             }
+
+             //UPDATE PRODUCTION_CAPTURE TABLE
+             var find_production = _context.ProductionCapture.Where(a=>a.Production_Id.Trim() == DAProduction_id.Trim() && a.OutletName.Trim() == DAOutletName.Trim()).ToList();
+             var find_dispatch = _context.Dispatch.Where(a => a.ProductionId.Trim() == DAProduction_id.Trim() && a.OutletName.Trim() == DAOutletName.Trim()).ToList();
+             if (find_production.Sum(a => a.TotalQty) == find_dispatch.Sum(a => a.Qty))
+             {
+                 find_production.ForEach(a =>
+                 {
+                     a.Status = "Completed";
+                 });
+                 _context.ProductionCapture.UpdateRange(find_production);
+                 _context.SaveChanges();
+
+                 find_dispatch.ForEach(a =>
+                 {
+                     a.Status = "Completed";
+                 });
+
+                 _context.Dispatch.UpdateRange(find_dispatch);
+                 _context.SaveChanges();
+             }
+
+             return Json(new {success = true, message = "Successfully Done !"});
+         }*/
 
 
         public IActionResult getdatatobind(string ProductionId, string DCNo, string BoxNo, string ReceiptNo, string OutletName)
         {
-                List<Dispatch> dispatch = new List<Dispatch>();
-                double totalqty = 0;
-                double totalamount = 0;
-                string Datee = "";
-                string category = "";
+            List<Dispatch> dispatch = new List<Dispatch>();
+            double totalqty = 0;
+            double totalamount = 0;
+            string Datee = "";
+            string category = "";
 
-                var list = _context.Dispatch
-                    .Where(a => a.OutletName.Trim() == OutletName.Trim() &&
-                                a.ReceiptNo.Trim() == ReceiptNo.Trim() &&
-                                a.DCNo.Trim() == DCNo.Trim() &&
-                                a.ProductionId.Trim() == ProductionId.Trim())
-                    .ToList();
+            var list = _context.Dispatch
+                .Where(a => a.OutletName.Trim() == OutletName.Trim() &&
+                            a.ReceiptNo.Trim() == ReceiptNo.Trim() &&
+                            a.DCNo.Trim() == DCNo.Trim() &&
+                            a.ProductionId.Trim() == ProductionId.Trim())
+                .ToList();
 
-                if (list.Any())
+            if (list.Any())
+            {
+                Datee = list.First().Dispatch_Date;
+
+                foreach (var item in list)
                 {
-                    Datee = list.First().Dispatch_Date;
+                    double sellingrate = _context.Packaging
+                        .Where(a => a.Production_Id.Trim() == item.ProductionId.Trim() &&
+                                    a.Reciept_Id.Trim() == item.ReceiptNo.Trim() &&
+                                    a.DCNo.Trim() == item.DCNo.Trim() &&
+                                    a.Product_Name.Trim() == item.ProductName.Trim()
+                                    && a.TotalNetWg == item.TotalNetWg)
+                        .Select(a => a.sellingRs)
+                        .FirstOrDefault();
 
-                    foreach (var item in list)
+                    category = _context.ProductMaster
+                        .Where(a => a.ProductName.Trim() == item.ProductName.Trim())
+                        .Select(a => a.Type)
+                        .FirstOrDefault() ?? "NA";
+
+                    dispatch.Add(new Dispatch
                     {
-                        double sellingrate = _context.Packaging
-                            .Where(a => a.Production_Id.Trim() == item.ProductionId.Trim() &&
-                                        a.Reciept_Id.Trim() == item.ReceiptNo.Trim() &&
-                                        a.DCNo.Trim() == item.DCNo.Trim() &&
-                                        a.Product_Name.Trim() == item.ProductName.Trim()
-                                        && a.TotalNetWg == item.TotalNetWg)
-                            .Select(a => a.sellingRs)
-                            .FirstOrDefault();
+                        ProductName = item.ProductName,
+                        Qty = item.Qty,
+                        rate = sellingrate,
+                        categary = category,
+                        amount = item.Qty * sellingrate
+                    });
 
-                        category = _context.ProductMaster
-                            .Where(a => a.ProductName.Trim() == item.ProductName.Trim())
-                            .Select(a => a.Type)
-                            .FirstOrDefault() ?? "NA";
-
-                        dispatch.Add(new Dispatch
-                        {
-                            ProductName = item.ProductName,
-                            Qty = item.Qty,
-                            rate = sellingrate,
-                            categary = category,
-                            amount = item.Qty * sellingrate
-                        });
-
-                        totalamount += item.Qty * sellingrate;
-                        totalqty += item.Qty;
-                    }
+                    totalamount += item.Qty * sellingrate;
+                    totalqty += item.Qty;
                 }
+            }
 
-                return Json(new { success = true, tabledata = dispatch, totalamount, totalqty, DCNo, OutletName, Datee, category });
-            
+            return Json(new { success = true, tabledata = dispatch, totalamount, totalqty, DCNo, OutletName, Datee, category });
+
         }
 
         public async Task<IActionResult> Edit(int? id)
@@ -783,7 +983,7 @@ namespace Ajit_Bakery.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,  Dispatch dispatch)
+        public async Task<IActionResult> Edit(int id, Dispatch dispatch)
         {
             if (id != dispatch.Id)
             {
@@ -843,14 +1043,14 @@ namespace Ajit_Bakery.Controllers
             {
                 _context.Dispatch.Remove(dispatch);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool DispatchExists(int id)
         {
-          return (_context.Dispatch?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Dispatch?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
         public IActionResult GetDMData(string ProductionId, string DCNo, string BoxNo, string ReceiptNo, string OutletName)
@@ -891,8 +1091,8 @@ namespace Ajit_Bakery.Controllers
                     double UNIT = item.TotalNetWg / 1000;
                     double amount = item.Qty * sellingrate;
                     string VALUE = (UNIT) + " KGS";
-                    var ratee = (amount/ UNIT) + " /KGS";
-                    
+                    var ratee = (amount / UNIT) + " /KGS";
+
                     dispatch.Add(new Dispatch
                     {
                         ProductName = item.ProductName,

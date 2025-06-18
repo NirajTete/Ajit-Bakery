@@ -32,7 +32,7 @@
                     </div>
 
                     <div class="col-sm-3">
-                        <label asp-for="outlet" class="control-label fw-bold small">Production Id</label>
+                        <label asp-for="outlet" class="control-label fw-bold small">Outlet Name</label>
                         <select asp-for="outlet" id="outlet" style="font-size:18px" required class="form-control text-uppercase" asp-items="@ViewBag.outlet" onchange="OnOutletChange()">
                         </select>
                     </div>
@@ -87,7 +87,7 @@
                     </div>
                 </div>
 
-                @*                 <div class="row p-3" style="display:none" id="TableDataId">
+                @*<div class="row p-3" style="display:none" id="TableDataId">
                 <table id="tableData" class="table table-bordered mt-3">
                 <thead class="thead-dark">
                 <tr>
@@ -240,6 +240,7 @@
     </div>
     <p class="mt-2" style="font-weight:600">Please wait...</p>
 </div>
+
 <style>
     #spinner {
         position: fixed;
