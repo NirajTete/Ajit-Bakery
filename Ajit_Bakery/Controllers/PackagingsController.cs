@@ -102,7 +102,7 @@ namespace Ajit_Bakery.Controllers
         {
             List<SaveProduction> check = new List<SaveProduction>();
             //check stock
-            var check1 = _context.SaveProduction.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Qty > 0 && a.ProductName.Trim() == productname.Trim()).ToList();
+            var check1 = _context.SaveProduction.Where(a => a.Production_Id.Trim() == Production_Id.Trim() && a.Qty > 0 && a.ProductName.Trim() == productname.Trim() && a.outlet.Trim() == outletName.Trim()).ToList();
             if (check1.Count > 0)
             {
                 //against outlet getting totalqty to pick
