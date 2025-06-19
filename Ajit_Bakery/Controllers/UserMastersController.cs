@@ -75,26 +75,14 @@ namespace Ajit_Bakery.Controllers
                     {
                         AllowRefresh = false,
                         //IsPersistent = true,
-                
+
                         IsPersistent = user.KeepLoogedIn
                     };
 
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), properties);
                     _notyfyService.Success("Login Successfully !");
                     return RedirectToAction("Index", "Home");
-                    //if (user.UserPassward == loginPage.UserPassward)
-                    //{
-                    //    HttpContext.Session.SetString("username", loginPage.UserName.Trim().ToLower());
-                    //    HttpContext.Session.SetString("DEPT_NAME", user.UserDept.Trim());
-                    //    HttpContext.Session.SetString("Role", user.UserRole.ToString().Trim());
-
-                    //    return RedirectToAction("Index", "Home");
-                    //}
-                    //else
-                    //{
-                    //    _notyfyService.Warning("Invalid Password !");
-                    //    return RedirectToAction("create", "LoginPages");
-                    //}
+                   
                 }
                 else
                 {
@@ -113,7 +101,7 @@ namespace Ajit_Bakery.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var list = await _context.UserMaster.OrderByDescending(a=>a.Id).ToListAsync();
+            var list = await _context.UserMaster.OrderByDescending(a => a.Id).ToListAsync();
             return View(list);
         }
 
@@ -163,7 +151,7 @@ namespace Ajit_Bakery.Controllers
                 userMaster.Modifiedtime = DateTime.Now.ToString("HH:mm");
                 //userMaster.User = "admin";
                 userMaster.Id = maxId;
-               
+
                 _context.Add(userMaster);
                 await _context.SaveChangesAsync();
                 return Json(new { success = true, message = "Created Successfully !" });
@@ -191,7 +179,7 @@ namespace Ajit_Bakery.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,  UserMaster userMaster)
+        public async Task<IActionResult> Edit(int id, UserMaster userMaster)
         {
             try
             {

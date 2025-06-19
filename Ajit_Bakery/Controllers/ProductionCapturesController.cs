@@ -85,7 +85,8 @@ namespace Ajit_Bakery.Controllers
 
             return lstProducts;
         }
-        private List<SelectListItem> GetProductionIds()
+
+        /*private List<SelectListItem> GetProductionIds()
         {
             var date = DateTime.Now.ToString("dd-MM-yyyy");
             var lstProducts = _context.ProductionCapture
@@ -110,7 +111,64 @@ namespace Ajit_Bakery.Controllers
 
             lstProducts.Insert(0, defItem);
             return lstProducts;
+        }*/
+
+        //Modified by Niraj Start
+        private List<SelectListItem> GetProductionIds()
+        {
+            var today = DateTime.Now.Date;
+            var yesterday = today.AddDays(-1);
+            var todayStr = today.ToString("dd-MM-yyyy");
+            var yesterdayStr = yesterday.ToString("dd-MM-yyyy");
+
+            var sixPM = new TimeSpan(18, 0, 0); // 6 PM
+
+            var allRecords = _context.ProductionCapture.AsNoTracking().ToList();
+
+            var validProductionIds = allRecords
+                .Where(a =>
+                {
+                    if (!TimeSpan.TryParseExact(a.Production_Time, "hh\\:mm", null, out TimeSpan prodTime))
+                        return false;
+
+                    var prodDate = a.Production_Date.Trim();
+
+                    // ✅ Show today's uploads (any time)
+                    if (prodDate == todayStr)
+                        return true;
+
+                    // ✅ Show yesterday's uploads if time is after 6 PM
+                    if (prodDate == yesterdayStr && prodTime >= sixPM)
+                        return true;
+
+                    return false;
+                })
+                .Select(a => a.Production_Id)
+                .Distinct()
+                .ToList();
+
+            var lstProducts = validProductionIds
+                .Select(id => new SelectListItem
+                {
+                    Value = id,
+                    Text = id
+                })
+                .OrderByDescending(x => x.Text)
+                .ToList();
+
+            // Add default item
+            lstProducts.Insert(0, new SelectListItem
+            {
+                Value = "",
+                Text = "-- Production Id --",
+                Selected = true,
+                Disabled = true
+            });
+
+            return lstProducts;
         }
+
+        //Modified by Niraj End
 
         private static List<ProductionCapture> ProductionCapture_list = new List<ProductionCapture>();
 
@@ -617,18 +675,54 @@ namespace Ajit_Bakery.Controllers
         //}
 
         public async Task<IActionResult> Index()
-        {         
+        {
             List<ProductionCapture> productionCaptures = new List<ProductionCapture>();
 
-            var yesdate = DateTime.Now.AddDays(-1).ToString("dd-MM-yyyy");
-            var todaydate = DateTime.Now.ToString("dd-MM-yyyy");
-            //Fetch ordered data from database
-            var list = await _context.ProductionCapture.Where(a => a.Production_Date.Trim() == todaydate.Trim() || a.Production_Date.Trim() == yesdate.Trim()).OrderByDescending(a => a.Id).ToListAsync();
+            var now = DateTime.Now;
+            var today = now.Date;
+            var yesterday = today.AddDays(-1);
+            TimeSpan sixPM = new TimeSpan(18, 0, 0); // 6:00 PM
 
-            //Get distinct outlet names dynamically from the data
+            var todayStr = today.ToString("dd-MM-yyyy");
+            var yesterdayStr = yesterday.ToString("dd-MM-yyyy");
+
+            var allRecords = await _context.ProductionCapture
+                .Where(a =>
+                    a.Production_Date.Trim() == todayStr || a.Production_Date.Trim() == yesterdayStr
+                )
+                .ToListAsync();
+
+            var list = allRecords.Where(a =>
+            {
+                if (!TimeSpan.TryParseExact(a.Production_Time, "hh\\:mm", null, out TimeSpan prodTime))
+                    return false; // Skip if time format is invalid
+
+                var prodDate = a.Production_Date.Trim();
+
+
+                if (prodDate == todayStr && prodTime < sixPM)
+                    return true;
+
+
+                if (prodDate == yesterdayStr && prodTime >= sixPM)
+                    return true;
+
+
+                if (prodDate == todayStr)
+                    return true;
+
+                return false;
+            })
+            .OrderByDescending(a => a.Id)
+            .ToList();
+
+
+
+
+
             var allOutlets = list.Select(x => x.OutletName).Distinct().ToList();
 
-            //Group data properly by Production_Id
+
             var groupedData = list
                 .GroupBy(p => new { p.Production_Id, p.Production_Date, p.Status })
                 .Select(g => new
@@ -684,7 +778,6 @@ namespace Ajit_Bakery.Controllers
             ViewBag.AllOutlets = allOutlets; // Send outlet names dynamically to the view
             return View(productionCaptures);
         }
-
 
 
         public async Task<IActionResult> Details(int? id)
@@ -1024,6 +1117,7 @@ namespace Ajit_Bakery.Controllers
 
             return Json(new { status = "success" });
         }
+
         public class ProductionUpdateModel
         {
             public string ProductId { get; set; }

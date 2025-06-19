@@ -10,8 +10,8 @@ namespace Ajit_Bakery.Models
         public int MenuId { get; set; }
         public int? ParentMenuId { get; set; }
         public string? icon { get; set; }
-        public string Title { get; set; }
-        public string Controller { get; set; }
-        public string Action { get; set; }
+        public string? Title { get; set; }
+        public string? Controller { get; set; }
+        public string? Action { get; set; }
     }
 }

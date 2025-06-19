@@ -175,21 +175,27 @@
                         console.log("API Response:", response);
 
                         var tableBody = $("#cakeTable tbody");
+                        tableBody.empty();
+
+                        if ($.fn.DataTable.isDataTable("#cakeTable")) {
+                            $("#cakeTable").DataTable().clear().destroy();
+                        }
+
 
                         $.each(response.data, function (index, cake) {
                             var row = `<tr>
                                 <td>${cake.productName}</td>
-                                                <td class="text-center">${cake.remainingQty}</td>
+                                <td class="text-center">${cake.remainingQty}</td>
                                 </tr>`;
                             tableBody.append(row);
                         });
 
                         $("#cakeTable").DataTable({
-                            destroy: true,  // Ensure it reinitializes properly
-                            paging: true,   // Enable pagination
-                            searching: true, // Enable search
-                            ordering: false, // Disable sorting
-                            lengthChange: false, // Disable "Show X entries" dropdown
+                            destroy: true,
+                            paging: true,
+                            searching: true,
+                            ordering: false,
+                            lengthChange: false,
                             pageLength: 10
                         });
 
@@ -449,10 +455,27 @@
             if (event.key === "Enter") {
                 event.preventDefault(); // Prevent the default form submission
 
+                // Get the values from the form
+                let remQty = $("#qtyremainig").val();
+
+                if (remQty == 0) {
+                   Swal.fire({
+                        icon: "warning",
+                        title: 'All Quantity Scanned',
+                        text: 'All quantity has already been scanned for this outlet.',
+                    });
+                    $('#ScanItem').val("");
+                    $("#Box_No").val("").trigger("change");
+                    return;
+                }
+
                 let Production_Id = $("#Production_Id").val().trim();
                 let Box_No = $("#Box_No").val().trim();
                 let scanvalue = $('#ScanItem').val().trim();
                 let outletName = $("#Outlet_Name").val().trim();
+
+
+                // alert("Box Box:" + Box_No);
 
                 // ✅ Validation for  fields
                 let missingFields = [];
@@ -543,7 +566,7 @@
                                 // If remaining quantity is zero, clear related fields
                                 if (response.qtyremainig == 0) {
                                     $("#Outlet_Name").val("");
-                                    $("#Box_No").val("");
+                                    $("#Box_No").val("").trigger("change");
                                     $("#qtyremainig").val(0);
                                     $("#qtypick").val(0);
                                     $("#ScanItem").val("");

@@ -56,6 +56,10 @@ namespace Ajit_Bakery.Controllers
                         {
                             return Json(new { success = true, unitqty = product.Unitqty });
                         }
+                        else if (productName.Contains("1+"))
+                        {
+                            return Json(new { success = true, unitqty = product.Unitqty, message = "Above 1 kg" });
+                        }
                         else
                         {
                             return Json(new { success = false, message = "Enter Correct Wt.,item unit range i,e " + product.Unitqty + " and you have enter " + TotalNetWg, unitqty = product.Unitqty });
@@ -157,34 +161,93 @@ namespace Ajit_Bakery.Controllers
             return Json(new { success = true, data = "" });
         }
 
+        /* public IActionResult GetOutlets(string Production_Id)
+         {
+             var date = DateTime.Now.ToString("dd-MM-yyyy");
+             var yesterday = DateTime.Now.AddDays(-1).ToString("dd-MM-yyyy");
+             var lstProducts = _context.ProductionCapture
+                .Where(a => a.Status == "Pending" && (a.Production_Date.Trim() == date.Trim() || a.Production_Date.Trim() == yesterday.Trim()) && a.Production_Id.Trim() == Production_Id.Trim())
+                .AsNoTracking()
+                .Select(n => new SelectListItem
+                {
+                    Value = n.OutletName,
+                    Text = n.OutletName
+                })
+                .Distinct()
+                .ToList();
+
+
+             var defItem = new SelectListItem()
+             {
+                 Value = "",
+                 Text = "-- Select Outlet Name --",
+                 Selected = true,
+                 Disabled = true
+             };
+             lstProducts.Insert(0, defItem);
+
+             return Json(new { success = true, data = lstProducts });
+
+         }*/
+
         public IActionResult GetOutlets(string Production_Id)
         {
             var date = DateTime.Now.ToString("dd-MM-yyyy");
             var yesterday = DateTime.Now.AddDays(-1).ToString("dd-MM-yyyy");
-            var lstProducts = _context.ProductionCapture
-               .Where(a => a.Status == "Pending" && (a.Production_Date.Trim() == date.Trim() || a.Production_Date.Trim() == yesterday.Trim()) && a.Production_Id.Trim() == Production_Id.Trim())
-               .AsNoTracking()
-               .Select(n => new SelectListItem
-               {
-                   Value = n.OutletName,
-                   Text = n.OutletName
-               })
-               .Distinct()
-               .ToList();
 
+           
+            var productionList = _context.ProductionCapture
+                .Where(a =>
+                    a.Production_Id.Trim() == Production_Id.Trim() &&
+                    a.Status == "Pending" &&
+                    (a.Production_Date.Trim() == date || a.Production_Date.Trim() == yesterday))
+                .ToList();
 
-            var defItem = new SelectListItem()
+          
+            var savedList = _context.SaveProduction
+                .Where(a =>
+                    a.Production_Id.Trim() == Production_Id.Trim() &&
+                    (a.SaveProduction_Date.Trim() == date || a.SaveProduction_Date.Trim() == yesterday))
+                .ToList();
+
+           
+            var remainingOutlets = productionList
+                .GroupBy(p => p.OutletName.Trim())
+                .Where(g =>
+                {
+                    var outletName = g.Key;
+                    var plannedQty = g.Sum(x => x.TotalQty);
+
+                    var savedQty = savedList
+                        .Where(s => s.outlet.Trim() == outletName)
+                        .Sum(s => s.Qty);
+
+                    return plannedQty > savedQty; // Only if some quantity is still remaining
+                })
+                .Select(g => g.Key)
+                .ToList();
+
+           
+            var lstProducts = remainingOutlets
+                .Select(name => new SelectListItem
+                {
+                    Value = name,
+                    Text = name
+                })
+                .ToList();
+
+          
+            lstProducts.Insert(0, new SelectListItem
             {
                 Value = "",
                 Text = "-- Select Outlet Name --",
                 Selected = true,
                 Disabled = true
-            };
-            lstProducts.Insert(0, defItem);
+            });
 
             return Json(new { success = true, data = lstProducts });
-
         }
+
 
         public IActionResult GetProducts(string Production_Id, string Outlet)
         {

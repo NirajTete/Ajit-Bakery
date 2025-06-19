@@ -32,21 +32,40 @@ public class HomeController : Controller
         var jsonData = HttpContext.Session.GetString("ProductionCaptureList");
         var productionListget = jsonData != null ? JsonConvert.DeserializeObject<List<ProductionCapture>>(jsonData) : new List<ProductionCapture>();
 
-        //return Json(new { count = productionList.Count });
-
-        var currentday = DateTime.Now.Day;
-        var currentMonth = DateTime.Now.Month;
-        var currentYear = DateTime.Now.Year;
-
-        // Fetch only Production_Date from the database
-        var productionList = _context.ProductionCapture
-            .Select(x => x.Production_Date) // Fetch only necessary column
-            .ToList();  // Load into memory
-
 
 
         var dateTimeNow = DateTime.Now.ToString("dd-MM-yyyy");
-        var list1 = _context.ProductionCapture.Where(a => a.Production_Date.Trim() == dateTimeNow.Trim()).ToList().Sum(a => a.TotalQty);
+        //var list1 = _context.ProductionCapture.Where(a => a.Production_Date.Trim() == dateTimeNow.Trim()).ToList().Sum(a => a.TotalQty);
+
+        var today = DateTime.Now.Date;
+        var yesterday = today.AddDays(-1);
+        var sixPM = new TimeSpan(18, 0, 0);
+
+        // Convert time strings to TimeSpan safely
+        bool TryParseTime(string timeStr, out TimeSpan result)
+        {
+            return TimeSpan.TryParseExact(timeStr, "hh\\:mm", null, out result);
+        }
+
+        // Fetch all production records
+        var allProduction = _context.ProductionCapture.ToList();
+        var filteredProduction = allProduction.Where(a =>
+        {
+            if (!TryParseTime(a.Production_Time, out var prodTime))
+                return false;
+
+            if (a.Production_Date.Trim() == today.ToString("dd-MM-yyyy") && prodTime < sixPM)
+                return true;
+
+            if (a.Production_Date.Trim() == yesterday.ToString("dd-MM-yyyy") && prodTime >= sixPM)
+                return true;
+
+            return false;
+        }).ToList();
+
+        // Count total planned quantity
+        var list1 = filteredProduction.Sum(a => a.TotalQty);
+
 
         // Count completed dispatches
         var completedDispatchCount = _context.Dispatch.Where(s => /*s.Dispatch_Date == dateTimeNow &&*/ s.Status == "Completed").ToList().Count();
